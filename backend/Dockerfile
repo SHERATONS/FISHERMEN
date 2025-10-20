@@ -1,14 +1,35 @@
-# Use an official OpenJDK runtime as a parent image
-FROM eclipse-temurin:17-jdk-jammy
+# === Stage 1: Build stage ===
+FROM eclipse-temurin:17-jdk AS builder
 
-# Set the working directory in the container
+# Set working directory
 WORKDIR /app
 
-# Copy the fat jar into the container at /app
-COPY target/*.jar app.jar
+# Copy only files needed to download dependencies
+COPY pom.xml mvnw ./
+COPY .mvn .mvn
 
-# Make port 8080 available to the world outside this container
+# Make mvnw executable
+RUN chmod +x ./mvnw
+
+# Pre-download dependencies (for build caching)
+RUN ./mvnw dependency:go-offline
+
+# Copy the rest of your source code
+COPY src ./src
+
+# Build the project (skip tests for faster builds)
+RUN ./mvnw clean package -DskipTests
+
+# === Stage 2: Runtime stage ===
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+# Copy built JAR from the builder stage
+COPY --from=builder /app/target/*.jar app.jar
+
+# Expose the same port as in application.properties
 EXPOSE 8080
 
-# Run the jar file
-ENTRYPOINT ["java","-jar","app.jar"]
+# Run the Spring Boot app
+ENTRYPOINT ["java", "-jar", "app.jar"]
