@@ -74,6 +74,7 @@
   font-weight: bold;
 }
 
+/*input block*/
 .price-inputs {
   display: flex;
   gap: 10px; 
@@ -99,7 +100,7 @@
   margin-top: 5px;
 }
 
-.filter-placeholder {
+.filter-placeholder { 
   margin-top: 20px;
   font-size: 0.9rem;
   color: #999;

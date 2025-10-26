@@ -7,7 +7,7 @@ const MOCK_FISH_DATA = [
     { id: 1, name: 'Salmon', price: 380, species: 'Salmon', freshness: 'Caught Today', location: 'Seattle', quantity: 15, description: 'Fresh, wild-caught salmon fillet, perfect for grilling or pan-searing.', images: ['/images/salmon1.jpg','/images/salmon2.jpg'] },
     { id: 2, name: 'Tuna', price: 400, species: 'Tuna', freshness: 'Frozen', location: 'Boston', quantity: 22, description: 'High-quality tuna steak, ideal for sushi or searing.', images: ['/images/tuna1.jpg','/images/tuna2.jpg'] },
     { id: 3, name: 'Snapper', price: 200, species: 'Snapper', freshness: 'Caught Yesterday', location: 'Miami', quantity: 8, description: 'Delicious red snapper, perfect for baking with herbs.', images: ['/images/snapper1.jpg','/images/snapper2.jpg'] },
-    { id: 4, name: 'Mackerel', price: 130, species: 'Mackerel', freshness: 'Caught Today', location: 'Tokyo', quantity: 30, description: 'Fresh mackerel with rich flavor, great for grilling.', images: ['/images/mackerel1.jpg','/images/mackerel2.jpg'] },
+    { id: 4, name: 'Mackerel', price: 140, species: 'Mackerel', freshness: 'Caught Today', location: 'Tokyo', quantity: 30, description: 'Fresh mackerel with rich flavor, great for grilling.', images: ['/images/mackerel1.jpg','/images/mackerel2.jpg'] },
     { id: 5, name: 'Cod', price: 260, species: 'Cod', freshness: 'Caught Yesterday', location: 'Anchorage', quantity: 10, description: 'Tender halibut steak, ideal for pan-frying or broiling.', images: ['/images/halibut1.jpg','/images/halibut2.jpg'] },
 ];
 
