@@ -7,6 +7,7 @@ import FishMarket from './pages/FishMarket';
 import FishDetailPage from './pages/FishDetailPage';
 import Manage from './pages/Manage';
 import BuyerReviews from './pages/BuyerReviews';
+import LoginRegisPage from "./pages/LoginRegisPage";
 
 function App() {
   // 🛒 ย้าย cart state มาไว้ที่นี่
@@ -25,6 +26,7 @@ function App() {
               <Link style={linkStyle} to="/market">Market</Link>
               <Link style={linkStyle} to="/manage">Manage Orders</Link>
               <Link style={linkStyle} to="/reviews">Reviews</Link>
+              <Link style={linkStyle} to="/login">Login</Link>
             </div>
           </nav>
 
@@ -38,6 +40,7 @@ function App() {
               <Route path="/market/:id" element={<FishDetailPage cart={cart} setCart={setCart} />} />
               <Route path="/manage" element={<Manage />} />
               <Route path="/reviews" element={<BuyerReviews />} />
+              <Route path="/login" element={<LoginRegisPage />} />
             </Routes>
           </div>
         </div>
@@ -75,6 +78,14 @@ const linkStyle = {
 const homeStyle = {
   textAlign: "center",
   marginTop: "50px"
+};
+
+const iconStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "12px",
+  transform: "translateY(-50%)",
+  color: "#888",
 };
 
 export default App;
