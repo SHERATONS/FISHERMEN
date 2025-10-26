@@ -188,6 +188,17 @@
   font-weight: 500;
 }
 
+.available {
+  color: green;
+  font-weight: bold;
+}
+
+.soldout {
+  color: red;
+  font-weight: bold;
+}
+
+
 
 
 
