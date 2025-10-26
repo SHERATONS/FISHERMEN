@@ -121,7 +121,7 @@ const Manage = () => {
         </div>
       </div>
 
-{/* Table */}
+{/*Table */}
 <table className="order-table">
   <thead>
     <tr>
