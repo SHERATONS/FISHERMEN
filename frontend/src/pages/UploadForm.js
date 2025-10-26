@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function UploadForm() {
   const navigate = useNavigate();
   const [fisherName, setFisherName] = useState("");
-  const [species, setSpecies] = useState([]);
+  const [fishType, setFishType] = useState([]);
   const [weight, setWeight] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState(null);
@@ -21,26 +21,37 @@ export default function UploadForm() {
   const [calculatedPrice, setCalculatedPrice] = useState(null);
 
   useEffect(() => {
-    const fetchMarketPrices = async () => {
-      try {
-        const data = [
-          { Species: "Tuna", fairPrice: 150 },
-          { Species: "Mackerel", fairPrice: 90 },
-          { Species: "Snapper", fairPrice: 120 },
-          { Species: "Salmon", fairPrice: 120 },
-          { Species: "Tilapia", fairPrice: 70 },
-          { Species: "Sea bass", fairPrice: 70 },
-          { Species: "Cod", fairPrice: 70 },
-          { Species: "Sardine", fairPrice: 70 },
-          { Species: "Catfish", fairPrice: 70 },
-          { Species: "Halibut", fairPrice: 70 },
-
-        ];
-        setMarketPrices(data);
-      } catch (err) {
-        console.error("Error fetching market prices:", err);
-      }
-    };
+      const fetchMarketPrices = async () => {
+          try {
+              // mock data
+              const data = [
+                  { fishType: "Anchovy", fairPrice: 80 },
+                  { fishType: "Bluefin Tuna", fairPrice: 1000 },
+                  { fishType: "Carp", fairPrice: 120 },
+                  { fishType: "Catfish", fairPrice: 160 },
+                  { fishType: "Cod", fairPrice: 240 },
+                  { fishType: "Eel", fairPrice: 400 },
+                  { fishType: "Herring", fairPrice: 100 },
+                  { fishType: "Kingfish", fairPrice: 440 },
+                  { fishType: "Mackerel", fairPrice: 110 },
+                  { fishType: "Pollock", fairPrice: 150 },
+                  { fishType: "Pomfret", fairPrice: 320 },
+                  { fishType: "Salmon", fairPrice: 360 },
+                  { fishType: "Sea Bass", fairPrice: 420 },
+                  { fishType: "Snapper", fairPrice: 180 },
+                  { fishType: "Swordfish", fairPrice: 500 },
+                  { fishType: "Trout", fairPrice: 240 },
+                  { fishType: "Tuna", fairPrice: 380 },
+                  { fishType: "Yellowtail", fairPrice: 400 }
+              ];
+              setMarketPrices(data);
+                  // const res = await axios.get("http://localhost:8080/api/fish/fair-prices");
+                  // setMarketPrices(res.data);
+                  // console.log(res.data);
+              } catch (err) {
+                  console.error("Error fetching market prices:", err);
+              }
+          };
     fetchMarketPrices();
   }, []);
 
@@ -54,9 +65,9 @@ export default function UploadForm() {
     fontSize: "16px",
   };
 
-  const handleSpeciesChange = (e) => {
+  const handleFishTypeChange = (e) => {
     const selected = Array.from(e.target.selectedOptions, (opt) => opt.value);
-    setSpecies(selected);
+    setFishType(selected);
   };
 
 const handleSubmit = (e) => {
@@ -87,9 +98,6 @@ const handleSubmit = (e) => {
   setTimeout(() => navigate("/manage"), 3000);
 };
 
-
-
-
   const calculateFairPrice = () => {
     if (!selectedFish || !calcWeight) {
       alert("Please select a fish and enter weight!");
@@ -97,7 +105,7 @@ const handleSubmit = (e) => {
     }
 
     const fishData = marketPrices.find(
-      (item) => item.Species.toLowerCase() === selectedFish.toLowerCase()
+      (item) => item.fishType.toLowerCase() === selectedFish.toLowerCase()
     );
 
     if (!fishData) {
@@ -172,8 +180,8 @@ const handleSubmit = (e) => {
                     >
                       <option value="">-- Select Species --</option>
                       {marketPrices.map((fish, index) => (
-                        <option key={index} value={fish.Species}>
-                          {fish.Species}
+                        <option key={index} value={fish.fishType}>
+                          {fish.fishType}
                         </option>
                       ))}
                     </select>
@@ -251,6 +259,14 @@ const handleSubmit = (e) => {
           }}
         >
           <h3 style={{ textAlign: "center", color: "#023047" }}>Fair Market Prices</h3>
+            <div
+                style={{
+                    maxHeight: "220px", // roughly fits ~5 rows
+                    overflowY: "auto",
+                    borderRadius: "8px",
+                    border: "1px solid #ddd",
+                }}
+            >
           <table
             style={{
               width: "100%",
@@ -268,12 +284,13 @@ const handleSubmit = (e) => {
             <tbody>
               {marketPrices.map((fish, index) => (
                 <tr key={index}>
-                  <td style={{ padding: "8px", border: "1px solid #ddd" }}>{fish.Species}</td>
+                  <td style={{ padding: "8px", border: "1px solid #ddd" }}>{fish.fishType}</td>
                   <td style={{ padding: "8px", border: "1px solid #ddd" }}>{fish.fairPrice}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
         </div>
 
         {/* Fair Price Calculator */}
@@ -297,8 +314,8 @@ const handleSubmit = (e) => {
           >
             <option value="">-- Select Species --</option>
             {marketPrices.map((fish, index) => (
-              <option key={index} value={fish.Species}>
-                {fish.Species}
+              <option key={index} value={fish.fishType}>
+                {fish.fishType}
               </option>
             ))}
           </select>
