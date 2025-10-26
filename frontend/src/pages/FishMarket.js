@@ -4,11 +4,11 @@ import './FishMarket.css';
 
 // --- Mock Data (ตัวอย่างสินค้า) ---
 const MOCK_FISH_DATA = [
-    { id: 1, name: 'Salmon Fillet', price: 12.99, species: 'Salmon', freshness: 'Caught Today', location: 'Seattle', quantity: 15, description: 'Fresh, wild-caught salmon fillet, perfect for grilling or pan-searing.', images: ['/images/salmon1.jpg','/images/salmon2.jpg'] },
-    { id: 2, name: 'Tuna Steak', price: 18.50, species: 'Tuna', freshness: 'Frozen', location: 'Boston', quantity: 22, description: 'High-quality tuna steak, ideal for sushi or searing.', images: ['/images/tuna1.jpg','/images/tuna2.jpg'] },
-    { id: 3, name: 'Red Snapper', price: 9.75, species: 'Snapper', freshness: 'Caught Yesterday', location: 'Miami', quantity: 8, description: 'Delicious red snapper, perfect for baking with herbs.', images: ['/images/snapper1.jpg','/images/snapper2.jpg'] },
-    { id: 4, name: 'Mackerel', price: 5.50, species: 'Mackerel', freshness: 'Caught Today', location: 'Tokyo', quantity: 30, description: 'Fresh mackerel with rich flavor, great for grilling.', images: ['/images/mackerel1.jpg','/images/mackerel2.jpg'] },
-    { id: 5, name: 'Halibut Steak', price: 15.20, species: 'Halibut', freshness: 'Caught Yesterday', location: 'Anchorage', quantity: 10, description: 'Tender halibut steak, ideal for pan-frying or broiling.', images: ['/images/halibut1.jpg','/images/halibut2.jpg'] },
+    { id: 1, name: 'Salmon', price: 380, species: 'Salmon', freshness: 'Caught Today', location: 'Seattle', quantity: 15, description: 'Fresh, wild-caught salmon fillet, perfect for grilling or pan-searing.', images: ['/images/salmon1.jpg','/images/salmon2.jpg'] },
+    { id: 2, name: 'Tuna', price: 400, species: 'Tuna', freshness: 'Frozen', location: 'Boston', quantity: 22, description: 'High-quality tuna steak, ideal for sushi or searing.', images: ['/images/tuna1.jpg','/images/tuna2.jpg'] },
+    { id: 3, name: 'Snapper', price: 200, species: 'Snapper', freshness: 'Caught Yesterday', location: 'Miami', quantity: 8, description: 'Delicious red snapper, perfect for baking with herbs.', images: ['/images/snapper1.jpg','/images/snapper2.jpg'] },
+    { id: 4, name: 'Mackerel', price: 130, species: 'Mackerel', freshness: 'Caught Today', location: 'Tokyo', quantity: 30, description: 'Fresh mackerel with rich flavor, great for grilling.', images: ['/images/mackerel1.jpg','/images/mackerel2.jpg'] },
+    { id: 5, name: 'Cod', price: 260, species: 'Cod', freshness: 'Caught Yesterday', location: 'Anchorage', quantity: 10, description: 'Tender halibut steak, ideal for pan-frying or broiling.', images: ['/images/halibut1.jpg','/images/halibut2.jpg'] },
 ];
 
 const FishMarket = () => {
@@ -130,12 +130,12 @@ const FishMarket = () => {
                                 onClick={() => openModal(fish)}
                             >
                                 <h3>{fish.name}</h3>
-                                <p>Price: <strong>${fish.price.toFixed(2)}</strong>/lb</p>
+                                <p>Price: <strong> ฿ {fish.price.toFixed(2)}</strong>/Kg</p>
                                 <p>Species: {fish.species}</p>
                                 <p>Freshness: <strong>{fish.freshness}</strong></p>
                                 <p>Location: {fish.location}</p>
                                 <button onClick={(e) => { e.stopPropagation(); addToCart(fish); }}>
-                                    Add to Cart 🛒
+                                    Add to Cart 
                                 </button>
                             </div>
                         ))}
@@ -144,7 +144,7 @@ const FishMarket = () => {
 
                 {/* Cart Panel */}
                 <div className="cart-panel">
-                    <h3>🛍️ Your Cart</h3>
+                    <h3>🛒 Your Cart</h3>
                     {cart.length === 0 ? <p>Your cart is empty.</p> : (
                         <ul>
                             {cart.map(item => (
@@ -182,7 +182,7 @@ const FishMarket = () => {
                         <p><strong>Available Quantity:</strong> {selectedFish.quantity}</p>
                         <p><strong>Description:</strong> {selectedFish.description}</p>
                         <button className="add-to-cart-btn" onClick={() => addToCart(selectedFish)}>
-                                Add to Cart 🛒
+                                Add to Cart
                         </button>
                     </div>
                 </div>
