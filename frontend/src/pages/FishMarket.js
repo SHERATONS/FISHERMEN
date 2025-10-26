@@ -178,7 +178,7 @@ const FishMarket = () => {
                         <ul>
                             {cart.map(item => (
                                 <li key={item.id}>
-                                    {item.name} x {item.quantity} - ${(item.price * item.quantity).toFixed(2)}
+                                    {item.name} x {item.quantity} - ฿{(item.price * item.quantity).toFixed(2)}
                                     <button onClick={() => removeFromCart(item.id)}>✕</button>
                                 </li>
                             ))}
@@ -186,7 +186,7 @@ const FishMarket = () => {
                     )}
                     {cart.length > 0 && (
                         <div className="cart-total">
-                            <strong>Total: ${totalPrice.toFixed(2)}</strong>
+                            <strong>Total: ฿{totalPrice.toFixed(2)}</strong>
                             <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
                         </div>
                     )}
@@ -204,7 +204,7 @@ const FishMarket = () => {
                             <img src={selectedFish.images[galleryIndex]} alt={selectedFish.name} />
                             <button className="gallery-btn" onClick={nextImage}>›</button>
                         </div>
-                        <p><strong>Price:</strong> ${selectedFish.price.toFixed(2)}/lb</p>
+                        <p><strong>Price:</strong> ฿{selectedFish.price.toFixed(2)}/Kg</p>
                         <p><strong>Species:</strong> {selectedFish.species}</p>
                         <p><strong>Freshness:</strong> {selectedFish.freshness}</p>
                         <p><strong>Location:</strong> {selectedFish.location}</p>
