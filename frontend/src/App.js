@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import UploadForm from './pages/UploadForm';
 import Payment from "./pages/Payment";
 import FishMarket from './pages/FishMarket';
+import Manage from './pages/Manage';
+import BuyerReviews from './pages/BuyerReviews';
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
             <Link style={linkStyle} to="/upload">Upload Fish</Link>
             <Link style={linkStyle} to="/payment">Payment</Link>
             <Link style={linkStyle} to="/market">Market</Link>
+            <Link style={linkStyle} to="/manage">Manage</Link>
+            <Link style={linkStyle} to="/reviews">Reviews</Link>
             
           </div>
         </nav>
@@ -28,6 +32,8 @@ function App() {
             <Route path="/upload" element={<UploadForm />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/market" element={<FishMarket />} />
+            <Route path="/manage" element={<Manage />} />
+            <Route path="/reviews" element={<BuyerReviews />} />
           </Routes>
         </div>
       </div>
