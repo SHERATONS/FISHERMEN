@@ -95,11 +95,14 @@
 .product-detail {
   text-align: left;
   color: #333;
+  line-height: 1.2; 
 }
 
 .order-info {
   text-align: left;
   color: #444;
+  line-height: 1.2; 
+
 }
 
 .status-badge {

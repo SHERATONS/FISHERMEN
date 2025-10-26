@@ -12,7 +12,7 @@ const Manage = () => {
       buyer: 'John Fisher',
       payment: 'Credit Card',
       product: 'Salmon Fillet',
-      price: 12.99,
+      price: 1200,
       species: 'Salmon',
       quantity: 2,
       status: 'Pending',
@@ -22,8 +22,8 @@ const Manage = () => {
       date: '2025-10-02',
       buyer: 'Alice Ocean',
       payment: 'Bank Transfer',
-      product: 'Tuna',
-      price: 15.49,
+      product: 'Tuna Steak',
+      price: 115.49,
       species: 'Tuna',
       quantity: 3,
       status: 'Unshipped',
@@ -34,7 +34,7 @@ const Manage = () => {
       buyer: 'Mark Blue',
       payment: 'Cash',
       product: 'Cod',
-      price: 10.99,
+      price: 79.50,
       species: 'Cod',
       quantity: 1,
       status: 'Unshipped',
@@ -45,7 +45,7 @@ const Manage = () => {
       buyer: 'Sophia Net',
       payment: 'Credit Card',
       product: 'Mackerel',
-      price: 9.5,
+      price: 90.5,
       species: 'Mackerel',
       quantity: 4,
       status: 'Shipped',
@@ -56,7 +56,7 @@ const Manage = () => {
       buyer: 'Liam Boat',
       payment: 'Bank Transfer',
       product: 'Sea Bass',
-      price: 14.75,
+      price: 34.75,
       species: 'Sea Bass',
       quantity: 2,
       status: 'Shipped',
@@ -112,7 +112,7 @@ const Manage = () => {
           <p>Available</p>
         </div>
         <div className="summary-box">
-          <h3>${totalBalance.toFixed(2)}</h3>
+          <h3>{totalBalance.toFixed(2)} THB</h3>
           <p>Total Balance</p>
         </div>
         <div className="summary-box">
@@ -142,10 +142,10 @@ const Manage = () => {
             <td>{order.date}</td>
             <td className="product-detail">
               <strong>{order.product}</strong><br />
-              Price: ${order.price.toFixed(2)}/lb<br />
+              Price: {order.price.toFixed(2)} THB/Kg<br />
               Species: {order.species}<br />
               Quantity: {order.quantity}<br />
-              <em>Subtotal: ${(order.price * order.quantity).toFixed(2)}</em>
+              Subtotal: {(order.price * order.quantity).toFixed(2)} THB
             </td>
             <td>
               <span className={`status-badge status-${order.status.replace(' ', '').toLowerCase()}`}>

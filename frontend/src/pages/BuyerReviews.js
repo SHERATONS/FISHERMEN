@@ -127,7 +127,7 @@ const BuyerReviews = () => {
                   <p><strong>Seller:</strong> {order.seller}</p>
                   <p><strong>Product:</strong> {order.product}</p>
                   <p><strong>Quantity:</strong> {order.quantity}</p>
-                  <p><strong>Subtotal:</strong> ${(order.quantity * order.price).toFixed(2)}</p>
+                  <p><strong>Subtotal:</strong> {(order.quantity * order.price).toFixed(2)} THB</p>
                 </div>
                 <div className="order-actions">
                   {reviews[order.id] ? (
