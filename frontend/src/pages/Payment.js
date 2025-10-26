@@ -1,7 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CreditCard, Smartphone, Wallet, QrCode, CheckCircle } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom"; // ✅ เพิ่ม import
 
 export default function Payment() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // ✅ รับยอดรวมจาก FishMarket (ส่งมาผ่าน navigate)
+  const totalAmount = location.state?.totalAmount || 0;
+
   const [selectedMethod, setSelectedMethod] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
@@ -9,10 +16,8 @@ export default function Payment() {
   const [selectedBank, setSelectedBank] = useState("");
   const [selectedWallet, setSelectedWallet] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const [popupVisible, setPopupVisible] = useState(false); // สำหรับ animation
+  const [popupVisible, setPopupVisible] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-
-  const totalAmount = 850.5;
 
   const inputStyle = {
     width: "100%",
@@ -60,10 +65,6 @@ export default function Payment() {
         alert("Month must be between 01 and 12.");
         return;
       }
-      if (year < 0 || year > 99) {
-        alert("Year must be valid two digits.");
-        return;
-      }
       if (!/^\d{3,4}$/.test(cvc)) {
         alert("CVC must be 3 or 4 digits.");
         return;
@@ -76,13 +77,13 @@ export default function Payment() {
       return;
     }
 
-    // Show popup with animation
+    // ✅ แสดง popup สำเร็จ
     setShowPopup(true);
-    setPopupVisible(true); // start scale & fade-in
-    setTimeout(() => setPopupVisible(false), 2500); // fade-out before 3s
-    setTimeout(() => setShowPopup(false), 3000); // remove popup
+    setPopupVisible(true);
+    setTimeout(() => setPopupVisible(false), 2500);
+    setTimeout(() => setShowPopup(false), 3000);
 
-    // Set success message
+    // ✅ ข้อความสำเร็จ
     let methodText = "";
     if (selectedMethod === "card") methodText = "Card";
     else if (selectedMethod === "mobile") methodText = selectedBank || "Mobile Banking";
@@ -97,6 +98,9 @@ export default function Payment() {
     setSelectedBank("");
     setSelectedWallet("");
     setSelectedMethod("");
+
+    // ✅ กลับไปหน้า Market หลังจาก 3 วินาที
+    setTimeout(() => navigate("/"), 3200);
   };
 
   const paymentMethods = [
@@ -107,180 +111,183 @@ export default function Payment() {
   ];
 
   return (
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "50px auto",
-        padding: "20px",
-        background: "#fff",
-        borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-        position: "relative",
-      }}
-    >
-      <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#023047" }}>Payment</h2>
+      <div
+          style={{
+            maxWidth: "400px",
+            margin: "50px auto",
+            padding: "20px",
+            background: "#fff",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            position: "relative",
+          }}
+      >
+        <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#023047" }}>Payment</h2>
 
-      <div style={{ textAlign: "center", marginBottom: "20px" }}>
-        <p style={{ color: "#555", marginBottom: "5px" }}>Total Amount</p>
-        <p style={{ fontSize: "28px", fontWeight: "bold", color: "#0077b6" }}>฿{totalAmount.toFixed(2)}</p>
-      </div>
-
-      <form onSubmit={handleSubmit}>
-        {/* Payment Method */}
-        <div style={{ marginBottom: "20px" }}>
-          <h3 style={{ marginBottom: "10px", color: "#023047" }}>Select Payment Method</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {paymentMethods.map((method) => (
-              <button
-                key={method.id}
-                type="button"
-                onClick={() => setSelectedMethod(method.id)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  padding: "10px 15px",
-                  borderRadius: "8px",
-                  border: selectedMethod === method.id ? "2px solid #0077b6" : "1px solid #ccc",
-                  background: selectedMethod === method.id ? "#e0f7ff" : "#fff",
-                  cursor: "pointer",
-                  textAlign: "left",
-                }}
-              >
-                {method.icon}
-                <span>{method.label}</span>
-              </button>
-            ))}
-          </div>
+        <div style={{ textAlign: "center", marginBottom: "20px" }}>
+          <p style={{ color: "#555", marginBottom: "5px" }}>Total Amount</p>
+          <p style={{ fontSize: "28px", fontWeight: "bold", color: "#0077b6" }}>${totalAmount.toFixed(2)}</p>
         </div>
 
-        {/* Card */}
-        {selectedMethod === "card" && (
+        <form onSubmit={handleSubmit}>
+          {/* Payment Method */}
           <div style={{ marginBottom: "20px" }}>
-            <h3 style={{ marginBottom: "10px", color: "#023047" }}>Card Information</h3>
-            <input
-              type="text"
-              value={cardNumber}
-              onChange={(e) => handleCardInput(e.target.value)}
-              placeholder="1234 5678 9012 3456"
-              style={inputStyle}
-            />
-            <div style={{ display: "flex", gap: "10px" }}>
-              <input
-                type="text"
-                value={expiry}
-                onChange={(e) => handleExpiryInput(e.target.value)}
-                placeholder="MM/YY"
-                style={{ ...inputStyle, marginBottom: 0 }}
-              />
-              <input
-                type="text"
-                value={cvc}
-                onChange={(e) => setCvc(e.target.value)}
-                placeholder="CVC"
-                style={{ ...inputStyle, marginBottom: 0 }}
-              />
+            <h3 style={{ marginBottom: "10px", color: "#023047" }}>Select Payment Method</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              {paymentMethods.map((method) => (
+                  <button
+                      key={method.id}
+                      type="button"
+                      onClick={() => setSelectedMethod(method.id)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        padding: "10px 15px",
+                        borderRadius: "8px",
+                        border: selectedMethod === method.id ? "2px solid #0077b6" : "1px solid #ccc",
+                        background: selectedMethod === method.id ? "#e0f7ff" : "#fff",
+                        cursor: "pointer",
+                        textAlign: "left",
+                      }}
+                  >
+                    {method.icon}
+                    <span>{method.label}</span>
+                  </button>
+              ))}
             </div>
           </div>
-        )}
 
-        {/* Mobile Banking */}
-        {selectedMethod === "mobile" && (
-          <div style={{ marginBottom: "20px" }}>
-            <select
-              value={selectedBank}
-              onChange={(e) => setSelectedBank(e.target.value)}
-              style={inputStyle}
+          {/* Card */}
+          {selectedMethod === "card" && (
+              <div style={{ marginBottom: "20px" }}>
+                <h3 style={{ marginBottom: "10px", color: "#023047" }}>Card Information</h3>
+                <input
+                    type="text"
+                    value={cardNumber}
+                    onChange={(e) => handleCardInput(e.target.value)}
+                    placeholder="1234 5678 9012 3456"
+                    style={inputStyle}
+                />
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <input
+                      type="text"
+                      value={expiry}
+                      onChange={(e) => handleExpiryInput(e.target.value)}
+                      placeholder="MM/YY"
+                      style={{ ...inputStyle, marginBottom: 0 }}
+                  />
+                  <input
+                      type="text"
+                      value={cvc}
+                      onChange={(e) => setCvc(e.target.value)}
+                      placeholder="CVC"
+                      style={{ ...inputStyle, marginBottom: 0 }}
+                  />
+                </div>
+              </div>
+          )}
+
+          {/* Mobile Banking */}
+          {selectedMethod === "mobile" && (
+              <div style={{ marginBottom: "20px" }}>
+                <select
+                    value={selectedBank}
+                    onChange={(e) => setSelectedBank(e.target.value)}
+                    style={inputStyle}
+                >
+                  <option value="">-- Choose Bank --</option>
+                  <option value="Kasikorn Bank">Kasikorn Bank</option>
+                  <option value="SCB">SCB</option>
+                  <option value="Bangkok Bank">Bangkok Bank</option>
+                  <option value="Krungsri">Krungsri</option>
+                </select>
+              </div>
+          )}
+
+          {/* E-Wallet */}
+          {selectedMethod === "ewallet" && (
+              <div style={{ marginBottom: "20px" }}>
+                <select
+                    value={selectedWallet}
+                    onChange={(e) => setSelectedWallet(e.target.value)}
+                    style={inputStyle}
+                >
+                  <option value="">-- Choose Wallet --</option>
+                  <option value="TrueMoney">TrueMoney</option>
+                  <option value="LINE Pay">LINE Pay</option>
+                  <option value="Rabbit LINE Pay">Rabbit LINE Pay</option>
+                  <option value="ShopeePay">ShopeePay</option>
+                </select>
+              </div>
+          )}
+
+          {/* PromptPay */}
+          {selectedMethod === "promptpay" && (
+              <div style={{ textAlign: "center", marginBottom: "20px" }}>
+                <img
+                    src="https://api.qrserver.com/v1/create-qr-code/?data=promptpay:0812345678&size=200x200"
+                    alt="PromptPay QR"
+                    style={{ borderRadius: "8px" }}
+                />
+                <p style={{ marginTop: "5px", color: "#555", fontSize: "14px" }}>
+                  Scan this QR code to complete your payment.
+                </p>
+              </div>
+          )}
+
+          <button
+              type="submit"
+              style={{
+                width: "100%",
+                padding: "12px",
+                background: "#0077b6",
+                color: "#fff",
+                borderRadius: "8px",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+          >
+            Confirm Payment
+          </button>
+
+          {successMessage && (
+              <p style={{ marginTop: "15px", fontWeight: "bold", color: "#1b4332", textAlign: "center" }}>
+                {successMessage}
+              </p>
+          )}
+        </form>
+
+        {/* Popup */}
+        {showPopup && (
+            <div
+                style={{
+                  position: "fixed",
+                  top: "50%",
+                  left: "50%",
+                  transform: popupVisible ? "translate(-50%, -50%) scale(1)" : "translate(-50%, -50%) scale(0.5)",
+                  background: "#2a9d8f",
+                  borderRadius: "50%",
+                  width: "150px",
+                  height: "150px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 6px 20px rgba(42,157,143,0.25)",
+                  zIndex: 1000,
+                  color: "#fff",
+                  textAlign: "center",
+                  opacity: popupVisible ? 1 : 0,
+                  transition: "opacity 0.5s ease, transform 0.5s ease",
+                }}
             >
-              <option value="">-- Choose Bank --</option>
-              <option value="kbank">Kasikorn Bank</option>
-              <option value="scb">SCB</option>
-              <option value="bbl">Bangkok Bank</option>
-              <option value="bay">Krungsri</option>
-            </select>
-          </div>
+              <CheckCircle size={50} />
+              <p style={{ marginTop: "10px", fontWeight: "bold", fontSize: "14px" }}>
+                Payment Successful
+              </p>
+            </div>
         )}
-
-        {/* E-Wallet */}
-        {selectedMethod === "ewallet" && (
-          <div style={{ marginBottom: "20px" }}>
-            <select
-              value={selectedWallet}
-              onChange={(e) => setSelectedWallet(e.target.value)}
-              style={inputStyle}
-            >
-              <option value="">-- Choose Wallet --</option>
-              <option value="truemoney">TrueMoney</option>
-              <option value="linepay">LINE Pay</option>
-              <option value="rabbitlinepay">Rabbit LINE Pay</option>
-              <option value="shopeepay">ShopeePay</option>
-            </select>
-          </div>
-        )}
-
-        {/* PromptPay */}
-        {selectedMethod === "promptpay" && (
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <img
-              src="https://api.qrserver.com/v1/create-qr-code/?data=promptpay:0812345678&size=200x200"
-              alt="PromptPay QR"
-              style={{ borderRadius: "8px" }}
-            />
-            <p style={{ marginTop: "5px", color: "#555", fontSize: "14px" }}>Scan this QR code to complete your payment.</p>
-          </div>
-        )}
-
-        <button
-          type="submit"
-          style={{
-            width: "100%",
-            padding: "12px",
-            background: "#0077b6",
-            color: "#fff",
-            borderRadius: "8px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Confirm Payment
-        </button>
-
-        {/* Success message below form */}
-        {successMessage && (
-          <p style={{ marginTop: "15px", fontWeight: "bold", color: "#1b4332", textAlign: "center" }}>
-            {successMessage}
-          </p>
-        )}
-      </form>
-
-      {/* Popup */}
-      {showPopup && (
-        <div
-          style={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: popupVisible ? "translate(-50%, -50%) scale(1)" : "translate(-50%, -50%) scale(0.5)",
-            background: "#2a9d8f",
-            borderRadius: "50%",
-            width: "150px",
-            height: "150px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 6px 20px rgba(42,157,143,0.25)",
-            zIndex: 1000,
-            color: "#fff",
-            textAlign: "center",
-            opacity: popupVisible ? 1 : 0,
-            transition: "opacity 0.5s ease, transform 0.5s ease",
-          }}
-        >
-          <CheckCircle size={50} />
-          <p style={{ marginTop: "10px", fontWeight: "bold", fontSize: "14px" }}>Payment Successful</p>
-        </div>
-      )}
-    </div>
+      </div>
   );
 }
