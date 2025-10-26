@@ -17,6 +17,8 @@ const FishMarket = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedSpecies, setSelectedSpecies] = useState('');
     const [selectedFreshness, setSelectedFreshness] = useState('');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
     const [cart, setCart] = useState([]);
     const navigate = useNavigate();
 
@@ -42,8 +44,21 @@ const FishMarket = () => {
                 fish.freshness === selectedFreshness
             );
         }
+
+        const min = parseFloat(minPrice);
+        const max = parseFloat(maxPrice);
+
+        // Filter by Min Price
+        if (!isNaN(min) && min >= 0) {
+            updatedList = updatedList.filter(fish => fish.price >= min);
+        }
+        
+        // Filter by Max Price
+        if (!isNaN(max) && max >= 0) {
+            updatedList = updatedList.filter(fish => fish.price <= max);
+        }
         setFilteredList(updatedList);
-    }, [searchTerm, selectedSpecies, selectedFreshness, fishList]);
+    }, [searchTerm, selectedSpecies, selectedFreshness, minPrice, maxPrice,fishList]);
 
     // Cart functions
     const addToCart = (fish) => {
@@ -113,8 +128,22 @@ const FishMarket = () => {
                             <option key={freshness} value={freshness}>{freshness}</option>
                         ))}
                     </select>
-                    <div className="filter-placeholder">
-                        <p>Price Range Filter coming soon...</p>
+                    <label>Price Range (฿/Kg):</label>
+                    <div className="price-inputs">
+                        <input
+                            type="number"
+                            placeholder="Min Price"
+                            value={minPrice}
+                            onChange={(e) => setMinPrice(e.target.value)}
+                            min="0"
+                        />
+                        <input
+                            type="number"
+                            placeholder="Max Price"
+                            value={maxPrice}
+                            onChange={(e) => setMaxPrice(e.target.value)}
+                            min="0"
+                        />
                     </div>
                 </div>
 
