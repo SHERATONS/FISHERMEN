@@ -13,11 +13,11 @@ const BuyerReviews = () => {
   const statuses = ['All', 'Pending', 'Completed', 'Cancelled'];
 
   const orders = [
-    { id: 'ORD101', seller: 'Ocean Fish Co.', product: 'Salmon Fillet', quantity: 2, price: 12.99, status: 'Completed' },
-    { id: 'ORD102', seller: 'Blue Sea Market', product: 'Tuna Steak', quantity: 1, price: 15.49, status: 'Completed' },
-    { id: 'ORD103', seller: 'Fresh Catch Ltd.', product: 'Cod Fillet', quantity: 3, price: 10.99, status: 'Completed' },
-    { id: 'ORD104', seller: 'Ocean Fish Co.', product: 'Mackerel', quantity: 1, price: 9.50, status: 'Completed' },
-    { id: 'ORD105', seller: 'Seafood Hub', product: 'Sea Bass', quantity: 2, price: 14.75, status: 'Completed' },
+    { id: 'ORD101', seller: 'Ocean Fish Co.', product: 'Salmon', quantity: 2, price: 360, status: 'Completed' },
+    { id: 'ORD102', seller: 'Blue Sea Market', product: 'Tuna', quantity: 1, price: 380, status: 'Completed' },
+    { id: 'ORD103', seller: 'Fresh Catch Ltd.', product: 'Cod', quantity: 4, price: 240, status: 'Completed' },
+    { id: 'ORD104', seller: 'Ocean Fish Co.', product: 'Mackerel', quantity: 1, price: 110, status: 'Completed' },
+    { id: 'ORD105', seller: 'Seafood Hub', product: 'Sea Bass', quantity: 2, price: 420, status: 'Completed' },
   ];
 
   const filteredOrders = orders.filter(order =>
