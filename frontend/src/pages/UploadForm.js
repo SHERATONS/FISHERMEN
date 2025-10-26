@@ -22,16 +22,16 @@ export default function UploadForm() {
     const fetchMarketPrices = async () => {
       try {
         // Example static data
-        const data = [
-            { kind: "Tuna", fairPrice: 150 },
-            { kind: "Mackerel", fairPrice: 90 },
-            { kind: "Snapper", fairPrice: 120 },
-            { kind: "Tilapia", fairPrice: 70 },
-        ];
-        setMarketPrices(data);
-        // const res = await axios.get("http://localhost:8080/api/fish/fair-prices");
-        // setMarketPrices(res.data);
-        // console.log(res.data);
+        // const data = [
+        //     { kind: "Tuna", fairPrice: 150 },
+        //     { kind: "Mackerel", fairPrice: 90 },
+        //     { kind: "Snapper", fairPrice: 120 },
+        //     { kind: "Tilapia", fairPrice: 70 },
+        // ];
+        // setMarketPrices(data);
+        const res = await axios.get("http://localhost:8080/api/fish/fair-prices");
+        setMarketPrices(res.data);
+        console.log(res.data);
       } catch (err) {
         console.error("Error fetching market prices:", err);
       }
@@ -102,8 +102,7 @@ export default function UploadForm() {
   };
 
   const fairPriceForFish = marketPrices.find(
-      (item) => item.kind.toLowerCase() === kindOfFish.toLowerCase()
-  )?.fairPrice;
+      (item) => item.fishType.toLowerCase() === kindOfFish.toLowerCase());
 
   const calculateFairPrice = () => {
     if (!selectedFish || !calcWeight) {
@@ -112,7 +111,7 @@ export default function UploadForm() {
     }
 
     const fishData = marketPrices.find(
-        (item) => item.kind.toLowerCase() === selectedFish.toLowerCase()
+        (item) => item.fishType.toLowerCase() === selectedFish.toLowerCase()
     );
 
     if (!fishData) {
@@ -206,7 +205,15 @@ export default function UploadForm() {
           {/* === Fair Market Prices Table === */}
           <div style={{ background: "#fff", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
             <h3 style={{ marginBottom: "10px", color: "#023047", textAlign: "center" }}>Fair Market Prices</h3>
-            <table
+              <div
+                  style={{
+                      maxHeight: "220px", // roughly fits ~5 rows
+                      overflowY: "auto",
+                      borderRadius: "8px",
+                      border: "1px solid #ddd",
+                  }}
+              >
+              <table
                 style={{
                   width: "100%",
                   borderCollapse: "collapse",
@@ -217,19 +224,19 @@ export default function UploadForm() {
               <thead>
               <tr style={{ background: "#f1f1f1" }}>
                 <th style={{ padding: "8px", border: "1px solid #ddd" }}>Kind of Fish</th>
-                <th style={{ padding: "8px", border: "1px solid #ddd" }}>Fair Price (THB/kg)</th>
+                <th style={{ padding: "8px", border: "1px solid #ddd" }}>Fair Price ($/kg)</th>
               </tr>
               </thead>
               <tbody>
               {marketPrices.map((fish, index) => (
                   <tr key={index}>
-                    <td style={{ padding: "8px", border: "1px solid #ddd" }}>{fish.kind}</td>
+                    <td style={{ padding: "8px", border: "1px solid #ddd" }}>{fish.fishType}</td>
                     <td style={{ padding: "8px", border: "1px solid #ddd" }}>{fish.fairPrice}</td>
                   </tr>
               ))}
               </tbody>
             </table>
-          </div>
+          </div></div>
 
           {/* === Fair Price Calculator === */}
           <div style={{ background: "#fff", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
@@ -253,8 +260,8 @@ export default function UploadForm() {
             >
               <option value="">-- Select Fish Type --</option>
               {marketPrices.map((fish, index) => (
-                  <option key={index} value={fish.kind}>
-                    {fish.kind}
+                  <option key={index} value={fish.fishType}>
+                    {fish.fishType}
                   </option>
               ))}
             </select>
@@ -303,7 +310,7 @@ export default function UploadForm() {
                       color: "#1b4332",
                     }}
                 >
-                  💰 Estimated Fair Total Price: {calculatedPrice} THB
+                  💰 Estimated Fair Total Price: {calculatedPrice} $
                 </div>
             )}
           </div>
