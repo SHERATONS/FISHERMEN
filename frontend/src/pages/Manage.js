@@ -82,7 +82,7 @@ const Manage = () => {
     <div className="manage-container">
       <h2>Order Management</h2>
 
-      {/* 🔹 Filter bar + Search */}
+      {/* Filter bar + Search */}
       <div className="filter-bar">
         <div className="status-navbar">
           {statuses.map(status => (
@@ -105,7 +105,7 @@ const Manage = () => {
         />
       </div>
 
-      {/* 🔹 Summary Boxes */}
+      {/* Summary Boxes */}
       <div className="summary-boxes">
         <div className="summary-box">
           <h3>{openOrders}</h3>
@@ -121,7 +121,7 @@ const Manage = () => {
         </div>
       </div>
 
-{/* 🔹 Table */}
+{/* Table */}
 <table className="order-table">
   <thead>
     <tr>
