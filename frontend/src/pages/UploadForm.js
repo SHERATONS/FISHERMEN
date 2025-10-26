@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function UploadForm() {
+  const navigate = useNavigate();
   const [fisherName, setFisherName] = useState("");
   const [species, setSpecies] = useState([]);
   const [weight, setWeight] = useState("");
@@ -17,20 +19,6 @@ export default function UploadForm() {
   const [selectedFish, setSelectedFish] = useState("");
   const [calcWeight, setCalcWeight] = useState("");
   const [calculatedPrice, setCalculatedPrice] = useState(null);
-
-//  const speciesOptions = [
-//    "Tuna",
-//    "Salmon",
-//    "Mackerel",
-//    "Snapper",
-//    "Tilapia",
-//    "Halibut",
-//    "Catfish",
-//    "Sardine",
-//    "Cod",
-//    "Sea bass",
-//    "Other",
-//  ];
 
   useEffect(() => {
     const fetchMarketPrices = async () => {
@@ -71,44 +59,36 @@ export default function UploadForm() {
     setSpecies(selected);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    if (!fisherName.trim()) return alert("Please enter fisher's name");
-    if (species.length === 0) return alert("Please select at least one species");
-    if (!location.trim()) return alert("Please enter location");
-    if (!image) return alert("Please select an image");
-    if (weight <= 0) return alert("Weight must be greater than 0!");
-    if (price <= 0) return alert("Price must be greater than 0!");
+  if (!fisherName.trim()) return alert("Please enter fisher's name");
+  if (!selectedFish) return alert("Please select at least one species");
+  if (!location.trim()) return alert("Please enter location");
+  if (!weight || weight <= 0) return alert("Weight must be greater than 0!");
+  if (!price || price <= 0) return alert("Price must be greater than 0!");
+  if (!image) return alert("Please select an image");
 
-    const formData = new FormData();
-    formData.append("fisherName", fisherName);
-    formData.append("species", species.join(", "));
-    formData.append("location", location);
-    formData.append("weight", weight);
-    formData.append("price", price);
-    formData.append("image", image);
+  // แสดง popup
+  setShowPopup(true);
+  setTimeout(() => setPopupVisible(true), 100);
+  setTimeout(() => setPopupVisible(false), 2300);
+  setTimeout(() => setShowPopup(false), 3000);
 
-    try {
-      const res = await axios.post("http://localhost:8080/api/fish/upload", formData);
-      // popup animation
-      setShowPopup(true);
-      setTimeout(() => setPopupVisible(true), 100);
-      setTimeout(() => setPopupVisible(false), 2300);
-      setTimeout(() => setShowPopup(false), 3000);
+  // reset form
+  setFisherName("");
+  setSelectedFish("");
+  setWeight("");
+  setPrice("");
+  setLocation("");
+  setImage(null);
 
-      setMessage(`Upload successful: ${res.data.Species || "Success"}`);
-      setFisherName("");
-      setSpecies([]);
-      setWeight("");
-      setPrice("");
-      setImage(null);
-      setLocation("");
-    } catch (err) {
-      console.error(err);
-      setMessage("Upload failed: " + (err.response?.data || err.message));
-    }
-  };
+  // redirect ไป /manage หลัง popup
+  setTimeout(() => navigate("/manage"), 3000);
+};
+
+
+
 
   const calculateFairPrice = () => {
     if (!selectedFish || !calcWeight) {
