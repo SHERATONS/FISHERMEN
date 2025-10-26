@@ -1,5 +1,6 @@
 # === Stage 1: Build stage ===
-FROM eclipse-temurin:17-jdk AS builder
+# FROM eclipse-temurin:17-jdk AS builder
+FROM eclipse-temurin:17-jdk-jammy AS builder
 
 # Set working directory
 WORKDIR /app
@@ -21,7 +22,9 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 # === Stage 2: Runtime stage ===
-FROM eclipse-temurin:17-jre-alpine
+# FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-jammy
+
 
 WORKDIR /app
 
