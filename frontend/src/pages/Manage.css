@@ -66,7 +66,7 @@
   outline: none;
 }
 
-/* 🔹 Order Table */
+/* OrderTable */
 .order-table {
   width: 100%;
   border-collapse: collapse;
@@ -125,7 +125,7 @@
   background-color: #29d066;
 }
 
-/* 🔹 Action Buttons */
+/*  Action Buttons */
 .action-buttons {
   display: flex;
   flex-direction: column;
@@ -151,7 +151,7 @@
   background-color: #e2e8f0;
 }
 
-/* 🔹 Summary Boxes */
+/* Summary Boxes */
 .summary-boxes {
   display: flex;
   justify-content: space-between;
@@ -187,6 +187,17 @@
   color: #457b9d;
   font-weight: 500;
 }
+
+.available {
+  color: green;
+  font-weight: bold;
+}
+
+.soldout {
+  color: red;
+  font-weight: bold;
+}
+
 
 
 

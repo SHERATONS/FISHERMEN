@@ -22,7 +22,7 @@ const Manage = () => {
       date: '2025-10-02',
       buyer: 'Alice Ocean',
       payment: 'Bank Transfer',
-      product: 'Tuna Steak',
+      product: 'Tuna',
       price: 15.49,
       species: 'Tuna',
       quantity: 3,
@@ -33,7 +33,7 @@ const Manage = () => {
       date: '2025-10-03',
       buyer: 'Mark Blue',
       payment: 'Cash',
-      product: 'Cod Fillet',
+      product: 'Cod',
       price: 10.99,
       species: 'Cod',
       quantity: 1,
@@ -59,11 +59,11 @@ const Manage = () => {
       price: 14.75,
       species: 'Sea Bass',
       quantity: 2,
-      status: 'Sold Out',
+      status: 'Shipped',
     },
   ];
 
-  const statuses = ['All', 'Pending', 'Unshipped', 'Shipped', 'Sold Out'];
+  const statuses = ['All', 'Pending', 'Unshipped', 'Shipped'];
 
   const filteredOrders = orders.filter(order => {
     const matchStatus =
@@ -82,7 +82,7 @@ const Manage = () => {
     <div className="manage-container">
       <h2>Order Management</h2>
 
-      {/* 🔹 Filter bar + Search */}
+      {/* Filter bar + Search */}
       <div className="filter-bar">
         <div className="status-navbar">
           {statuses.map(status => (
@@ -105,7 +105,7 @@ const Manage = () => {
         />
       </div>
 
-      {/* 🔹 Summary Boxes */}
+      {/* Summary Boxes */}
       <div className="summary-boxes">
         <div className="summary-box">
           <h3>{openOrders}</h3>
@@ -121,55 +121,65 @@ const Manage = () => {
         </div>
       </div>
 
-      {/* 🔹 Table */}
-      <table className="order-table">
-        <thead>
-          <tr>
-            <th>Order Date</th>
-            <th>Product Detail</th>
-            <th>Status</th>
-            <th>Order Detail</th>
-            <th>Action</th>
+{/*Table */}
+<table className="order-table">
+  <thead>
+    <tr>
+      <th>Order Date</th>
+      <th>Product Detail</th>
+      <th>Delivery Status</th>
+      <th>Availability</th> {/* เพิ่ม column ใหม่ */}
+      <th>Order Detail</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filteredOrders.length > 0 ? (
+      filteredOrders.map(order => {
+        const isAvailable = order.status !== "Shipped"; // ตัวอย่าง: Shipped = Sold Out
+        return (
+          <tr key={order.id}>
+            <td>{order.date}</td>
+            <td className="product-detail">
+              <strong>{order.product}</strong><br />
+              Price: ${order.price.toFixed(2)}/lb<br />
+              Species: {order.species}<br />
+              Quantity: {order.quantity}<br />
+              <em>Subtotal: ${(order.price * order.quantity).toFixed(2)}</em>
+            </td>
+            <td>
+              <span className={`status-badge status-${order.status.replace(' ', '').toLowerCase()}`}>
+                {order.status}
+              </span>
+            </td>
+            <td>
+              <span className={isAvailable ? "available" : "soldout"}>
+                {isAvailable ? "Available" : "Sold Out"}
+              </span>
+            </td>
+            <td className="order-info">
+              <strong>ID:</strong> {order.id}<br />
+              <strong>Buyer:</strong> {order.buyer}<br />
+              <strong>Payment:</strong> {order.payment}
+            </td>
+            <td className="action-buttons">
+              <button className="btn light">Print Packing Slip</button>
+              <button className="btn light">Cancel Order</button>
+              <button className="btn light">Confirm Shipment</button>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {filteredOrders.length > 0 ? (
-            filteredOrders.map(order => (
-              <tr key={order.id}>
-                <td>{order.date}</td>
-                <td className="product-detail">
-                  <strong>{order.product}</strong><br />
-                  Price: ${order.price.toFixed(2)}/lb<br />
-                  Species: {order.species}<br />
-                  Quantity: {order.quantity}<br />
-                  <em>Subtotal: ${(order.price * order.quantity).toFixed(2)}</em>
-                </td>
-                <td>
-                  <span className={`status-badge status-${order.status.replace(' ', '').toLowerCase()}`}>
-                    {order.status}
-                  </span>
-                </td>
-                <td className="order-info">
-                  <strong>ID:</strong> {order.id}<br />
-                  <strong>Buyer:</strong> {order.buyer}<br />
-                  <strong>Payment:</strong> {order.payment}
-                </td>
-                <td className="action-buttons">
-                  <button className="btn light">Print Packing Slip</button>
-                  <button className="btn light">Cancel Order</button>
-                  <button className="btn light">Confirm Shipment</button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" style={{ textAlign: 'center', color: '#666' }}>
-                No orders found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+        );
+      })
+    ) : (
+      <tr>
+        <td colSpan="6" style={{ textAlign: 'center', color: '#666' }}>
+          No orders found
+        </td>
+      </tr>
+    )}
+  </tbody>
+</table>
+
     </div>
   );
 };
