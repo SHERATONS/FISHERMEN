@@ -126,7 +126,7 @@ export default function Payment() {
 
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <p style={{ color: "#555", marginBottom: "5px" }}>Total Amount</p>
-          <p style={{ fontSize: "28px", fontWeight: "bold", color: "#0077b6" }}>${totalAmount.toFixed(2)}</p>
+          <p style={{ fontSize: "28px", fontWeight: "bold", color: "#0077b6" }}>฿{totalAmount.toFixed(2)}</p>
         </div>
 
         <form onSubmit={handleSubmit}>
