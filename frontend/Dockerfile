@@ -7,6 +7,8 @@ WORKDIR /app
 COPY package.json ./
 COPY package-lock.json ./
 RUN npm install
+RUN npm install axios
+RUN npm install lucide-react
 
 # Copy the rest of the application source code
 COPY . .

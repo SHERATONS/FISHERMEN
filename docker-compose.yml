@@ -7,9 +7,9 @@ services:
       - 'POSTGRES_PASSWORD=secret'
       - 'POSTGRES_USER=myuser'
     ports:
-      - '5432:5432'
+      - '5431:5431'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/18/data
       - ./database/fishermen.sql:/docker-entrypoint-initdb.d/fishermen.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
