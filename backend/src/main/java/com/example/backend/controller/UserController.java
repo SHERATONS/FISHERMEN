@@ -1,30 +1,28 @@
 package com.example.backend.controller;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.LoginRequestDto;
-import com.example.backend.dto.UpdateUserDto;
 import com.example.backend.dto.RegisterUserDto;
+import com.example.backend.dto.UpdateUserDto;
 import com.example.backend.enums.UserRole;
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepo;
-
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000") // Removed allowCredentials as full Spring Security is not used
@@ -33,11 +31,28 @@ public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserRepo userRepo;
-    private final PasswordEncoder passwordEncoder; // Inject PasswordEncoder
 
-    public UserController(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+    public UserController(UserRepo userRepo) {
         this.userRepo = userRepo;
-        this.passwordEncoder = passwordEncoder;
+    }
+
+    private synchronized String generateUserId(UserRole role) {
+        String prefix = role == UserRole.BUYER ? "BUY" : "FISHER";
+        String lastId = userRepo.findMaxIdWithPrefix(prefix);
+        int nextSequence = 1;
+
+        if (lastId != null) {
+            try {
+                int lastSequence = Integer.parseInt(lastId.substring(prefix.length()));
+                nextSequence = lastSequence + 1;
+            } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+                logger.warn("Failed to parse sequence from lastId: '{}'. Resetting sequence to 1. Error: {}", lastId, e.getMessage());
+                // If parsing fails, it means the ID format is unexpected. Start from 1,
+                // but rely on the unique constraint to catch actual duplicates.
+                nextSequence = 1; 
+            }
+        }
+        return String.format("%s%04d", prefix, nextSequence);
     }
 
     @GetMapping("/list")
@@ -67,8 +82,8 @@ public class UserController {
         User user = new User();
         user.setUsername(registerDto.getUsername());
         user.setEmail(registerDto.getEmail());
-        // Hash the password before saving
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        // Save the password in plain text
+        user.setPassword(registerDto.getPassword());
         user.setFirstName(registerDto.getFirstName());
         user.setLastName(registerDto.getLastName());
         user.setProfileInfo(registerDto.getProfileInfo());
@@ -95,25 +110,6 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    private synchronized String generateUserId(UserRole role) {
-        String prefix = role == UserRole.BUYER ? "BUY" : "FISHER";
-        String lastId = userRepo.findMaxIdWithPrefix(prefix);
-        int nextSequence = 1;
-
-        if (lastId != null) {
-            try {
-                int lastSequence = Integer.parseInt(lastId.substring(prefix.length()));
-                nextSequence = lastSequence + 1;
-            } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
-                logger.warn("Failed to parse sequence from lastId: '{}'. Resetting sequence to 1. Error: {}", lastId, e.getMessage());
-                // If parsing fails, it means the ID format is unexpected. Start from 1,
-                // but rely on the unique constraint to catch actual duplicates.
-                nextSequence = 1; 
-            }
-        }
-        return String.format("%s%04d", prefix, nextSequence);
-    }
-
     @PostMapping("/login") // Changed to POST and using DTO
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequest) {
         // Try to find user by username first
@@ -125,7 +121,7 @@ public class UserController {
         }
 
         return userOptional.map(user -> {
-            if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            if (loginRequest.getPassword().equals(user.getPassword())) {
                 return ResponseEntity.ok(user); // Login successful
             } else {
                 return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED); // Password mismatch
@@ -152,7 +148,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    @DeleteMapping("/delete/{id}") // Changed to DELETE mapping
+    @DeleteMapping("/{id}") // Simplified RESTful endpoint
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
         if (!userRepo.existsById(id)) { // More efficient check
             return ResponseEntity.notFound().build();

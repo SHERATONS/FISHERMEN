@@ -1,11 +1,12 @@
 package com.example.backend.controller;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
-import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,22 +15,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.dto.CreateReviewDto;
+import com.example.backend.dto.UpdateReviewDto;
+import com.example.backend.model.OrderItem;
 import com.example.backend.model.Review;
-
-import jakarta.persistence.criteria.Order;
+import com.example.backend.model.User;
+import com.example.backend.repository.OrderItemRepo;
 
 @RestController
-@RequestMapping("/reviews")
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/reviews")
 public class ReviewController {
-    
+
     private final com.example.backend.repository.ReviewRepo reviewRepo;
     private final com.example.backend.repository.UserRepo userRepo;
-    private final com.example.backend.repository.OrderRepo orderRepo;
+    private final OrderItemRepo orderItemRepo;
 
-    public ReviewController(com.example.backend.repository.ReviewRepo reviewRepo, com.example.backend.repository.UserRepo userRepo, com.example.backend.repository.OrderRepo orderRepo) {
+    public ReviewController(com.example.backend.repository.ReviewRepo reviewRepo, com.example.backend.repository.UserRepo userRepo, OrderItemRepo orderItemRepo) {
         this.reviewRepo = reviewRepo;
         this.userRepo = userRepo;
-        this.orderRepo = orderRepo;
+        this.orderItemRepo = orderItemRepo;
     }
 
     @GetMapping("/list")
@@ -40,61 +45,61 @@ public class ReviewController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Review> getReviewById(@PathVariable Long id) {
-        Review review = reviewRepo.findById(id).orElse(null);
-        if (review != null) {
-            return ResponseEntity.ok(review);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return reviewRepo.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createReview(@RequestBody Map<String, Object> reviewData) {
-        Long buyerId = ((Number) reviewData.get("buyerId")).longValue();
-        Long orderId = ((Number) reviewData.get("orderId")).longValue();
-
-        User buyer = (User) userRepo.findById(buyerId).orElse(null);
-        if (buyer == null) {
+    public ResponseEntity<?> createReview(@RequestBody CreateReviewDto reviewDto) {
+        // Find the buyer by their String ID
+        Optional<User> buyerOptional = userRepo.findById(reviewDto.getBuyerId());
+        if (buyerOptional.isEmpty()) {
             return new ResponseEntity<>("Buyer not found", HttpStatus.NOT_FOUND);
         }
 
-        Order order = (Order) orderRepo.findById(orderId).orElse(null);
-        if (order == null) {
-            return new ResponseEntity<>("Order not found", HttpStatus.NOT_FOUND);
+        // Find the order item by its Long ID
+        Optional<OrderItem> orderItemOptional = orderItemRepo.findById(reviewDto.getOrderItemId());
+        if (orderItemOptional.isEmpty()) {
+            return new ResponseEntity<>("Order item not found", HttpStatus.NOT_FOUND);
         }
 
-        if (reviewRepo.findById(orderId).isPresent()) {
-            return new ResponseEntity<>("Review for this order already exists", HttpStatus.CONFLICT);
+        // Check if a review for this order item already exists
+        if (reviewRepo.existsByOrderItemId(reviewDto.getOrderItemId())) {
+            return new ResponseEntity<>("Review for this order item already exists", HttpStatus.CONFLICT);
+        }
+
+        User buyer = buyerOptional.get();
+        OrderItem orderItem = orderItemOptional.get();
+
+        // Verify that the buyer who is leaving the review is the one who placed the order
+        if (!orderItem.getOrder().getBuyer().getId().equals(buyer.getId())) {
+            return new ResponseEntity<>("This order item does not belong to the specified buyer.", HttpStatus.FORBIDDEN);
         }
 
         Review review = new Review();
-        review.setRating((Integer) reviewData.get("rating"));
-        review.setComment((String) reviewData.get("comment"));
-        review.setBuyer((com.example.backend.model.User) buyer);
-        review.setOrder((com.example.backend.model.Order) order);
+        review.setRating(reviewDto.getRating());
+        review.setComment(reviewDto.getComment());
+        review.setBuyer(buyer);
+        review.setOrderItem(orderItem);
 
         Review createdReview = reviewRepo.save(review);
-
         return new ResponseEntity<>(createdReview, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Review> updateReview(@PathVariable Long id, @RequestBody Review updatedReview) {
-        Review existingReview = reviewRepo.findById(id).orElse(null);
-        if (existingReview != null) {
-            existingReview.setRating(updatedReview.getRating());
-            existingReview.setComment(updatedReview.getComment());
+    public ResponseEntity<Review> updateReview(@PathVariable Long id, @RequestBody UpdateReviewDto reviewDto) {
+        return reviewRepo.findById(id).map(existingReview -> {
+            if (reviewDto.getRating() != null) existingReview.setRating(reviewDto.getRating());
+            if (reviewDto.getComment() != null) existingReview.setComment(reviewDto.getComment());
             Review updated = reviewRepo.save(existingReview);
             return ResponseEntity.ok(updated);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        }).orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteReview(@PathVariable Long id) {
-        reviewRepo.findById(id).orElse(null);
-        if (reviewRepo.findById(id).orElse(null) == null) {
+        if (!reviewRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
