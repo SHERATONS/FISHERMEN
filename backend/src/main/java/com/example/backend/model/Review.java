@@ -44,8 +44,8 @@ public class Review {
     @JoinColumn(name = "buyer_id", nullable = false)
     private User buyer;
 
-    // A review is for one specific order
+    // A review is for one specific order item
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false, unique = true)
-    private Order order;
+    @JoinColumn(name = "order_item_id", nullable = false, unique = true)
+    private OrderItem orderItem;
 }
