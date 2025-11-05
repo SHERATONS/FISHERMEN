@@ -60,13 +60,13 @@ export default function LoginRegisPage() {
                     location,
                     profileInfo,
                 };
-                await axios.post("http://localhost:8080/api/auth/register", payload);
+                await axios.post("http://localhost:8080/api/users/register", payload); // Updated endpoint
             } else {
-                const payload = { password };
-                if (email.trim()) payload.email = email;
-                if (username.trim()) payload.username = username;
-                await axios.post("http://localhost:8080/api/auth/login", payload);
+                // For login, send username (which can be email) and password
+                const payload = { username: username || email, password };
+                await axios.post("http://localhost:8080/api/users/login", payload); // Updated endpoint
             }
+            
 
             setShowPopup(true);
             setTimeout(() => setPopupVisible(true), 100);
