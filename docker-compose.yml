@@ -10,7 +10,6 @@ services:
       - '5431:5431'
     volumes:
       - postgres_data:/var/lib/postgresql/18/data
-      - ./database/fishermen.sql:/docker-entrypoint-initdb.d/fishermen.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
       interval: 10s
@@ -26,6 +25,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
       - SPRING_DATASOURCE_USERNAME=myuser
       - SPRING_DATASOURCE_PASSWORD=secret
+      # Tell Spring where to find the data script inside the container
+      - SPRING_SQL_INIT_DATA_LOCATIONS=classpath:fishermen.sql
     depends_on:
       postgres:
         condition: service_healthy

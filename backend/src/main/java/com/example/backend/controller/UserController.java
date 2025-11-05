@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -19,7 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.LoginRequestDto;
 import com.example.backend.dto.RegisterUserDto;
+import com.example.backend.dto.FishListingSummaryDto;
+import com.example.backend.dto.OrderSummaryDto;
+import com.example.backend.dto.ReviewSummaryDto;
 import com.example.backend.dto.UpdateUserDto;
+import com.example.backend.dto.UserResponseDto;
 import com.example.backend.enums.UserRole;
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepo;
@@ -55,17 +60,67 @@ public class UserController {
         return String.format("%s%04d", prefix, nextSequence);
     }
 
+    private UserResponseDto convertToDto(User user) {
+        UserResponseDto dto = new UserResponseDto();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        dto.setProfileInfo(user.getProfileInfo());
+        dto.setLocation(user.getLocation());
+        dto.setCreatedAt(user.getCreatedAt());
+
+        if (user.getRole() == UserRole.FISHERMAN && user.getFishListings() != null) {
+            dto.setFishListings(user.getFishListings().stream().map(listing -> {
+                FishListingSummaryDto summary = new FishListingSummaryDto();
+                summary.setId(listing.getId());
+                summary.setFishType(listing.getFishType());
+                return summary;
+            }).toList());
+        }
+
+        if (user.getRole() == UserRole.BUYER) {
+            if (user.getOrders() != null) {
+                dto.setOrders(user.getOrders().stream().map(order -> {
+                    OrderSummaryDto summary = new OrderSummaryDto();
+                    summary.setId(order.getId());
+                    summary.setOrderDate(order.getOrderDate());
+                    summary.setStatus(order.getStatus());
+                    summary.setTotalPrice(order.getTotalPrice());
+                    return summary;
+                }).toList());
+            }
+
+            if (user.getReviews() != null) {
+                dto.setReviews(user.getReviews().stream().map(review -> {
+                    ReviewSummaryDto summary = new ReviewSummaryDto();
+                    summary.setId(review.getId());
+                    summary.setRating(review.getRating());
+                    summary.setComment(review.getComment());
+                    summary.setReviewDate(review.getReviewDate());
+                    if (review.getOrderItem() != null) {
+                        summary.setOrderItemId(review.getOrderItem().getId());
+                    }
+                    return summary;
+                }).toList());
+            }
+        }
+
+        return dto;
+    }
+
     @GetMapping("/list")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
         List<User> users = userRepo.findAll();
-        return ResponseEntity.ok(users);
+        List<UserResponseDto> userDtos = users.stream().map(this::convertToDto).toList();
+        return ResponseEntity.ok(userDtos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable String id) {
-        return userRepo.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable String id) {
+        return userRepo.findById(id).map(user -> ResponseEntity.ok(convertToDto(user))).orElse(ResponseEntity.notFound().build());
     }
     
     @PostMapping("/register") // Changed from createUser to registerUser for clarity
