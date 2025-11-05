@@ -1,7 +1,6 @@
 package com.example.backend.controller;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -18,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.backend.dto.LoginRequestDto;
-import com.example.backend.dto.RegisterUserDto;
 import com.example.backend.dto.FishListingSummaryDto;
+import com.example.backend.dto.LoginRequestDto;
 import com.example.backend.dto.OrderSummaryDto;
+import com.example.backend.dto.RegisterUserDto;
 import com.example.backend.dto.ReviewSummaryDto;
 import com.example.backend.dto.UpdateUserDto;
 import com.example.backend.dto.UserResponseDto;
