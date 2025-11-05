@@ -1,9 +1,11 @@
 package com.example.backend.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.CreateFishListingDto;
+import com.example.backend.dto.FishListingResponseDto;
 import com.example.backend.dto.UpdateFishListingDto;
+import com.example.backend.dto.UserSummaryDto;
 import com.example.backend.enums.ListingStatus;
 import com.example.backend.enums.UserRole;
 import com.example.backend.model.FishListing;
@@ -23,6 +27,7 @@ import com.example.backend.repository.FishListingRepo;
 import com.example.backend.repository.UserRepo;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/fishListings")
 public class FishListingController {
     
@@ -34,16 +39,37 @@ public class FishListingController {
         this.userRepo = userRepo;
     }
 
+    private FishListingResponseDto convertToDto(FishListing listing) {
+        FishListingResponseDto dto = new FishListingResponseDto();
+        dto.setId(listing.getId());
+        dto.setFishType(listing.getFishType());
+        dto.setWeightInKg(listing.getWeightInKg());
+        dto.setPrice(listing.getPrice());
+        dto.setPhotoUrl(listing.getPhotoUrl());
+        dto.setCatchDate(listing.getCatchDate());
+        dto.setStatus(listing.getStatus());
+        dto.setCreatedAt(listing.getCreatedAt());
+
+        UserSummaryDto fishermanDto = new UserSummaryDto();
+        fishermanDto.setId(listing.getFisherman().getId());
+        fishermanDto.setFirstName(listing.getFisherman().getFirstName());
+        fishermanDto.setLastName(listing.getFisherman().getLastName());
+        dto.setFisherman(fishermanDto);
+
+        return dto;
+    }
+
     @GetMapping("/list")
-    public ResponseEntity<List<FishListing>> getAllFishListings() {
+    public ResponseEntity<List<FishListingResponseDto>> getAllFishListings() {
         List<FishListing> fishListings = fishListingRepo.findAll();
-        return ResponseEntity.ok(fishListings);
+        List<FishListingResponseDto> dtoList = fishListings.stream().map(this::convertToDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FishListing> getFishListingById(@PathVariable Long id) {
+    public ResponseEntity<FishListingResponseDto> getFishListingById(@PathVariable Long id) {
         return fishListingRepo.findById(id)
-                .map(ResponseEntity::ok)
+                .map(listing -> ResponseEntity.ok(convertToDto(listing)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -69,11 +95,11 @@ public class FishListingController {
 
         FishListing createdFishListing = fishListingRepo.save(fishListing);
 
-        return new ResponseEntity<>(createdFishListing, HttpStatus.CREATED);
+        return new ResponseEntity<>(convertToDto(createdFishListing), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FishListing> updateFishListing(@PathVariable Long id, @RequestBody UpdateFishListingDto listingDto) {
+    public ResponseEntity<FishListingResponseDto> updateFishListing(@PathVariable Long id, @RequestBody UpdateFishListingDto listingDto) {
         return fishListingRepo.findById(id).map(existingFishListing -> {
             if (listingDto.getFishType() != null) existingFishListing.setFishType(listingDto.getFishType());
             if (listingDto.getWeightInKg() != null) existingFishListing.setWeightInKg(listingDto.getWeightInKg());
@@ -83,7 +109,7 @@ public class FishListingController {
             if (listingDto.getStatus() != null) existingFishListing.setStatus(listingDto.getStatus());
             
             FishListing updated = fishListingRepo.save(existingFishListing);
-            return ResponseEntity.ok(updated);
+            return ResponseEntity.ok(convertToDto(updated));
         }).orElse(ResponseEntity.notFound().build());
     }
 
