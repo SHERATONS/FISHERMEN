@@ -28,14 +28,27 @@ INSERT INTO users (id, username, email, password, first_name, last_name, role, p
 -- FISH LISTINGS
 -- =================================================================
 -- Note: id is auto-generated, so we don't specify it.
-INSERT INTO fish_listings (fish_type, weight_in_kg, price, photo_url, catch_date, status, fisherman_id, created_at) VALUES
-('Yellowfin Tuna', 15.5, 22.50, 'https://example.com/images/tuna.jpg', '2024-05-10 08:00:00', 'AVAILABLE', 'FISHER0001', '2024-05-10 10:00:00'),
-('Red Snapper', 5.2, 18.00, 'https://example.com/images/snapper.jpg', '2024-05-10 09:30:00', 'AVAILABLE', 'FISHER0002', '2024-05-10 11:00:00'),
-('Mahi Mahi', 8.0, 19.75, 'https://example.com/images/mahi.jpg', '2024-05-09 14:00:00', 'SOLD', 'FISHER0001', '2024-05-09 16:00:00'),
-('Grouper', 12.1, 16.50, 'https://example.com/images/grouper.jpg', '2024-05-10 07:00:00', 'AVAILABLE', 'FISHER0002', '2024-05-10 09:00:00'),
-('Cod', 10.0, 12.00, 'https://example.com/images/cod.jpg', '2024-05-11 11:00:00', 'AVAILABLE', 'FISHER0003', '2024-05-11 13:00:00'),
-('Salmon', 4.5, 25.00, 'https://example.com/images/salmon.jpg', '2024-05-11 08:00:00', 'AVAILABLE', 'FISHER0001', '2024-05-11 10:00:00'),
-('Swordfish', 25.0, 28.00, 'https://example.com/images/swordfish.jpg', '2024-05-12 06:00:00', 'UNAVAILABLE', 'FISHER0003', '2024-05-12 09:00:00');
+INSERT INTO fish_listings (
+    fish_type, weight_in_kg, price, photo_url, catch_date, status, fisherman_id, created_at, location
+) VALUES
+('Anchovy', 1.2, 8.50, 'https://example.com/images/anchovy.jpg', '2024-05-10 08:00:00', 'AVAILABLE', 'FISHER0001', '2024-05-10 10:00:00', 'Phuket'),
+('Bluefin Tuna', 30.0, 45.00, 'https://example.com/images/bluefin_tuna.jpg', '2024-05-09 06:00:00', 'AVAILABLE', 'FISHER0002', '2024-05-09 08:00:00', 'Songkhla'),
+('Carp', 3.5, 10.00, 'https://example.com/images/carp.jpg', '2024-05-11 09:30:00', 'AVAILABLE', 'FISHER0003', '2024-05-11 11:00:00', 'Chiang Mai'),
+('Catfish', 4.0, 12.00, 'https://example.com/images/catfish.jpg', '2024-05-12 07:00:00', 'SOLD', 'FISHER0001', '2024-05-12 09:00:00', 'Nakhon Sawan'),
+('Cod', 8.0, 14.00, 'https://example.com/images/cod.jpg', '2024-05-08 10:30:00', 'AVAILABLE', 'FISHER0002', '2024-05-08 12:00:00', 'Trang'),
+('Eel', 2.5, 16.50, 'https://example.com/images/eel.jpg', '2024-05-10 14:00:00', 'AVAILABLE', 'FISHER0003', '2024-05-10 16:00:00', 'Phang Nga'),
+('Herring', 1.8, 9.00, 'https://example.com/images/herring.jpg', '2024-05-09 08:30:00', 'AVAILABLE', 'FISHER0001', '2024-05-09 10:00:00', 'Krabi'),
+('Kingfish', 10.5, 22.00, 'https://example.com/images/kingfish.jpg', '2024-05-11 07:45:00', 'AVAILABLE', 'FISHER0002', '2024-05-11 09:45:00', 'Phuket'),
+('Mackerel', 3.0, 13.50, 'https://example.com/images/mackerel.jpg', '2024-05-12 06:15:00', 'SOLD', 'FISHER0003', '2024-05-12 08:00:00', 'Pattani'),
+('Pollock', 6.0, 15.00, 'https://example.com/images/pollock.jpg', '2024-05-09 09:00:00', 'AVAILABLE', 'FISHER0001', '2024-05-09 11:00:00', 'Songkhla'),
+('Pomfret', 4.2, 18.75, 'https://example.com/images/pomfret.jpg', '2024-05-10 05:30:00', 'AVAILABLE', 'FISHER0002', '2024-05-10 07:00:00', 'Phuket'),
+('Salmon', 5.5, 25.00, 'https://example.com/images/salmon.jpg', '2024-05-11 10:00:00', 'AVAILABLE', 'FISHER0003', '2024-05-11 12:00:00', 'Bangkok'),
+('Sea Bass', 7.2, 20.00, 'https://example.com/images/seabass.jpg', '2024-05-08 06:00:00', 'SOLD', 'FISHER0001', '2024-05-08 08:00:00', 'Krabi'),
+('Snapper', 5.8, 17.50, 'https://example.com/images/snapper.jpg', '2024-05-10 09:00:00', 'AVAILABLE', 'FISHER0002', '2024-05-10 11:00:00', 'Trang'),
+('Swordfish', 25.0, 28.00, 'https://example.com/images/swordfish.jpg', '2024-05-12 06:00:00', 'UNAVAILABLE', 'FISHER0003', '2024-05-12 09:00:00', 'Phuket'),
+('Trout', 4.0, 19.00, 'https://example.com/images/trout.jpg', '2024-05-09 07:30:00', 'AVAILABLE', 'FISHER0001', '2024-05-09 09:00:00', 'Chiang Mai'),
+('Tuna', 12.0, 21.00, 'https://example.com/images/tuna.jpg', '2024-05-10 08:00:00', 'AVAILABLE', 'FISHER0002', '2024-05-10 10:00:00', 'Phuket'),
+('Yellowtail', 9.0, 23.00, 'https://example.com/images/yellowtail.jpg', '2024-05-11 08:15:00', 'AVAILABLE', 'FISHER0003', '2024-05-11 10:15:00', 'Songkhla');
 
 
 -- =================================================================
