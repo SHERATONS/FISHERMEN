@@ -50,6 +50,9 @@ public class FishListing {
     @Column(name = "catch_date", nullable = false)
     private LocalDateTime catchDate;
 
+    @Column(nullable = false)
+    private String location;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ListingStatus status = ListingStatus.AVAILABLE;
@@ -66,4 +69,5 @@ public class FishListing {
     // A listing can be part of many order items
     @OneToMany(mappedBy = "fishListing")
     private List<OrderItem> orderItems;
+
 }

@@ -13,4 +13,5 @@ public class CreateFishListingDto {
     private String photoUrl;
     private LocalDateTime catchDate;
     private String fishermanId;
+    private String location;
 }

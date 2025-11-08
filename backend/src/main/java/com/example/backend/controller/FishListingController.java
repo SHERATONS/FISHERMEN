@@ -47,6 +47,7 @@ public class FishListingController {
         dto.setPrice(listing.getPrice());
         dto.setPhotoUrl(listing.getPhotoUrl());
         dto.setCatchDate(listing.getCatchDate());
+        dto.setLocation(listing.getLocation());
         dto.setStatus(listing.getStatus());
         dto.setCreatedAt(listing.getCreatedAt());
 
@@ -90,6 +91,7 @@ public class FishListingController {
         fishListing.setPrice(listingDto.getPrice());
         fishListing.setPhotoUrl(listingDto.getPhotoUrl());
         fishListing.setCatchDate(listingDto.getCatchDate());
+        fishListing.setLocation(listingDto.getLocation());
         fishListing.setFisherman(fisherman);
         fishListing.setStatus(ListingStatus.AVAILABLE); // Default status for new listings
 
