@@ -18,4 +18,5 @@ public class FishListingResponseDto {
     private ListingStatus status;
     private LocalDateTime createdAt;
     private UserSummaryDto fisherman;
+    private String location;
 }
