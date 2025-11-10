@@ -8,29 +8,54 @@ import FishDetailPage from './pages/FishDetailPage';
 import Manage from './pages/Manage';
 import BuyerReviews from './pages/BuyerReviews';
 import LoginRegisPage from "./pages/LoginRegisPage";
+import { AuthProvider } from "./AuthContext";
+import Navbar from "./Navbar";
 
 function App() {
   // 🛒 ย้าย cart state มาไว้ที่นี่
   const [cart, setCart] = useState([]);
 
+  // return (
+  //   <AuthProvider>
+  //     <Router>
+  //       <div className="App">
+
+  //         {/* Navbar */}
+  //         <nav style={navStyle}>
+  //           <h1 style={{ margin: 0 }}>🐟 Oceanmate</h1>
+  //           <div>
+  //             <Link style={linkStyle} to="/">Home</Link>
+  //             <Link style={linkStyle} to="/upload">Upload Fish</Link>
+  //             <Link style={linkStyle} to="/market">Market</Link>
+  //             <Link style={linkStyle} to="/manage">Manage Orders</Link>
+  //             <Link style={linkStyle} to="/reviews">Reviews</Link>
+  //             <Link style={linkStyle} to="/login">Login</Link>
+  //           </div>
+  //         </nav>
+
+  //         {/* Main content */}
+  //         <div style={{ padding: "20px" }}>
+  //           <Routes>
+  //             <Route path="/" element={<Home />} />
+  //             <Route path="/upload" element={<UploadForm />} />
+  //             <Route path="/payment" element={<Payment cart={cart} />} />
+  //             <Route path="/market" element={<FishMarket cart={cart} setCart={setCart} />} />
+  //             <Route path="/market/:id" element={<FishDetailPage cart={cart} setCart={setCart} />} />
+  //             <Route path="/manage" element={<Manage />} />
+  //             <Route path="/reviews" element={<BuyerReviews />} />
+  //             <Route path="/login" element={<LoginRegisPage />} />
+  //           </Routes>
+  //         </div>
+  //       </div>
+  //     </Router>
+  //     </AuthProvider>
+  // );
   return (
+    <AuthProvider>
       <Router>
         <div className="App">
+          <Navbar />
 
-          {/* Navbar */}
-          <nav style={navStyle}>
-            <h1 style={{ margin: 0 }}>🐟 Oceanmate</h1>
-            <div>
-              <Link style={linkStyle} to="/">Home</Link>
-              <Link style={linkStyle} to="/upload">Upload Fish</Link>
-              <Link style={linkStyle} to="/market">Market</Link>
-              <Link style={linkStyle} to="/manage">Manage Orders</Link>
-              <Link style={linkStyle} to="/reviews">Reviews</Link>
-              <Link style={linkStyle} to="/login">Login</Link>
-            </div>
-          </nav>
-
-          {/* Main content */}
           <div style={{ padding: "20px" }}>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -45,6 +70,7 @@ function App() {
           </div>
         </div>
       </Router>
+    </AuthProvider>
   );
 }
 
@@ -53,7 +79,8 @@ function Home() {
   return (
       <div style={homeStyle}>
         <h2>Welcome to Fish Market!</h2>
-        <p>Click "Upload Fish" in the navbar to upload your daily catch.</p>
+        {/* <p>Login first!</p> */}
+        <h1>°‧ 𓇼 𓆟 𓆞 ·｡𓆝 ⋆｡°‧𓇼</h1>
       </div>
   );
 }

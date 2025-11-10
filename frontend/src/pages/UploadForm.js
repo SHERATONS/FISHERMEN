@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 export default function UploadForm() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [fisherName, setFisherName] = useState("");
   const [fishType, setFishType] = useState([]);
   const [weight, setWeight] = useState("");
@@ -19,35 +21,59 @@ export default function UploadForm() {
   const [selectedFish, setSelectedFish] = useState("");
   const [calcWeight, setCalcWeight] = useState("");
   const [calculatedPrice, setCalculatedPrice] = useState(null);
+  const [catchDate, setCatchDate] = useState(() => {
+    const now = new Date();
+    const localISOTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString().slice(0, 10); 
+    return localISOTime;
+  });
 
   useEffect(() => {
       const fetchMarketPrices = async () => {
           try {
               // mock data
-              const data = [
-                  { fishType: "Anchovy", fairPrice: 80 },
-                  { fishType: "Bluefin Tuna", fairPrice: 1000 },
-                  { fishType: "Carp", fairPrice: 120 },
-                  { fishType: "Catfish", fairPrice: 160 },
-                  { fishType: "Cod", fairPrice: 240 },
-                  { fishType: "Eel", fairPrice: 400 },
-                  { fishType: "Herring", fairPrice: 100 },
-                  { fishType: "Kingfish", fairPrice: 440 },
-                  { fishType: "Mackerel", fairPrice: 110 },
-                  { fishType: "Pollock", fairPrice: 150 },
-                  { fishType: "Pomfret", fairPrice: 320 },
-                  { fishType: "Salmon", fairPrice: 360 },
-                  { fishType: "Sea Bass", fairPrice: 420 },
-                  { fishType: "Snapper", fairPrice: 180 },
-                  { fishType: "Swordfish", fairPrice: 500 },
-                  { fishType: "Trout", fairPrice: 240 },
-                  { fishType: "Tuna", fairPrice: 380 },
-                  { fishType: "Yellowtail", fairPrice: 400 }
-              ];
-              setMarketPrices(data);
-                  // const res = await axios.get("http://localhost:8080/api/fish/fair-prices");
-                  // setMarketPrices(res.data);
-                  // console.log(res.data);
+              // const data = [
+              //     { fishType: "Anchovy", fairPrice: 80 },
+              //     { fishType: "Bluefin Tuna", fairPrice: 1000 },
+              //     { fishType: "Carp", fairPrice: 120 },
+              //     { fishType: "Catfish", fairPrice: 160 },
+              //     { fishType: "Cod", fairPrice: 240 },
+              //     { fishType: "Eel", fairPrice: 400 },
+              //     { fishType: "Herring", fairPrice: 100 },
+              //     { fishType: "Kingfish", fairPrice: 440 },
+              //     { fishType: "Mackerel", fairPrice: 110 },
+              //     { fishType: "Pollock", fairPrice: 150 },
+              //     { fishType: "Pomfret", fairPrice: 320 },
+              //     { fishType: "Salmon", fairPrice: 360 },
+              //     { fishType: "Sea Bass", fairPrice: 420 },
+              //     { fishType: "Snapper", fairPrice: 180 },
+              //     { fishType: "Swordfish", fairPrice: 500 },
+              //     { fishType: "Trout", fairPrice: 240 },
+              //     { fishType: "Tuna", fairPrice: 380 },
+              //     { fishType: "Yellowtail", fairPrice: 400 }
+              // ];
+              // setMarketPrices(data);
+                  const res = await axios.get("http://localhost:8080/api/fishListings/list");
+                  const fetchedData = res.data;
+                  const priceMap = {};
+                  fetchedData.forEach((item) => {
+                    if (!priceMap[item.fishType]) {
+                      priceMap[item.fishType] = { total: 0, count: 0 };
+                    }
+                    priceMap[item.fishType].total += item.price;
+                    priceMap[item.fishType].count += 1;
+                  });
+
+                  // Convert the grouped data into fair price list
+                  const averagedPrices = Object.keys(priceMap).map((fishType) => ({
+                    fishType,
+                    fairPrice: parseFloat(
+                      (priceMap[fishType].total / priceMap[fishType].count).toFixed(2)
+                    ),
+                  }));
+
+                  setMarketPrices(averagedPrices);
+                  // console.log("Averaged fair prices:", averagedPrices);
               } catch (err) {
                   console.error("Error fetching market prices:", err);
               }
@@ -72,7 +98,6 @@ export default function UploadForm() {
 
 const handleSubmit = (e) => {
   e.preventDefault();
-
   if (!fisherName.trim()) return alert("Please enter fisher's name");
   if (!selectedFish) return alert("Please select at least one species");
   if (!location.trim()) return alert("Please enter location");
@@ -156,8 +181,8 @@ const handleSubmit = (e) => {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Fisher Name"
-            value={fisherName}
+            placeholder="Fisher ID"
+            value={user?.id || ""}
             onChange={(e) => setFisherName(e.target.value)}
             style={inputStyle}
           />
@@ -204,6 +229,14 @@ const handleSubmit = (e) => {
             type="file"
             accept="image/*"
             onChange={(e) => setImage(e.target.files[0])}
+            style={inputStyle}
+          />
+          <label>Catch Date</label>
+          <input
+            type="date"
+            value={catchDate}
+            max={new Date().toISOString().slice(0, 10)}
+            onChange={(e) => setCatchDate(e.target.value)}
             style={inputStyle}
           />
 
