@@ -1,3 +1,4 @@
+import { useAuth } from "../AuthContext";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, User, Mail, Lock } from "lucide-react";
@@ -5,6 +6,7 @@ import axios from "axios";
 
 export default function LoginRegisPage() {
     const navigate = useNavigate();
+    const { login } = useAuth(); 
     const [isRegister, setIsRegister] = useState(false);
     const [role, setRole] = useState(""); // "BUYER" or "FISHERMAN"
     const [firstName, setFirstName] = useState("");
@@ -43,12 +45,15 @@ export default function LoginRegisPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!role) return alert("Please select your role!");
         if (!password.trim() || (!username.trim() && !email.trim())) return alert("Username/email and password are required");
-        if (isRegister && (!firstName.trim() || !lastName.trim() || !username.trim() || password !== confirmPassword))
-            return alert("Please fill all fields and check password confirmation");
+        if (isRegister){
+            if (!firstName.trim() || !lastName.trim() || !username.trim() || password !== confirmPassword)
+                {return alert("Please fill all fields and check password confirmation");}
+            if (!role) return alert("Please select your role.");
+        }
 
         try {
+            let response;
             if (isRegister) {
                 const payload = {
                     firstName,
@@ -60,16 +65,39 @@ export default function LoginRegisPage() {
                     location,
                     profileInfo,
                 };
-                await axios.post("http://localhost:8080/api/users/register", payload); // Updated endpoint
+                response = await axios.post("http://localhost:8080/api/users/register", payload); 
             } else {
-                // For login, send username (which can be email) and password
                 const payload = { username: username || email, password };
-                await axios.post("http://localhost:8080/api/users/login", payload); // Updated endpoint
+                response = await axios.post("http://localhost:8080/api/users/login", payload); 
+                
+                let userRole = null;
+                let userId = null;
+                if (typeof response.data === "string") {
+                    const roleMatch = response.data.match(/"role"\s*:\s*"(\w+)"/);
+                    const idMatch = response.data.match(/"id"\s*:\s*"([\w\d]+)"/);
+
+                    if (roleMatch) userRole = roleMatch[1];
+                    if (idMatch) userId = idMatch[1];
+
+                    if (!userRole || !userId) {
+                        alert("Login failed: unable to determine role or ID");
+                        return;
+                    }
+                } else {
+                    userRole = response.data.role;
+                    userId = response.data.id;
+                }
+                login({ role: userRole, id: userId });
+                // console.log("User role:", userRole);
+                setTimeout(() => {
+                    if (userRole === "FISHERMAN") navigate("/upload");
+                    else if (userRole === "BUYER") navigate("/market");
+                }, 1000);
+                return;
             }
-            
 
             setShowPopup(true);
-            setTimeout(() => setPopupVisible(true), 100);
+            setPopupVisible(true);
             setTimeout(() => setPopupVisible(false), 2300);
             setTimeout(() => setShowPopup(false), 3000);
 
@@ -80,13 +108,12 @@ export default function LoginRegisPage() {
             setEmail("");
             setPassword("");
             setConfirmPassword("");
-            setRole("");
+            if (isRegister) setRole("");
             setLocation("");
             setProfileInfo("");
 
-            // setTimeout(() => navigate("/home"), 3000);
         } catch (err) {
-            alert(err.response?.data?.message || "Error submitting form");
+            alert(err.response?.data || "Error submitting form");
         }
     };
 
@@ -115,6 +142,7 @@ export default function LoginRegisPage() {
             </h2>
 
             {/* Role Selection */}
+            {isRegister && (
             <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "15px" }}>
                 <button
                     type="button"
@@ -147,6 +175,7 @@ export default function LoginRegisPage() {
                     Fisherman
                 </button>
             </div>
+            )}
 
             <form onSubmit={handleSubmit}>
                 {isRegister && (
