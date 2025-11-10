@@ -113,7 +113,11 @@ export default function LoginRegisPage() {
             setProfileInfo("");
 
         } catch (err) {
-            alert(err.response?.data || "Error submitting form");
+            if (err.response && err.response.data) {
+                alert(`Registration failed: ${err.response.data}`);
+            } else {
+                alert("Error submitting form");
+            }
         }
     };
 
@@ -207,6 +211,16 @@ export default function LoginRegisPage() {
                                 placeholder="Username"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
+                                style={inputStyle}
+                            />
+                        </div>
+                        <div style={inputContainerStyle}>
+                            <User size={18} style={iconStyle} />
+                            <input
+                                type="text"
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 style={inputStyle}
                             />
                         </div>
