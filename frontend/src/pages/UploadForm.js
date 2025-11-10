@@ -19,35 +19,59 @@ export default function UploadForm() {
   const [selectedFish, setSelectedFish] = useState("");
   const [calcWeight, setCalcWeight] = useState("");
   const [calculatedPrice, setCalculatedPrice] = useState(null);
+  const [catchDate, setCatchDate] = useState(() => {
+    const now = new Date();
+    const localISOTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString().slice(0, 16); 
+    return localISOTime;
+  });
 
   useEffect(() => {
       const fetchMarketPrices = async () => {
           try {
               // mock data
-              const data = [
-                  { fishType: "Anchovy", fairPrice: 80 },
-                  { fishType: "Bluefin Tuna", fairPrice: 1000 },
-                  { fishType: "Carp", fairPrice: 120 },
-                  { fishType: "Catfish", fairPrice: 160 },
-                  { fishType: "Cod", fairPrice: 240 },
-                  { fishType: "Eel", fairPrice: 400 },
-                  { fishType: "Herring", fairPrice: 100 },
-                  { fishType: "Kingfish", fairPrice: 440 },
-                  { fishType: "Mackerel", fairPrice: 110 },
-                  { fishType: "Pollock", fairPrice: 150 },
-                  { fishType: "Pomfret", fairPrice: 320 },
-                  { fishType: "Salmon", fairPrice: 360 },
-                  { fishType: "Sea Bass", fairPrice: 420 },
-                  { fishType: "Snapper", fairPrice: 180 },
-                  { fishType: "Swordfish", fairPrice: 500 },
-                  { fishType: "Trout", fairPrice: 240 },
-                  { fishType: "Tuna", fairPrice: 380 },
-                  { fishType: "Yellowtail", fairPrice: 400 }
-              ];
-              setMarketPrices(data);
-                  // const res = await axios.get("http://localhost:8080/api/fish/fair-prices");
-                  // setMarketPrices(res.data);
-                  // console.log(res.data);
+              // const data = [
+              //     { fishType: "Anchovy", fairPrice: 80 },
+              //     { fishType: "Bluefin Tuna", fairPrice: 1000 },
+              //     { fishType: "Carp", fairPrice: 120 },
+              //     { fishType: "Catfish", fairPrice: 160 },
+              //     { fishType: "Cod", fairPrice: 240 },
+              //     { fishType: "Eel", fairPrice: 400 },
+              //     { fishType: "Herring", fairPrice: 100 },
+              //     { fishType: "Kingfish", fairPrice: 440 },
+              //     { fishType: "Mackerel", fairPrice: 110 },
+              //     { fishType: "Pollock", fairPrice: 150 },
+              //     { fishType: "Pomfret", fairPrice: 320 },
+              //     { fishType: "Salmon", fairPrice: 360 },
+              //     { fishType: "Sea Bass", fairPrice: 420 },
+              //     { fishType: "Snapper", fairPrice: 180 },
+              //     { fishType: "Swordfish", fairPrice: 500 },
+              //     { fishType: "Trout", fairPrice: 240 },
+              //     { fishType: "Tuna", fairPrice: 380 },
+              //     { fishType: "Yellowtail", fairPrice: 400 }
+              // ];
+              // setMarketPrices(data);
+                  const res = await axios.get("http://localhost:8080/api/fishListings/list");
+                  const fetchedData = res.data;
+                  const priceMap = {};
+                  fetchedData.forEach((item) => {
+                    if (!priceMap[item.fishType]) {
+                      priceMap[item.fishType] = { total: 0, count: 0 };
+                    }
+                    priceMap[item.fishType].total += item.price;
+                    priceMap[item.fishType].count += 1;
+                  });
+
+                  // Convert the grouped data into fair price list
+                  const averagedPrices = Object.keys(priceMap).map((fishType) => ({
+                    fishType,
+                    fairPrice: parseFloat(
+                      (priceMap[fishType].total / priceMap[fishType].count).toFixed(2)
+                    ),
+                  }));
+
+                  setMarketPrices(averagedPrices);
+                  console.log("Averaged fair prices:", averagedPrices);
               } catch (err) {
                   console.error("Error fetching market prices:", err);
               }
@@ -70,7 +94,7 @@ export default function UploadForm() {
     setFishType(selected);
   };
 
-const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   if (!fisherName.trim()) return alert("Please enter fisher's name");
@@ -78,7 +102,27 @@ const handleSubmit = (e) => {
   if (!location.trim()) return alert("Please enter location");
   if (!weight || weight <= 0) return alert("Weight must be greater than 0!");
   if (!price || price <= 0) return alert("Price must be greater than 0!");
-  if (!image) return alert("Please select an image");
+  // if (!image) return alert("Please select an image"); //ใช้ม้อคดีม้ัย ขก ทำ
+
+  try {
+    const newFishListing = {
+      fishType: selectedFish,
+      weightInKg: parseFloat(weight),
+      price: parseFloat(price),
+      photoUrl: "https://example.com/images/" + selectedFish.toLowerCase() + ".jpg", // mock image URL
+      catchDate: new Date(catchDate).toISOString(), 
+      fishermanId: fisherName, // use the fisher ID (FISHER0002)
+      location: location,
+    };
+
+    // === Send POST request to backend ===
+    const res = await axios.post(
+      "http://localhost:8080/api/fishListings/create",
+      newFishListing
+    );
+
+    console.log("Upload successful:", res.data);
+    setMessage("Upload successful!");
 
   // แสดง popup
   setShowPopup(true);
@@ -94,8 +138,12 @@ const handleSubmit = (e) => {
   setLocation("");
   setImage(null);
 
-  // redirect ไป /manage หลัง popup
-  setTimeout(() => navigate("/manage"), 3000);
+  // redirect ไป /market หลัง popup
+  setTimeout(() => navigate("/market"), 3000);
+  }catch (err) {
+    console.error("Error uploading:", err);
+    alert("Error uploading fish.");
+  }
 };
 
   const calculateFairPrice = () => {
@@ -156,7 +204,7 @@ const handleSubmit = (e) => {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Fisher Name"
+            placeholder="Fisher ID"
             value={fisherName}
             onChange={(e) => setFisherName(e.target.value)}
             style={inputStyle}
@@ -173,18 +221,41 @@ const handleSubmit = (e) => {
           <label style={{ fontWeight: "bold", color: "#023047", fontSize: "15px" }}>
 
           </label>
-          <select
-                      value={selectedFish}
-                      onChange={(e) => setSelectedFish(e.target.value)}
-                      style={inputStyle}
-                    >
-                      <option value="">-- Select Species --</option>
-                      {marketPrices.map((fish, index) => (
-                        <option key={index} value={fish.fishType}>
-                          {fish.fishType}
-                        </option>
-                      ))}
-                    </select>
+          {/* <select
+            value={selectedFish}
+            onChange={(e) => setSelectedFish(e.target.value)}
+            style={inputStyle}
+          >
+            <option value="">-- Select Species --</option>
+            {marketPrices.map((fish, index) => (
+              <option key={index} value={fish.fishType}>
+                {fish.fishType}
+              </option>
+            ))}
+          </select> */}
+          <input
+            list="fishOptions"
+            type="text"
+            value={selectedFish}
+            onChange={(e) => {
+              const inputValue = e.target.value.trim();
+              if (inputValue === "") {
+                setSelectedFish("");
+              } else {
+                const formatted =
+                  inputValue.charAt(0).toUpperCase() + inputValue.slice(1).toLowerCase();
+                setSelectedFish(formatted);
+              }
+            }}
+            placeholder="Enter or select fish type"
+            style={inputStyle}
+          />
+
+          <datalist id="fishOptions">
+            {marketPrices.map((fish, index) => (
+              <option key={index} value={fish.fishType} />
+            ))}
+          </datalist>
 
           <input
             type="number"
@@ -198,6 +269,13 @@ const handleSubmit = (e) => {
             placeholder="Price (THB)"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
+            style={inputStyle}
+          />
+          <input
+            type="datetime-local"
+            value={catchDate}
+            max={new Date().toISOString().slice(0, 16)}
+            onChange={(e) => setCatchDate(e.target.value)}
             style={inputStyle}
           />
           <input
