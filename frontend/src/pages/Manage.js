@@ -1,70 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Manage.css';
 
 const Manage = () => {
+  const [orders, setOrders] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const orders = [
-    {
-      id: 'ORD001',
-      date: '2025-10-01',
-      buyer: 'John Fisher',
-      payment: 'Credit Card',
-      product: 'Anchovy',
-      price: 80,
-      species: 'Anchovy',
-      quantity: 2,
-      status: 'Pending',
-    },
-    {
-      id: 'ORD002',
-      date: '2025-10-02',
-      buyer: 'Alice Ocean',
-      payment: 'Bank Transfer',
-      product: 'Bluefin Tuna',
-      price: 1000,
-      species: 'Tuna',
-      quantity: 3,
-      status: 'Unshipped',
-    },
-    {
-      id: 'ORD003',
-      date: '2025-10-03',
-      buyer: 'Mark Blue',
-      payment: 'Cash',
-      product: 'Cod',
-      price: 240,
-      species: 'Cod',
-      quantity: 1,
-      status: 'Unshipped',
-    },
-    {
-      id: 'ORD004',
-      date: '2025-10-04',
-      buyer: 'Sophia Net',
-      payment: 'Credit Card',
-      product: 'Kingfish',
-      price: 440,
-      species: 'Kingfish',
-      quantity: 4,
-      status: 'Shipped',
-    },
-    {
-      id: 'ORD005',
-      date: '2025-10-05',
-      buyer: 'Liam Boat',
-      payment: 'Bank Transfer',
-      product: 'Sea Bass',
-      price: 420,
-      species: 'Sea Bass',
-      quantity: 2,
-      status: 'Shipped',
-    },
-  ];
+  useEffect(() => {
+    fetch('http://localhost:8080/api/orders/list-dto')
+      .then(res => res.json())
+      .then(data => {
+        console.log('Fetched Orders:', data);
+        setOrders(data);
+      })
+      .catch(err => console.error('Error fetching orders:', err));
+  }, []);
 
-  const statuses = ['All', 'Pending', 'Unshipped', 'Shipped'];
+  const statuses = ['All', 'PENDING', 'UNSHIPPED', 'SHIPPED'];
 
+  // ฟิลเตอร์ตามสถานะและ Order ID
   const filteredOrders = orders.filter(order => {
     const matchStatus =
       selectedStatus === 'All' || order.status === selectedStatus;
@@ -74,9 +28,10 @@ const Manage = () => {
     return matchStatus && matchSearch;
   });
 
-  const openOrders = orders.filter(o => o.status !== 'Sold Out').length;
-  const totalBalance = orders.reduce((sum, o) => sum + o.price * o.quantity, 0);
-  const reviews = 128; // mock number
+  // คำนวณสรุปยอดรวม
+  const openOrders = orders.filter(o => o.status !== 'SHIPPED').length;
+  const totalBalance = orders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+  const reviews = 4; // mock
 
   return (
     <div className="manage-container">
@@ -121,65 +76,82 @@ const Manage = () => {
         </div>
       </div>
 
-{/*Table */}
-<table className="order-table">
-  <thead>
-    <tr>
-      <th>Order Date</th>
-      <th>Product Detail</th>
-      <th>Delivery Status</th>
-      <th>Availability</th> {/* เพิ่ม column ใหม่ */}
-      <th>Order Detail</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    {filteredOrders.length > 0 ? (
-      filteredOrders.map(order => {
-        const isAvailable = order.status !== "Shipped"; // ตัวอย่าง: Shipped = Sold Out
-        return (
-          <tr key={order.id}>
-            <td>{order.date}</td>
-            <td className="product-detail">
-              <strong>{order.product}</strong><br />
-              Price: {order.price.toFixed(2)} THB/Kg<br />
-              Species: {order.species}<br />
-              Quantity: {order.quantity}<br />
-              Subtotal: {(order.price * order.quantity).toFixed(2)} THB
-            </td>
-            <td>
-              <span className={`status-badge status-${order.status.replace(' ', '').toLowerCase()}`}>
-                {order.status}
-              </span>
-            </td>
-            <td>
-              <span className={isAvailable ? "available" : "soldout"}>
-                {isAvailable ? "Available" : "Sold Out"}
-              </span>
-            </td>
-            <td className="order-info">
-              <strong>ID:</strong> {order.id}<br />
-              <strong>Buyer:</strong> {order.buyer}<br />
-              <strong>Payment:</strong> {order.payment}
-            </td>
-            <td className="action-buttons">
-              <button className="btn light">Print Packing Slip</button>
-              <button className="btn light">Cancel Order</button>
-              <button className="btn light">Confirm Shipment</button>
-            </td>
+      {/* Table */}
+      <table className="order-table">
+        <thead>
+          <tr>
+            <th>Order Date</th>
+            <th>Product Detail</th>
+            <th>Delivery Status</th>
+            <th>Availability</th>
+            <th>Order Detail</th>
+            <th>Action</th>
           </tr>
-        );
-      })
-    ) : (
-      <tr>
-        <td colSpan="6" style={{ textAlign: 'center', color: '#666' }}>
-          No orders found
-        </td>
-      </tr>
-    )}
-  </tbody>
-</table>
+        </thead>
+        <tbody>
+          {filteredOrders.length > 0 ? (
+            filteredOrders.map(order => {
+              const isAvailable = order.status !== 'SHIPPED';
 
+              return (
+                <tr key={order.id}>
+                  <td>
+                    {new Date(order.orderDate).toLocaleDateString('th-TH', {
+                      dateStyle: 'medium',
+                    })}
+                  </td>
+
+                  {/* แสดงทุก order item */}
+                  <td className="product-detail">
+                    {order.items?.map((item, idx) => {
+                      const fishName = item.fishName || 'N/A';
+                      const price = item.priceAtPurchase || 0;
+                      const qty = item.quantity || 0;
+                      const subtotal = price * qty;
+                      return (
+                        <div key={idx}>
+                          <strong>{fishName}</strong><br />
+                          Price: {price.toFixed(2)} THB/Kg<br />
+                          Quantity: {qty}<br />
+                          Subtotal: {subtotal.toFixed(2)} THB
+                        </div>
+                      );
+                    })}
+                  </td>
+
+                  <td>
+                    <span className={`status-badge status-${order.status.toLowerCase()}`}>
+                      {order.status}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span className={isAvailable ? 'available' : 'soldout'}>
+                      {isAvailable ? 'Available' : 'Sold Out'}
+                    </span>
+                  </td>
+
+                  <td className="order-info">
+                    <strong>ID:</strong> {order.id}<br />
+                    <strong>Buyer:</strong> {order.buyer?.username || 'Unknown'}<br />
+                  </td>
+
+                  <td className="action-buttons">
+                    <button className="btn light">Cancel Order</button>
+                    <button className="btn light" >Confirm Shipment</button>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="6" style={{ textAlign: 'center', color: '#666' }}>
+                No orders found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -187,3 +159,6 @@ const Manage = () => {
 export default Manage;
 
 
+
+
+    

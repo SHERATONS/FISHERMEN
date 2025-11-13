@@ -98,6 +98,10 @@
   line-height: 1.2; 
 }
 
+.product-detail div {
+  margin-bottom: 10px; 
+}
+
 .order-info {
   text-align: left;
   color: #444;
@@ -130,11 +134,15 @@
 
 /*  Action Buttons */
 .action-buttons {
-  display: flex;
   flex-direction: column;
   gap: 8px;
   align-items: left;
 }
+
+.action-buttons .btn.light:not(:first-child) {
+  margin-top: 8px;
+}
+
 
 .btn.light {
   border: 1px solid #d1d5db;
