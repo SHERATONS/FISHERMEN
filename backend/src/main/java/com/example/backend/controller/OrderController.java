@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.CreateOrderDto;
+import com.example.backend.dto.OrderDto;
 import com.example.backend.dto.OrderItemDto;
 import com.example.backend.dto.UpdateOrderStatusDto;
 import com.example.backend.enums.OrderStatus;
@@ -70,6 +72,15 @@ public class OrderController {
     public ResponseEntity<List<Order>> getAllOrders() {
         List<Order> orders = orderRepo.findAll();
         return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/list-dto")
+    public ResponseEntity<List<OrderDto>> getAllOrdersDto() {
+        List<Order> orders = orderRepo.findAll();
+        List<OrderDto> dtoList = orders.stream()
+                                       .map(OrderDto::from)
+                                       .toList();
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/{id}")

@@ -82,7 +82,7 @@ INSERT INTO fish_listings (
 
 -- Order 1: Alice buys Red Snapper and Grouper
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD001', '2024-05-11 12:00:00', 'COMPLETED', 289.80, 'BUY0001');
+('ORD001', '2024-05-11 12:00:00', 'UNSHIPPED', 289.80, 'BUY0001');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD001', 2, 2.0, 18.00), -- 2kg of Red Snapper
@@ -93,7 +93,7 @@ UPDATE orders SET total_price = 60.75 WHERE id = 'ORD001';
 
 -- Order 2: Bob (restaurant owner) buys a lot of Tuna
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD002', '2024-05-11 14:30:00', 'CONFIRMED', 225.00, 'BUY0002');
+('ORD002', '2024-05-11 14:30:00', 'SHIPPED', 225.00, 'BUY0002');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD002', 1, 10.0, 22.50); -- 10kg of Yellowfin Tuna
