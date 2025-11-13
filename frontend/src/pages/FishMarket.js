@@ -14,7 +14,7 @@ const FishMarket = () => {
     const [selectedFish, setSelectedFish] = useState(null);
     const navigate = useNavigate();
 
-    
+    // Fetch data from API
     useEffect(() => {
         fetch("http://localhost:8080/api/fishListings/list")
             .then(res => res.json())
@@ -25,7 +25,7 @@ const FishMarket = () => {
             .catch(err => console.error("Error fetching fish listings:", err));
     }, []);
 
-    
+    // Filter Logic
     useEffect(() => {
         let updatedList = [...fishList];
 
@@ -61,7 +61,7 @@ const FishMarket = () => {
         setFilteredList(updatedList);
     }, [searchTerm, selectedSpecies, selectedFreshness, minPrice, maxPrice, fishList]);
 
-    
+    // Cart Functions
     const addToCart = (fish) => {
         setCart(prevCart => {
             const existing = prevCart.find(item => item.id === fish.id);
@@ -75,14 +75,12 @@ const FishMarket = () => {
         });
     };
 
-   
     const removeFromCart = (id) => {
         setCart(prevCart => prevCart.filter(item => item.id !== id));
     };
 
     const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
-    
     const handleCheckout = () => {
         if (cart.length === 0) {
             alert("Your cart is empty!");
@@ -91,11 +89,11 @@ const FishMarket = () => {
         navigate("/payment", { state: { totalAmount: totalPrice } });
     };
 
-    
+    // Modal Functions
     const openModal = (fish) => setSelectedFish(fish);
     const closeModal = () => setSelectedFish(null);
 
-   
+    // Helper: Date Formatter
     const formatDate = (dateStr) => {
         if (!dateStr) return "-";
         const date = new Date(dateStr);
@@ -110,7 +108,7 @@ const FishMarket = () => {
         <div className="fish-market-page">
             <h1>Fresh Fish Market 🎣</h1>
 
-            {/* 🔍 Search Bar */}
+            {/* Search Bar */}
             <div className="search-bar">
                 <input
                     type="text"
@@ -121,7 +119,7 @@ const FishMarket = () => {
             </div>
 
             <div className="fish-list-container">
-                {/* 🧭 Filter Panel */}
+                {/* Filter Panel */}
                 <div className="filter-panel">
                     <h3>Filters</h3>
                     <label>Species:</label>
@@ -140,7 +138,7 @@ const FishMarket = () => {
                         ))}
                     </select>
 
-                    <label>Price Range (฿/Kg):</label>
+                    <label>Price Range (Total ฿):</label>
                     <div className="price-inputs">
                         <input
                             type="number"
@@ -159,7 +157,7 @@ const FishMarket = () => {
                     </div>
                 </div>
 
-                {/* 🐟 Fish List */}
+                {/* Fish List */}
                 <div className="fish-display-area">
                     <h2>Available Listings ({filteredList.length})</h2>
                     <div className="fish-list">
@@ -170,18 +168,12 @@ const FishMarket = () => {
                                 onClick={() => openModal(fish)}
                                 style={{ cursor: 'pointer' }}
                             >
-                                {fish.photoUrl && (
-                                    <img
-                                        src={fish.photoUrl}
-                                        alt={fish.fishType}
-                                        className="fish-photo"
-                                    />
-                                )}
-                                <h3>{fish.fishType}</h3>
-                                <p>Price: <strong>฿ {fish.price?.toFixed(2)}</strong>/Kg</p>
+                                <h2>{fish.fishType}</h2>
+                                {/* --- ส่วนที่เพิ่มและแก้ไข --- */}
+                                <p>Price: <strong>฿ {fish.price?.toFixed(2)}</strong></p>
                                 <p>Location: {fish.location}</p>
+                                <p>Status: {fish.status}</p>
                                 <p>Date Caught: {formatDate(fish.catchDate)}</p>
-
                                 <button onClick={(e) => { e.stopPropagation(); addToCart(fish); }}>
                                     Add to Cart
                                 </button>
@@ -190,7 +182,7 @@ const FishMarket = () => {
                     </div>
                 </div>
 
-                {/* 🛒 Cart Panel */}
+                {/*  Cart Panel */}
                 <div className="cart-panel">
                     <h3>🛒 Your Cart</h3>
                     {cart.length === 0 ? (
@@ -199,7 +191,7 @@ const FishMarket = () => {
                         <ul>
                             {cart.map(item => (
                                 <li key={item.id}>
-                                    {item.fishType} x {item.quantity} - ฿{(item.price * item.quantity).toFixed(2)}
+                                    {item.fishType} ({item.weightInKg}kg) x {item.quantity} - ฿{(item.price * item.quantity).toFixed(2)}
                                     <button onClick={() => removeFromCart(item.id)}>✕</button>
                                 </li>
                             ))}
@@ -216,18 +208,21 @@ const FishMarket = () => {
                 </div>
             </div>
 
-            {/* 📸 Modal */}
+            {/*  Modal */}
             {selectedFish && (
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <button className="modal-close-btn" onClick={closeModal}>✕</button>
-                        <h2>{selectedFish.fishType}</h2>
-                        {selectedFish.photoUrl && (
-                            <img src={selectedFish.photoUrl} alt={selectedFish.fishType} />
-                        )}
-                        <p><strong>Price:</strong> ฿{selectedFish.price?.toFixed(2)}/Kg</p>
-                        <p><strong>Location:</strong> {selectedFish.location}</p>
-                        <p><strong>Date Caught:</strong> {formatDate(selectedFish.catchDate)}</p>
+                        <h2>{selectedFish.fishType}</h2>    
+                        {/* --- Modal --- */}
+                        <div className="modal-details">
+                            <p><strong>Price:</strong> ฿{selectedFish.price?.toFixed(2)}</p>
+                            <p><strong>Status:</strong> {selectedFish.status}</p>
+                            <p><strong>Location:</strong> {selectedFish.location}</p>
+                            <p><strong>Date Caught:</strong> {formatDate(selectedFish.catchDate)}</p>
+                        </div>
+                        {/* ------------------------ */}
+
                         <button className="add-to-cart-btn" onClick={() => addToCart(selectedFish)}>
                             Add to Cart
                         </button>

@@ -31,24 +31,77 @@ INSERT INTO users (id, username, email, password, first_name, last_name, role, p
 INSERT INTO fish_listings (
     fish_type, weight_in_kg, price, photo_url, catch_date, status, fisherman_id, created_at, location
 ) VALUES
-('Anchovy', 1.2, 8.50, 'https://example.com/images/anchovy.jpg', '2024-05-10 08:00:00', 'AVAILABLE', 'FISHER0001', '2024-05-10 10:00:00', 'Phuket'),
-('Bluefin Tuna', 30.0, 45.00, 'https://example.com/images/bluefin_tuna.jpg', '2024-05-09 06:00:00', 'AVAILABLE', 'FISHER0002', '2024-05-09 08:00:00', 'Songkhla'),
-('Carp', 3.5, 10.00, 'https://example.com/images/carp.jpg', '2024-05-11 09:30:00', 'AVAILABLE', 'FISHER0003', '2024-05-11 11:00:00', 'Chiang Mai'),
-('Catfish', 4.0, 12.00, 'https://example.com/images/catfish.jpg', '2024-05-12 07:00:00', 'SOLD', 'FISHER0001', '2024-05-12 09:00:00', 'Nakhon Sawan'),
-('Cod', 8.0, 14.00, 'https://example.com/images/cod.jpg', '2024-05-08 10:30:00', 'AVAILABLE', 'FISHER0002', '2024-05-08 12:00:00', 'Trang'),
-('Eel', 2.5, 16.50, 'https://example.com/images/eel.jpg', '2024-05-10 14:00:00', 'AVAILABLE', 'FISHER0003', '2024-05-10 16:00:00', 'Phang Nga'),
-('Herring', 1.8, 9.00, 'https://example.com/images/herring.jpg', '2024-05-09 08:30:00', 'AVAILABLE', 'FISHER0001', '2024-05-09 10:00:00', 'Krabi'),
-('Kingfish', 10.5, 22.00, 'https://example.com/images/kingfish.jpg', '2024-05-11 07:45:00', 'AVAILABLE', 'FISHER0002', '2024-05-11 09:45:00', 'Phuket'),
-('Mackerel', 3.0, 13.50, 'https://example.com/images/mackerel.jpg', '2024-05-12 06:15:00', 'SOLD', 'FISHER0003', '2024-05-12 08:00:00', 'Pattani'),
-('Pollock', 6.0, 15.00, 'https://example.com/images/pollock.jpg', '2024-05-09 09:00:00', 'AVAILABLE', 'FISHER0001', '2024-05-09 11:00:00', 'Songkhla'),
-('Pomfret', 4.2, 18.75, 'https://example.com/images/pomfret.jpg', '2024-05-10 05:30:00', 'AVAILABLE', 'FISHER0002', '2024-05-10 07:00:00', 'Phuket'),
-('Salmon', 5.5, 25.00, 'https://example.com/images/salmon.jpg', '2024-05-11 10:00:00', 'AVAILABLE', 'FISHER0003', '2024-05-11 12:00:00', 'Bangkok'),
-('Sea Bass', 7.2, 20.00, 'https://example.com/images/seabass.jpg', '2024-05-08 06:00:00', 'SOLD', 'FISHER0001', '2024-05-08 08:00:00', 'Krabi'),
-('Snapper', 5.8, 17.50, 'https://example.com/images/snapper.jpg', '2024-05-10 09:00:00', 'AVAILABLE', 'FISHER0002', '2024-05-10 11:00:00', 'Trang'),
-('Swordfish', 25.0, 28.00, 'https://example.com/images/swordfish.jpg', '2024-05-12 06:00:00', 'UNAVAILABLE', 'FISHER0003', '2024-05-12 09:00:00', 'Phuket'),
-('Trout', 4.0, 19.00, 'https://example.com/images/trout.jpg', '2024-05-09 07:30:00', 'AVAILABLE', 'FISHER0001', '2024-05-09 09:00:00', 'Chiang Mai'),
-('Tuna', 12.0, 21.00, 'https://example.com/images/tuna.jpg', '2024-05-10 08:00:00', 'AVAILABLE', 'FISHER0002', '2024-05-10 10:00:00', 'Phuket'),
-('Yellowtail', 9.0, 23.00, 'https://example.com/images/yellowtail.jpg', '2024-05-11 08:15:00', 'AVAILABLE', 'FISHER0003', '2024-05-11 10:15:00', 'Songkhla');
+-- Anchovy (Commonly found in the Mediterranean and Gulf of Thailand)
+('Anchovy', 1.0, 180.00, 'https://example.com/images/anchovy.jpg', '2025-05-10 08:00:00', 'SENT_FRESH', 'FISHER0001', '2025-05-10 10:00:00', 'Gulf of Thailand'),
+('Anchovy', 1.0, 235.00, 'https://example.com/images/anchovy_2.jpg', '2025-05-13 07:00:00', 'SENT_FRESH', 'FISHER0002', '2025-05-13 09:00:00', 'Mediterranean Sea'),
+
+-- Bluefin Tuna (Oceanic, highly migratory)
+('Bluefin Tuna', 1.0, 5400.00, 'https://example.com/images/bluefin_tuna.jpg', '2025-05-09 06:00:00', 'SENT_FRESH', 'FISHER0002', '2025-05-09 08:00:00', 'Atlantic Ocean'),
+('Bluefin Tuna', 1.0, 7920.00, 'https://example.com/images/bluefin_tuna_big.jpg', '2025-05-14 05:30:00', 'SENT_FRESH', 'FISHER0001', '2025-05-14 08:00:00', 'Pacific Ocean'),
+
+-- Carp (Freshwater, but using an associated water body name)
+('Carp', 1.0, 290.00, 'https://example.com/images/carp.jpg', '2025-05-11 09:30:00', 'SENT_FRESH', 'FISHER0003', '2025-05-11 11:00:00', 'Black Sea (Azov area)'),
+('Carp', 1.0, 380.00, 'https://example.com/images/carp_2.jpg', '2025-05-13 10:00:00', 'SENT_FROZEN', 'FISHER0001', '2025-05-13 12:00:00', 'Caspian Sea Basin'),
+
+-- Catfish (Freshwater, but using an associated water body name)
+('Catfish', 1.0, 270.00, 'https://example.com/images/catfish.jpg', '2025-05-12 07:00:00', 'SENT_FROZEN', 'FISHER0001', '2025-05-12 09:00:00', 'Gulf of Mexico'),
+('Catfish', 1.0, 325.00, 'https://example.com/images/catfish_small.jpg', '2025-05-14 06:00:00', 'SENT_FRESH', 'FISHER0003', '2025-05-14 08:00:00', 'South China Sea'),
+
+-- Cod (Major fishing grounds in the North Atlantic and Pacific)
+('Cod', 1.0, 1080.00, 'https://example.com/images/cod.jpg', '2025-05-08 10:30:00', 'SENT_FRESH', 'FISHER0002', '2025-05-08 12:00:00', 'Barents Sea'),
+('Cod', 1.0, 900.00, 'https://example.com/images/cod_2.jpg', '2025-05-12 11:00:00', 'SENT_FRESH', 'FISHER0002', '2025-05-12 13:00:00', 'North Sea'),
+
+-- Eel (Found in various oceans and migrate to rivers)
+('Eel', 1.0, 1620.00, 'https://example.com/images/eel.jpg', '2025-05-10 14:00:00', 'SENT_FRESH', 'FISHER0003', '2025-05-10 16:00:00', 'Sargasso Sea'),
+('Eel', 1.0, 1980.00, 'https://example.com/images/eel_2.jpg', '2025-05-13 15:00:00', 'SENT_FRESH', 'FISHER0001', '2025-05-13 17:00:00', 'Bay of Bengal'),
+
+-- Herring (Large fisheries in the North Atlantic and Pacific)
+('Herring', 1.0, 430.00, 'https://example.com/images/herring.jpg', '2025-05-09 08:30:00', 'SENT_FRESH', 'FISHER0001', '2025-05-09 10:00:00', 'Baltic Sea'),
+('Herring', 1.0, 520.00, 'https://example.com/images/herring_2.jpg', '2025-05-12 09:00:00', 'SENT_FRESH', 'FISHER0002', '2025-05-12 10:30:00', 'Norwegian Sea'),
+
+-- Kingfish (E.g., King Mackerel, found in warmer waters)
+('Kingfish', 1.0, 1440.00, 'https://example.com/images/kingfish.jpg', '2025-05-11 07:45:00', 'SENT_FRESH', 'FISHER0002', '2025-05-11 09:45:00', 'Indian Ocean'),
+('Kingfish', 1.0, 1370.00, 'https://example.com/images/kingfish_2.jpg', '2025-05-14 08:00:00', 'SENT_FROZEN', 'FISHER0003', '2025-05-14 10:00:00', 'Arabian Sea'),
+
+-- Mackerel (Coastal pelagic species)
+('Mackerel', 1.0, 360.00, 'https://example.com/images/mackerel.jpg', '2025-05-12 06:15:00', 'SENT_FROZEN', 'FISHER0003', '2025-05-12 08:00:00', 'Celtic Sea'),
+('Mackerel', 1.0, 415.00, 'https://example.com/images/mackerel_2.jpg', '2025-05-14 07:00:00', 'SENT_FRESH', 'FISHER0001', '2025-05-14 09:00:00', 'English Channel'),
+
+-- Pollock (Cold water fish, major industry in the North Pacific)
+('Pollock', 1.0, 540.00, 'https://example.com/images/pollock.jpg', '2025-05-09 09:00:00', 'SENT_FRESH', 'FISHER0001', '2025-05-09 11:00:00', 'Bering Sea'),
+('Pollock', 1.0, 485.00, 'https://example.com/images/pollock_2.jpg', '2025-05-13 08:30:00', 'SENT_FRESH', 'FISHER0002', '2025-05-13 10:30:00', 'Sea of Okhotsk'),
+
+-- Pomfret (Tropical and temperate marine waters)
+('Pomfret', 1.0, 1260.00, 'https://example.com/images/pomfret.jpg', '2025-05-10 05:30:00', 'SENT_FRESH', 'FISHER0002', '2025-05-10 07:00:00', 'Andaman Sea'),
+('Pomfret', 1.0, 1510.00, 'https://example.com/images/pomfret_2.jpg', '2025-05-14 06:00:00', 'SENT_FRESH', 'FISHER0003', '2025-05-14 08:00:00', 'Persian Gulf'),
+
+-- Salmon (Anadromous, but commonly associated with oceans/bays)
+('Salmon', 1.0, 1000.00, 'https://example.com/images/salmon.jpg', '2025-05-11 10:00:00', 'SENT_FRESH', 'FISHER0003', '2025-05-11 12:00:00', 'North Atlantic Ocean'),
+('Salmon', 1.0, 1260.00, 'https://example.com/images/salmon_2.jpg', '2025-05-13 09:00:00', 'SENT_FRESH', 'FISHER0001', '2025-05-13 11:00:00', 'Gulf of Alaska'),
+
+-- Sea Bass (Coastal waters and estuaries)
+('Sea Bass', 1.0, 790.00, 'https://example.com/images/seabass.jpg', '2025-05-08 06:00:00', 'SENT_FROZEN', 'FISHER0001', '2025-05-08 08:00:00', 'Adriatic Sea'),
+('Sea Bass', 1.0, 1000.00, 'https://example.com/images/seabass_2.jpg', '2025-05-12 07:30:00', 'SENT_FRESH', 'FISHER0002', '2025-05-12 09:30:00', 'Ionian Sea'),
+
+-- Snapper (Found in tropical and subtropical regions)
+('Snapper', 1.0, 1370.00, 'https://example.com/images/snapper.jpg', '2025-05-10 09:00:00', 'SENT_FRESH', 'FISHER0002', '2025-05-10 11:00:00', 'Caribbean Sea'),
+('Snapper', 1.0, 1620.00, 'https://example.com/images/snapper_2.jpg', '2025-05-14 08:30:00', 'SENT_FRESH', 'FISHER0003', '2025-05-14 10:30:00', 'Coral Sea'),
+
+-- Swordfish (Highly migratory, found in temperate and tropical oceans)
+('Swordfish', 1.0, 1730.00, 'https://example.com/images/swordfish.jpg', '2025-05-12 06:00:00', 'SENT_FRESH', 'FISHER0003', '2025-05-12 09:00:00', 'Indian Ocean'),
+('Swordfish', 1.0, 1980.00, 'https://example.com/images/swordfish_big.jpg', '2025-05-14 05:00:00', 'SENT_FRESH', 'FISHER0002', '2025-05-14 08:00:00', 'South Pacific Ocean'),
+
+-- Trout (Freshwater/Anadromous, using associated sea/bay names)
+('Trout', 1.0, 650.00, 'https://example.com/images/trout.jpg', '2025-05-09 07:30:00', 'SENT_FRESH', 'FISHER0001', '2025-05-09 09:00:00', 'Great Lakes (Connecting to the Atlantic)'),
+('Trout', 1.0, 900.00, 'https://example.com/images/trout_2.jpg', '2025-05-12 08:00:00', 'SENT_FRESH', 'FISHER0003', '2025-05-12 09:30:00', 'Chesapeake Bay'),
+
+-- Tuna (Commonly caught in all major oceans)
+('Tuna', 1.0, 720.00, 'https://example.com/images/tuna.jpg', '2025-05-10 08:00:00', 'SENT_FRESH', 'FISHER0002', '2025-05-10 10:00:00', 'Indian Ocean'),
+('Tuna', 1.0, 940.00, 'https://example.com/images/tuna_large.jpg', '2025-05-14 06:30:00', 'SENT_FRESH', 'FISHER0001', '2025-05-14 09:00:00', 'Bay of Plenty'),
+
+-- Yellowtail (e.g., Japanese Amberjack, found in Pacific waters)
+('Yellowtail', 1.0, 2340.00, 'https://example.com/images/yellowtail.jpg', '2025-05-11 08:15:00', 'SENT_FRESH', 'FISHER0003', '2025-05-11 10:15:00', 'Sea of Japan'),
+('Yellowtail', 1.0, 2700.00, 'https://example.com/images/yellowtail_2.jpg', '2025-05-13 07:45:00', 'SENT_FRESH', 'FISHER0002', '2025-05-13 09:45:00', 'South China Sea');
 
 
 -- =================================================================
