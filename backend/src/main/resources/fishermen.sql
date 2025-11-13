@@ -2,19 +2,12 @@
 -- It assumes that the tables have been created by Hibernate (ddl-auto=update).
 -- Note: Timestamps are hardcoded for reproducibility. In a real scenario, these would be dynamic.
 
--- Clear existing data to prevent conflicts on re-run (optional, use with caution)
--- DELETE FROM reviews;
--- DELETE FROM payments;
--- DELETE FROM order_items;
--- DELETE FROM orders;
--- DELETE FROM fish_listings;
--- DELETE FROM users;
-
+-- Clear existing data and reset sequences
+TRUNCATE TABLE reviews, payments, order_items, orders, fish_listings, users RESTART IDENTITY CASCADE;
 
 -- =================================================================
 -- USERS
 -- =================================================================
--- Passwords are in plain text as requested.
 INSERT INTO users (id, username, email, password, first_name, last_name, role, profile_info, location, created_at) VALUES
 ('FISHER0001', 'captain_jack', 'jack.sparrow@sea.com', 'blackpearl', 'Jack', 'Sparrow', 'FISHERMAN', 'Experienced captain specializing in deep-sea tuna.', 'Port Royal', '2024-05-01 10:00:00'),
 ('FISHER0002', 'salty_sue', 'sue.storm@ocean.com', 'saltydog', 'Susan', 'Storm', 'FISHERMAN', 'Local expert in coastal fish like snapper and grouper.', 'Coastal City', '2024-05-01 11:30:00'),
@@ -22,7 +15,6 @@ INSERT INTO users (id, username, email, password, first_name, last_name, role, p
 ('BUY0001', 'alice_b', 'alice.b@email.com', 'password123', 'Alice', 'Brown', 'BUYER', 'Home cook looking for fresh fish for the family.', 'Maple Creek', '2024-05-03 14:00:00'),
 ('BUY0002', 'bob_c', 'bob.c@email.com', 'password123', 'Bob', 'Carter', 'BUYER', 'Restaurant owner sourcing local seafood.', 'Metro City', '2024-05-03 15:20:00'),
 ('BUY0003', 'charlie_d', 'charlie.d@email.com', 'password123', 'Charlie', 'Davis', 'BUYER', 'Loves grilling fish on the weekend.', 'Suburbia', '2024-05-04 18:00:00');
-
 
 -- =================================================================
 -- FISH LISTINGS
