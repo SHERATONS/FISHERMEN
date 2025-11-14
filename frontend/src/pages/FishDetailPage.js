@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import './FishMarket.css';
+// import './FishMarket.css';
 
 const MOCK_FISH_DATA = [
     { id: 1, name: 'Salmon Fillet', price: 12.99, species: 'Salmon', freshness: 'Caught Today', location: 'Seattle', quantity: 15, description: 'Freshly caught wild salmon, rich in omega-3, perfect for grilling or sashimi.', image: '/images/salmon.jpg' },
