@@ -28,6 +28,8 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    
+
     @Column(name = "price_at_purchase", nullable = false)
     private BigDecimal priceAtPurchase;
     
