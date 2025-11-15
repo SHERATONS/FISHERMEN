@@ -1,6 +1,15 @@
 package com.example.backend.controller;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -13,7 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.dto.CreateFishListingDto;
 import com.example.backend.dto.FishListingResponseDto;
@@ -30,13 +41,21 @@ import com.example.backend.repository.UserRepo;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/fishListings")
 public class FishListingController {
-    
+
     private final UserRepo userRepo;
     private final FishListingRepo fishListingRepo;
+    private final String UPLOAD_DIR = "uploads/fish-images/";
 
     public FishListingController(FishListingRepo fishListingRepo, UserRepo userRepo) {
         this.fishListingRepo = fishListingRepo;
         this.userRepo = userRepo;
+
+        // สร้างโฟลเดอร์ uploads ถ้ายังไม่มี
+        try {
+            Files.createDirectories(Paths.get(UPLOAD_DIR));
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create upload directory!", e);
+        }
     }
 
     private FishListingResponseDto convertToDto(FishListing listing) {
@@ -63,7 +82,8 @@ public class FishListingController {
     @GetMapping("/list")
     public ResponseEntity<List<FishListingResponseDto>> getAllFishListings() {
         List<FishListing> fishListings = fishListingRepo.findAll();
-        List<FishListingResponseDto> dtoList = fishListings.stream().map(this::convertToDto).collect(Collectors.toList());
+        List<FishListingResponseDto> dtoList = fishListings.stream().map(this::convertToDto)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(dtoList);
     }
 
@@ -75,41 +95,92 @@ public class FishListingController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createFishListing(@RequestBody CreateFishListingDto listingDto) {
-        User fisherman = userRepo.findById(listingDto.getFishermanId()).orElse(null);
-        if (fisherman == null) {
-            return new ResponseEntity<>("Fisherman not found", HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> createFishListing(
+            @RequestParam("fishType") String fishType,
+            @RequestParam("weightInKg") Double weightInKg,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("catchDate") String catchDate,
+            @RequestParam("fishermanId") String fishermanId,
+            @RequestParam("location") String location,
+            @RequestParam("status") String statusStr,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+
+        try {
+            // ตรวจสอบ Fisherman
+            User fisherman = userRepo.findById(fishermanId).orElse(null);
+            if (fisherman == null) {
+                return new ResponseEntity<>("Fisherman not found", HttpStatus.NOT_FOUND);
+            }
+
+            if (fisherman.getRole() != UserRole.FISHERMAN) {
+                return new ResponseEntity<>("User is not a Fisherman", HttpStatus.FORBIDDEN);
+            }
+
+            // จัดการไฟล์รูปภาพ
+            String photoUrl = null;
+            if (image != null && !image.isEmpty()) {
+                String originalFilename = image.getOriginalFilename();
+                String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
+
+                Path filePath = Paths.get(UPLOAD_DIR + uniqueFilename);
+                Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // สร้าง URL สำหรับเข้าถึงรูปภาพ
+                photoUrl = "http://localhost:8080/uploads/fish-images/" + uniqueFilename;
+            }
+
+            // แปลง String เป็น ListingStatus enum
+            ListingStatus status;
+            try {
+                status = ListingStatus.valueOf(statusStr);
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>("Invalid status value: " + statusStr, HttpStatus.BAD_REQUEST);
+            }
+
+            // แปลง catchDate จาก ISO String เป็น LocalDateTime
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+            LocalDateTime parsedCatchDate = LocalDateTime.parse(catchDate, formatter);
+
+            // สร้าง FishListing
+            FishListing fishListing = new FishListing();
+            fishListing.setFishType(fishType);
+            fishListing.setWeightInKg(weightInKg);
+            fishListing.setPrice(price);
+            fishListing.setPhotoUrl(photoUrl);
+            fishListing.setCatchDate(parsedCatchDate);
+            fishListing.setLocation(location);
+            fishListing.setFisherman(fisherman);
+            fishListing.setStatus(status);
+
+            FishListing createdFishListing = fishListingRepo.save(fishListing);
+
+            return new ResponseEntity<>(convertToDto(createdFishListing), HttpStatus.CREATED);
+
+        } catch (IOException e) {
+            return new ResponseEntity<>("Failed to upload image: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error creating fish listing: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        
-        if (fisherman.getRole() != UserRole.FISHERMAN) {
-            return new ResponseEntity<>("User is not a Fisherman", HttpStatus.FORBIDDEN);
-        }
-
-        FishListing fishListing = new FishListing();
-        fishListing.setFishType(listingDto.getFishType());
-        fishListing.setWeightInKg(listingDto.getWeightInKg());
-        fishListing.setPrice(listingDto.getPrice());
-        fishListing.setPhotoUrl(listingDto.getPhotoUrl());
-        fishListing.setCatchDate(listingDto.getCatchDate());
-        fishListing.setLocation(listingDto.getLocation());
-        fishListing.setFisherman(fisherman);
-        fishListing.setStatus(ListingStatus.AVAILABLE); // Default status for new listings
-
-        FishListing createdFishListing = fishListingRepo.save(fishListing);
-
-        return new ResponseEntity<>(convertToDto(createdFishListing), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FishListingResponseDto> updateFishListing(@PathVariable Long id, @RequestBody UpdateFishListingDto listingDto) {
+    public ResponseEntity<FishListingResponseDto> updateFishListing(@PathVariable Long id,
+            @RequestBody UpdateFishListingDto listingDto) {
         return fishListingRepo.findById(id).map(existingFishListing -> {
-            if (listingDto.getFishType() != null) existingFishListing.setFishType(listingDto.getFishType());
-            if (listingDto.getWeightInKg() != null) existingFishListing.setWeightInKg(listingDto.getWeightInKg());
-            if (listingDto.getPrice() != null) existingFishListing.setPrice(listingDto.getPrice());
-            if (listingDto.getPhotoUrl() != null) existingFishListing.setPhotoUrl(listingDto.getPhotoUrl());
-            if (listingDto.getCatchDate() != null) existingFishListing.setCatchDate(listingDto.getCatchDate());
-            if (listingDto.getStatus() != null) existingFishListing.setStatus(listingDto.getStatus());
-            
+            if (listingDto.getFishType() != null)
+                existingFishListing.setFishType(listingDto.getFishType());
+            if (listingDto.getWeightInKg() != null)
+                existingFishListing.setWeightInKg(listingDto.getWeightInKg());
+            if (listingDto.getPrice() != null)
+                existingFishListing.setPrice(listingDto.getPrice());
+            if (listingDto.getPhotoUrl() != null)
+                existingFishListing.setPhotoUrl(listingDto.getPhotoUrl());
+            if (listingDto.getCatchDate() != null)
+                existingFishListing.setCatchDate(listingDto.getCatchDate());
+            if (listingDto.getStatus() != null)
+                existingFishListing.setStatus(listingDto.getStatus());
+
             FishListing updated = fishListingRepo.save(existingFishListing);
             return ResponseEntity.ok(convertToDto(updated));
         }).orElse(ResponseEntity.notFound().build());
