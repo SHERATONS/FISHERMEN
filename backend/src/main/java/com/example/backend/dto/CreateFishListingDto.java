@@ -3,6 +3,8 @@ package com.example.backend.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.example.backend.enums.ListingStatus;
+
 import lombok.Data;
 
 @Data
@@ -13,5 +15,6 @@ public class CreateFishListingDto {
     private String photoUrl;
     private LocalDateTime catchDate;
     private String fishermanId;
+    private ListingStatus status;
     private String location;
 }

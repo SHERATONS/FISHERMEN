@@ -8,11 +8,12 @@ export default function UploadForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [fisherName, setFisherName] = useState("");
-  const [fishType, setFishType] = useState([]);
   const [weight, setWeight] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [location, setLocation] = useState("");
+  const [status, setStatus] = useState("SENT_FRESH"); // Default status
   const [message, setMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [popupVisible, setPopupVisible] = useState(false);
@@ -31,28 +32,6 @@ export default function UploadForm() {
   useEffect(() => {
     const fetchMarketPrices = async () => {
       try {
-        // mock data
-        // const data = [
-        //     { fishType: "Anchovy", fairPrice: 80 },
-        //     { fishType: "Bluefin Tuna", fairPrice: 1000 },
-        //     { fishType: "Carp", fairPrice: 120 },
-        //     { fishType: "Catfish", fairPrice: 160 },
-        //     { fishType: "Cod", fairPrice: 240 },
-        //     { fishType: "Eel", fairPrice: 400 },
-        //     { fishType: "Herring", fairPrice: 100 },
-        //     { fishType: "Kingfish", fairPrice: 440 },
-        //     { fishType: "Mackerel", fairPrice: 110 },
-        //     { fishType: "Pollock", fairPrice: 150 },
-        //     { fishType: "Pomfret", fairPrice: 320 },
-        //     { fishType: "Salmon", fairPrice: 360 },
-        //     { fishType: "Sea Bass", fairPrice: 420 },
-        //     { fishType: "Snapper", fairPrice: 180 },
-        //     { fishType: "Swordfish", fairPrice: 500 },
-        //     { fishType: "Trout", fairPrice: 240 },
-        //     { fishType: "Tuna", fairPrice: 380 },
-        //     { fishType: "Yellowtail", fairPrice: 400 }
-        // ];
-        // setMarketPrices(data);
         const res = await axios.get("http://localhost:8080/api/fishListings/list");
         const fetchedData = res.data;
         const priceMap = {};
@@ -64,7 +43,6 @@ export default function UploadForm() {
           priceMap[item.fishType].count += 1;
         });
 
-        // Convert the grouped data into fair price list
         const averagedPrices = Object.keys(priceMap).map((fishType) => ({
           fishType,
           fairPrice: parseFloat(
@@ -73,13 +51,18 @@ export default function UploadForm() {
         }));
 
         setMarketPrices(averagedPrices);
-        // console.log("Averaged fair prices:", averagedPrices);
       } catch (err) {
         console.error("Error fetching market prices:", err);
       }
     };
     fetchMarketPrices();
   }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      setFisherName(user.id);
+    }
+  }, [user]);
 
   const inputStyle = {
     width: "100%",
@@ -91,64 +74,92 @@ export default function UploadForm() {
     fontSize: "16px",
   };
 
-  const handleFishTypeChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions, (opt) => opt.value);
-    setFishType(selected);
+  const labelStyle = {
+    display: "block",
+    fontWeight: "bold",
+    color: "#023047",
+    fontSize: "15px",
+    marginBottom: "5px",
+    marginTop: "10px",
+    textAlign: "left"
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validation
     if (!fisherName.trim()) return alert("Please enter fisher's id");
     if (!selectedFish) return alert("Please select at least one species");
     if (!location.trim()) return alert("Please enter location");
     if (!weight || weight <= 0) return alert("Weight must be greater than 0!");
     if (!price || price <= 0) return alert("Price must be greater than 0!");
-    // if (!image) return alert("Please select an image"); //ม้อคไปก่อนค่อยว่ากัน
+    if (!image) return alert("Please select an image");
 
     try {
-      const newFishListing = {
+      const formData = new FormData();
+      formData.append("fishType", selectedFish);
+      formData.append("weightInKg", parseFloat(weight));
+      formData.append("price", parseFloat(price));
+      formData.append("catchDate", new Date(catchDate).toISOString());
+      formData.append("fishermanId", fisherName);
+      formData.append("location", location);
+      formData.append("status", status);
+      formData.append("image", image);
+
+      console.log("Sending data:", {
         fishType: selectedFish,
-        weightInKg: parseFloat(weight),
-        price: parseFloat(price),
-        photoUrl: "https://example.com/images/" + selectedFish.toLowerCase() + ".jpg", // mock image URL
-        catchDate: new Date(catchDate).toISOString(),
-        fishermanId: fisherName, // use the fisher ID (FISHER0002)
-        location: location,
-      };
+        weightInKg: weight,
+        price: price,
+        status: status,
+        location: location
+      });
+
       const res = await axios.post(
         "http://localhost:8080/api/fishListings/create",
-        newFishListing
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       console.log("Upload successful:", res.data);
       setMessage("Upload successful!");
-      // แสดง popup
+      
       setShowPopup(true);
       setTimeout(() => setPopupVisible(true), 100);
       setTimeout(() => setPopupVisible(false), 2300);
       setTimeout(() => setShowPopup(false), 3000);
 
-      // reset form
+      // Reset form
       setFisherName(user?.id || "");
       setSelectedFish("");
       setWeight("");
       setPrice("");
       setLocation("");
+      setStatus("SENT_FRESH");
       setImage(null);
+      setImagePreview(null);
 
-      // redirect ไป /market หลัง popup
       setTimeout(() => navigate("/market"), 3000);
     } catch (err) {
       console.error("Error uploading:", err);
-      alert("Error uploading fish.");
+      alert("Error uploading fish: " + (err.response?.data || err.message));
     }
   };
-
-  useEffect(() => {
-    if (user?.id) {
-      setFisherName(user.id);
-    }
-  }, [user]);
 
   const calculateFairPrice = () => {
     if (!selectedFish || !calcWeight) {
@@ -182,7 +193,7 @@ export default function UploadForm() {
         fontFamily: "Poppins, sans-serif",
       }}
     >
-      {/* === Left: Upload Form === */}
+      {/* LEFT SIDE - Upload Form */}
       <div
         style={{
           flex: 1,
@@ -190,7 +201,6 @@ export default function UploadForm() {
           padding: "25px",
           borderRadius: "20px",
           boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
-          transition: "all 0.3s ease",
         }}
       >
         <h2
@@ -206,36 +216,28 @@ export default function UploadForm() {
         </h2>
 
         <form onSubmit={handleSubmit}>
+          {/* Fisher ID */}
+          <label style={labelStyle}>Fisher ID:</label>
           <input
             type="text"
-            placeholder="Fisher ID"
             value={user?.id || ""}
             onChange={(e) => setFisherName(e.target.value)}
-            style={inputStyle}
+            style={{...inputStyle, backgroundColor: "#f5f5f5"}}
+            disabled
           />
 
+          {/* Location */}
+          <label style={labelStyle}>Location:</label>
           <input
             type="text"
-            placeholder="Location"
+            placeholder="e.g., Phuket, Krabi"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             style={inputStyle}
           />
 
-          <label style={{ fontWeight: "bold", color: "#023047", fontSize: "15px" }}>
-          </label>
-          {/* <select
-              value={selectedFish}
-              onChange={(e) => setSelectedFish(e.target.value)}
-              style={inputStyle}
-            >
-              <option value="">-- Select Species --</option>
-              {marketPrices.map((fish, index) => (
-                <option key={index} value={fish.fishType}>
-                  {fish.fishType}
-                </option>
-              ))}
-            </select> */}
+          {/* Fish Species */}
+          <label style={labelStyle}>Fish Species:</label>
           <input
             list="fishOptions"
             type="text"
@@ -259,29 +261,49 @@ export default function UploadForm() {
             ))}
           </datalist>
 
+          {/* Weight */}
+          <label style={labelStyle}>Weight (kg):</label>
           <input
             type="number"
-            placeholder="Weight (kg)"
+            placeholder="Weight in kilograms"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
             min="0"
+            step="0.01"
             style={inputStyle}
           />
+
+          {/* Price */}
+          <label style={labelStyle}>Price (THB):</label>
           <input
             type="number"
-            placeholder="Price (THB)"
+            placeholder="Price per kg"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             min="0"
+            step="0.01"
             style={inputStyle}
           />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
-            style={inputStyle}
-          />
-          <label>Catch Date</label>
+
+          {/* STATUS DROPDOWN */}
+          <label style={labelStyle}>
+            Delivery Status: <span style={{ color: "red" }}>*</span>
+          </label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            style={{
+              ...inputStyle,
+              cursor: "pointer",
+              backgroundColor: "#fff",
+            }}
+          >
+            <option value="SENT_FRESH">Sent Fresh</option>
+            <option value="SENT_FROZEN">Sent Frozen</option>
+          </select>
+
+          {/* Catch Date */}
+          <label style={labelStyle}>Catch Date:</label>
           <input
             type="date"
             value={catchDate}
@@ -290,22 +312,58 @@ export default function UploadForm() {
             style={inputStyle}
           />
 
+          {/* Fish Photo */}
+          <label style={labelStyle}>
+            Fish Photo: <span style={{ color: "red" }}>*</span>
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={inputStyle}
+            required
+          />
+
+          {/* Image Preview */}
+          {imagePreview && (
+            <div style={{ marginBottom: "15px", textAlign: "center" }}>
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "250px",
+                  borderRadius: "10px",
+                  border: "3px solid #0077b6",
+                  objectFit: "cover"
+                }}
+              />
+              <p style={{ fontSize: "12px", color: "#666", marginTop: "8px" }}>
+                📸 Preview of selected image
+              </p>
+            </div>
+          )}
+
+          {/* Submit Button */}
           <button
             type="submit"
             style={{
               width: "100%",
-              padding: "12px",
+              padding: "14px",
               background: "#0077b6",
               color: "#fff",
               borderRadius: "10px",
               fontWeight: "bold",
               fontSize: "16px",
               cursor: "pointer",
-              marginTop: "10px",
-              transition: "0.3s",
+              marginTop: "15px",
+              border: "none",
+              transition: "background 0.3s ease",
             }}
+            onMouseOver={(e) => (e.target.style.background = "#005f8a")}
+            onMouseOut={(e) => (e.target.style.background = "#0077b6")}
           >
-            Upload
+             Upload Daily Catch
           </button>
 
           {message && (
@@ -323,7 +381,7 @@ export default function UploadForm() {
         </form>
       </div>
 
-      {/* === Right: Market Prices + Calculator === */}
+      {/* RIGHT SIDE - Market Prices & Calculator */}
       <div
         style={{
           flex: 0.6,
@@ -332,7 +390,7 @@ export default function UploadForm() {
           gap: "20px",
         }}
       >
-        {/* Market Table */}
+        {/* Market Prices Table */}
         <div
           style={{
             background: "#fff",
@@ -341,10 +399,12 @@ export default function UploadForm() {
             boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
           }}
         >
-          <h3 style={{ textAlign: "center", color: "#023047" }}>Fair Market Prices</h3>
+          <h3 style={{ textAlign: "center", color: "#023047", marginBottom: "15px" }}>
+             Fair Market Prices
+          </h3>
           <div
             style={{
-              maxHeight: "220px", // roughly fits ~5 rows
+              maxHeight: "250px",
               overflowY: "auto",
               borderRadius: "8px",
               border: "1px solid #ddd",
@@ -354,21 +414,22 @@ export default function UploadForm() {
               style={{
                 width: "100%",
                 borderCollapse: "collapse",
-                marginTop: "10px",
                 fontSize: "14px",
               }}
             >
-              <thead>
-                <tr style={{ background: "#f1f1f1" }}>
-                  <th style={{ padding: "8px", border: "1px solid #ddd" }}>Species</th>
-                  <th style={{ padding: "8px", border: "1px solid #ddd" }}>Fair Price (THB/kg)</th>
+              <thead style={{position: "sticky", top: 0, background: "#f8f9fa"}}>
+                <tr style={{ background: "#e9ecef" }}>
+                  <th style={{ padding: "10px", border: "1px solid #ddd", textAlign: "left" }}>Species</th>
+                  <th style={{ padding: "10px", border: "1px solid #ddd", textAlign: "right" }}>Price (THB/kg)</th>
                 </tr>
               </thead>
               <tbody>
                 {marketPrices.map((fish, index) => (
-                  <tr key={index}>
+                  <tr key={index} style={{backgroundColor: index % 2 === 0 ? "#fff" : "#f8f9fa"}}>
                     <td style={{ padding: "8px", border: "1px solid #ddd" }}>{fish.fishType}</td>
-                    <td style={{ padding: "8px", border: "1px solid #ddd" }}>{fish.fairPrice}</td>
+                    <td style={{ padding: "8px", border: "1px solid #ddd", textAlign: "right", fontWeight: "bold" }}>
+                      ฿{fish.fairPrice}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -385,11 +446,14 @@ export default function UploadForm() {
             boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
           }}
         >
-          <h3 style={{ color: "#023047", textAlign: "center" }}>Fair Price Calculator</h3>
-          <p style={{ fontSize: "14px", color: "#555", textAlign: "center" }}>
-            Select fish type and enter weight to estimate fair total price.
+          <h3 style={{ color: "#023047", textAlign: "center", marginBottom: "10px" }}>
+            Fair Price Calculator
+          </h3>
+          <p style={{ fontSize: "13px", color: "#666", textAlign: "center", marginBottom: "15px" }}>
+            Calculate estimated fair total price
           </p>
 
+          <label style={{...labelStyle, marginTop: "0"}}>Select Fish:</label>
           <select
             value={selectedFish}
             onChange={(e) => setSelectedFish(e.target.value)}
@@ -403,11 +467,14 @@ export default function UploadForm() {
             ))}
           </select>
 
+          <label style={labelStyle}>Enter Weight (kg):</label>
           <input
             type="number"
-            placeholder="Weight (kg)"
+            placeholder="Weight in kg"
             value={calcWeight}
             onChange={(e) => setCalcWeight(e.target.value)}
+            min="0"
+            step="0.01"
             style={inputStyle}
           />
 
@@ -416,35 +483,45 @@ export default function UploadForm() {
             onClick={calculateFairPrice}
             style={{
               width: "100%",
-              padding: "10px",
+              padding: "12px",
               background: "#2a9d8f",
               color: "#fff",
               borderRadius: "10px",
               fontWeight: "bold",
               fontSize: "15px",
               cursor: "pointer",
+              border: "none",
+              transition: "background 0.3s ease",
             }}
+            onMouseOver={(e) => (e.target.style.background = "#238276")}
+            onMouseOut={(e) => (e.target.style.background = "#2a9d8f")}
           >
-            Calculate Fair Value
+            Calculate
           </button>
 
           {calculatedPrice && (
             <div
               style={{
-                marginTop: "15px",
+                marginTop: "20px",
+                padding: "15px",
+                background: "#d4f1dc",
+                borderRadius: "10px",
                 textAlign: "center",
-                fontSize: "16px",
-                fontWeight: "bold",
-                color: "#1b4332",
+                border: "2px solid #2a9d8f"
               }}
             >
-              💰 Estimated Fair Total Price: {calculatedPrice} THB
+              <p style={{ fontSize: "14px", color: "#1b4332", marginBottom: "5px" }}>
+                Estimated Fair Total Price:
+              </p>
+              <p style={{ fontSize: "24px", fontWeight: "bold", color: "#1b4332", margin: 0 }}>
+                ฿{calculatedPrice}
+              </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* === Popup === */}
+      {/* Success Popup */}
       {showPopup && (
         <div
           style={{
@@ -454,7 +531,7 @@ export default function UploadForm() {
             transform: popupVisible
               ? "translate(-50%, -50%) scale(1)"
               : "translate(-50%, -50%) scale(0.7)",
-            background: "#2a9d8f",
+            background: "linear-gradient(135deg, #2a9d8f 0%, #238276 100%)",
             borderRadius: "30px",
             width: "340px",
             height: "340px",
@@ -462,7 +539,7 @@ export default function UploadForm() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 8px 25px rgba(42,157,143,0.3)",
+            boxShadow: "0 12px 40px rgba(42,157,143,0.4)",
             zIndex: 1000,
             color: "#fff",
             textAlign: "center",
@@ -470,11 +547,11 @@ export default function UploadForm() {
             transition: "opacity 0.6s ease, transform 0.6s ease",
           }}
         >
-          <CheckCircle size={80} />
-          <p style={{ marginTop: "20px", fontWeight: "bold", fontSize: "18px" }}>
-            Upload Successful
+          <CheckCircle size={80} strokeWidth={2.5} />
+          <p style={{ marginTop: "20px", fontWeight: "bold", fontSize: "20px" }}>
+            Upload Successful! 
           </p>
-          <p style={{ fontSize: "14px", marginTop: "5px" }}>
+          <p style={{ fontSize: "14px", marginTop: "8px", opacity: 0.9 }}>
             Your daily catch has been recorded.
           </p>
         </div>
