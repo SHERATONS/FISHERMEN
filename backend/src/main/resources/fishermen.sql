@@ -77,37 +77,39 @@ INSERT INTO fish_listings (
 
 
 -- =================================================================
--- ORDERS & ORDER ITEMS
+-- ORDERS & ORDER ITEMS (Updated)
 -- =================================================================
 
--- Order 1: Alice buys Red Snapper and Grouper
+-- Order 1: Alice buys 2kg Anchovy (id=2) and 1.5kg Bluefin Tuna (id=4)
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD001', '2024-05-11 12:00:00', 'UNSHIPPED', 289.80, 'BUY0001');
+('ORD001', '2024-05-11 12:00:00', 'UNSHIPPED', 0, 'BUY0001');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
-('ORD001', 2, 2.0, 18.00), -- 2kg of Red Snapper
-('ORD001', 4, 1.5, 16.50); -- 1.5kg of Grouper
--- Note: Manually update total_price in orders table: (2.0 * 18.00) + (1.5 * 16.50) = 36 + 24.75 = 60.75. Let's assume a mistake in manual entry and correct it.
-UPDATE orders SET total_price = 60.75 WHERE id = 'ORD001';
+('ORD001', 4, 1.5, 7920.00), -- 1.5kg Bluefin Tuna (id=4, price=7920)
+('ORD001', 2, 2.0, 235.00);  -- 2kg Anchovy (id=2, price=235)
 
+UPDATE orders SET total_price = (12350.00) WHERE id = 'ORD001';
 
--- Order 2: Bob (restaurant owner) buys a lot of Tuna
+-- Order 2: Bob buys 10kg Snapper (id=21)
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD002', '2024-05-11 14:30:00', 'SHIPPED', 225.00, 'BUY0002');
+('ORD002', '2024-05-11 14:30:00', 'SHIPPED', 0, 'BUY0002');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
-('ORD002', 1, 10.0, 22.50); -- 10kg of Yellowfin Tuna
+('ORD002', 21, 10.0, 1370.00); -- 10kg Snapper (id=21, price=1370)
+
+UPDATE orders SET total_price = (13700.00) WHERE id = 'ORD002';
 
 
--- Order 3: Charlie buys Cod and Salmon
+-- Order 3: Charlie buys 3kg Herring (id=11) and 2.5kg Salmon (id=18)
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD003', '2024-05-12 10:00:00', 'PENDING', 99.00, 'BUY0003');
+('ORD003', '2024-05-12 10:00:00', 'PENDING', 0, 'BUY0003');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
-('ORD003', 5, 3.0, 12.00), -- 3kg of Cod
-('ORD003', 6, 2.5, 25.00); -- 2.5kg of Salmon
--- Correcting total price: (3.0 * 12.00) + (2.5 * 25.00) = 36 + 62.5 = 98.50
-UPDATE orders SET total_price = 98.50 WHERE id = 'ORD003';
+('ORD003', 11, 3.0, 430.00), -- 3kg Herring (id=11, price=430)
+('ORD003', 18, 2.5, 1260.00); -- 2.5kg Salmon (id=18, price=1260)
+
+UPDATE orders SET total_price = (4440.00) WHERE id = 'ORD003';
+
 
 
 -- =================================================================
@@ -154,3 +156,5 @@ SELECT setval('fish_listings_id_seq', (SELECT MAX(id) FROM fish_listings));
 SELECT setval('order_items_id_seq', (SELECT MAX(id) FROM order_items));
 SELECT setval('payments_id_seq', (SELECT MAX(id) FROM payments));
 SELECT setval('reviews_id_seq', (SELECT MAX(id) FROM reviews));
+
+SELECT id, fish_type, photo_url FROM fish_listings ORDER BY id;
