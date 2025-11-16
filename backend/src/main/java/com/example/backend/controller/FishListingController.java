@@ -49,7 +49,7 @@ public class FishListingController {
         this.fishListingRepo = fishListingRepo;
         this.userRepo = userRepo;
 
-        // สร้างโฟลเดอร์ uploads ถ้ายังไม่มี
+        // Create uploads folder, if haven't
         try {
             Files.createDirectories(Paths.get(UPLOAD_DIR));
         } catch (IOException e) {
@@ -105,7 +105,7 @@ public class FishListingController {
             @RequestParam(value = "image", required = false) MultipartFile image) {
 
         try {
-            // ตรวจสอบ Fisherman
+            // Check Fisherman
             User fisherman = userRepo.findById(fishermanId).orElse(null);
             if (fisherman == null) {
                 return new ResponseEntity<>("Fisherman not found", HttpStatus.NOT_FOUND);
@@ -115,7 +115,7 @@ public class FishListingController {
                 return new ResponseEntity<>("User is not a Fisherman", HttpStatus.FORBIDDEN);
             }
 
-            // จัดการไฟล์รูปภาพ
+            // Manage the image file
             String photoUrl = null;
             if (image != null && !image.isEmpty()) {
                 String originalFilename = image.getOriginalFilename();
@@ -125,11 +125,11 @@ public class FishListingController {
                 Path filePath = Paths.get(UPLOAD_DIR + uniqueFilename);
                 Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                // สร้าง URL สำหรับเข้าถึงรูปภาพ
+                // Create URL for accessing the image
                 photoUrl = "http://localhost:8080/uploads/fish-images/" + uniqueFilename;
             }
 
-            // แปลง String เป็น ListingStatus enum
+            // Convert String to ListingStatus enum
             ListingStatus status;
             try {
                 status = ListingStatus.valueOf(statusStr);
@@ -137,11 +137,11 @@ public class FishListingController {
                 return new ResponseEntity<>("Invalid status value: " + statusStr, HttpStatus.BAD_REQUEST);
             }
 
-            // แปลง catchDate จาก ISO String เป็น LocalDateTime
+            // Convert catchDate from ISO String to LocalDateTime
             DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
             LocalDateTime parsedCatchDate = LocalDateTime.parse(catchDate, formatter);
 
-            // สร้าง FishListing
+            // Create FishListing
             FishListing fishListing = new FishListing();
             fishListing.setFishType(fishType);
             fishListing.setWeightInKg(weightInKg);
