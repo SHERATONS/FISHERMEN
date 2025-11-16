@@ -10,6 +10,7 @@ import BuyerReviews from './pages/BuyerReviews';
 import LoginRegisPage from "./pages/LoginRegisPage";
 import { AuthProvider, useAuth } from "./AuthContext";
 import Navbar from "./Navbar";
+import { CartProvider } from "./CartContext";
 
 function AppContent() {
   const [cart, setCart] = useState([]);
@@ -55,7 +56,10 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      {/* <AppContent /> */}
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
     </AuthProvider>
   );
 }
