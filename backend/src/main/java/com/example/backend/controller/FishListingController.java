@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.backend.dto.CreateFishListingDto;
 import com.example.backend.dto.FishListingResponseDto;
 import com.example.backend.dto.UpdateFishListingDto;
 import com.example.backend.dto.UserSummaryDto;
