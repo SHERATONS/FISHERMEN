@@ -28,6 +28,7 @@ export function AuthProvider({ children }) {
         } else if (storedUser) {
           // Fallback: check for complete user object
           const parsedUser = JSON.parse(storedUser);
+          console.log("Restored user from localStorage:", parsedUser);
           setUser(parsedUser);
         }
       } catch (error) {
