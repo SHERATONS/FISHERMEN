@@ -1,53 +1,50 @@
-import reportWebVitals from './reportWebVitals';
+// reportWebVitals.test.js
 
-// Mock the web-vitals module BEFORE importing reportWebVitals
-jest.mock('web-vitals', () => ({
-  getCLS: jest.fn(),
-  getFID: jest.fn(),
-  getFCP: jest.fn(),
-  getLCP: jest.fn(),
-  getTTFB: jest.fn(),
-}));
-
-// Import the mocked functions
-import {
-  getCLS,
-  getFID,
-  getFCP,
-  getLCP,
-  getTTFB
-} from 'web-vitals';
+import * as rpt from "./reportWebVitals";
 
 describe("reportWebVitals", () => {
+  const mockGetCLS = jest.fn();
+  const mockGetFID = jest.fn();
+  const mockGetFCP = jest.fn();
+  const mockGetLCP = jest.fn();
+  const mockGetTTFB = jest.fn();
 
-  test("does nothing when onPerfEntry is undefined", () => {
-    reportWebVitals(undefined);
+  beforeEach(() => {
+    jest.clearAllMocks();
 
-    expect(getCLS).not.toHaveBeenCalled();
-    expect(getFID).not.toHaveBeenCalled();
+    // Mock loadWebVitals to resolve immediately
+    jest.spyOn(rpt, "loadWebVitals").mockResolvedValue({
+      getCLS: mockGetCLS,
+      getFID: mockGetFID,
+      getFCP: mockGetFCP,
+      getLCP: mockGetLCP,
+      getTTFB: mockGetTTFB,
+    });
   });
 
-  test("does nothing when onPerfEntry is not a function", () => {
-    reportWebVitals(123);
+  test("does nothing with invalid callback", async () => {
+    rpt.default(null);
+    rpt.default(123);
+    rpt.default({});
+    rpt.default(undefined);
 
-    expect(getCLS).not.toHaveBeenCalled();
-    expect(getFID).not.toHaveBeenCalled();
-  });
-
-  test("imports web-vitals and calls all metric functions", async () => {
-    const callback = jest.fn();
-
-    // Call function (returns a Promise because of import)
-    const result = reportWebVitals(callback);
-
-    // Wait microtask queue to resolve the dynamic import
     await Promise.resolve();
 
-    expect(getCLS).toHaveBeenCalledWith(callback);
-    expect(getFID).toHaveBeenCalledWith(callback);
-    expect(getFCP).toHaveBeenCalledWith(callback);
-    expect(getLCP).toHaveBeenCalledWith(callback);
-    expect(getTTFB).toHaveBeenCalledWith(callback);
+    expect(mockGetCLS).not.toHaveBeenCalled();
   });
 
+  test("calls all metrics when callback is provided", async () => {
+    const cb = jest.fn();
+
+    rpt.default(cb);
+
+    // Wait for promise chain
+    await Promise.resolve();
+
+    expect(mockGetCLS).toHaveBeenCalledWith(cb);
+    expect(mockGetFID).toHaveBeenCalledWith(cb);
+    expect(mockGetFCP).toHaveBeenCalledWith(cb);
+    expect(mockGetLCP).toHaveBeenCalledWith(cb);
+    expect(mockGetTTFB).toHaveBeenCalledWith(cb);
+  });
 });
