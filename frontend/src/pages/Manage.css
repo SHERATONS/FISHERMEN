@@ -30,6 +30,7 @@ h2 { text-align: center; margin-bottom: 22px; }
 .badge-success { background: #29d066; color: #2d2d2d; }
 .badge-un {background: #3b7ceb; color: #fff;}
 .badge-muted { background: #9ca3af; color: #fff; }
+.badge-com {background: #ff9b37; color: #fff;}
 
 /* Body Items */
 .card-body { display: flex; flex-direction: column; gap: 6px; }
@@ -96,7 +97,7 @@ h2 { text-align: center; margin-bottom: 22px; }
 
 .destructive { 
   background: #ef4345; 
-  color: #fff; 
+  color: #000000; 
   flex: 1;
   cursor: pointer;
   border: none;
@@ -106,19 +107,19 @@ h2 { text-align: center; margin-bottom: 22px; }
   font-weight: 700; 
   font-size: 1rem; 
 }
-.outline { 
-  background:
-  #fff; 
-  border: 1px solid #d1d5db; 
-  color: #0b2540; 
+
+.destructiv{
+  color: #0b0f23; 
   flex: 1;
   cursor: pointer;
-  border-radius: 10px; 
+  border: none;
+  border-radius: 9px; 
   padding-top: 15px;
   padding-bottom: 15px;
   font-weight: 700; 
   font-size: 1rem; 
 }
+
 
 /* Expanded Items */
 .expanded-items { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
