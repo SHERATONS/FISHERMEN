@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +87,15 @@ public class OrderController {
         return orderRepo.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/buyer/{buyerId}")
+    public ResponseEntity<List<OrderDto>> getOrdersByBuyer(@PathVariable String buyerId) {
+        List<Order> orders = orderRepo.findByBuyerId(buyerId);
+        List<OrderDto> orderDtos = orders.stream()
+            .map(OrderDto::from)
+            .toList();
+        return ResponseEntity.ok(orderDtos);
     }
 
     @PostMapping("/create")
