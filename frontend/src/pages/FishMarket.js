@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../AuthContext";
+import { CheckCircle, User, Mail, Lock } from "lucide-react";
 
 const FishMarket = () => {
   const [fishList, setFishList] = useState([]);
@@ -11,8 +13,9 @@ const FishMarket = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [cart, setCart] = useState([]);
   const [selectedFish, setSelectedFish] = useState(null);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { login, user } = useAuth();
 
   useEffect(() => {
     const loadFish = async () => {
@@ -24,7 +27,7 @@ const FishMarket = () => {
       } catch (err) {
         console.error("Error fetching fish listings:", err);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
     loadFish();
@@ -197,7 +200,7 @@ const FishMarket = () => {
 
         .fish-list {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
           gap: 15px;
         }
 
@@ -368,8 +371,23 @@ const FishMarket = () => {
           .cart-panel {
             max-height: none;
           }
+          
         }
-      `}</style>
+        .fish-list-container.full-width-display {
+          /* Set a 1fr filter panel and a 3fr display area */
+          grid-template-columns: 1fr 3fr; 
+        }
+        
+        /* Optional: Make the fish display area take up the remaining space */
+        .fish-list-container.full-width-display .fish-display-area {
+          grid-column: 2 / -1; /* Stretch across the second and last column */
+        }
+        
+        /* Ensure the filter panel takes the first column */
+        .fish-list-container.full-width-display .filter-panel {
+          grid-column: 1 / 2;
+        }
+          `}</style>
 
       <h1>Fresh Fish Market 🎣</h1>
 
@@ -382,7 +400,7 @@ const FishMarket = () => {
         />
       </div>
 
-      <div className="fish-list-container">
+      <div className={`fish-list-container ${user?.role !== "BUYER" ? 'full-width-display' : ''}`}>
         <div className="filter-panel">
           <h3>Filters</h3>
           <label>Species:</label>
@@ -428,34 +446,38 @@ const FishMarket = () => {
                   <p>Location: {fish.location}</p>
                   <p>Status: {fish.status}</p>
                   <p>Date Caught: {formatDate(fish.catchDate)}</p>
-                  <button onClick={(e) => { e.stopPropagation(); addToCart(fish); }}>Add to Cart</button>
+                  {user?.role === "BUYER" && (
+              <button onClick={(e) => { e.stopPropagation(); addToCart(fish); }}>Add to Cart</button>
+            )}
                 </div>
               ))
             )}
           </div>
         </div>
 
-        <div className="cart-panel">
-          <h3>🛒 Your Cart</h3>
-          {cart.length === 0 ? (
-            <p>Your cart is empty.</p>
-          ) : (
-            <>
-              <ul>
-                {cart.map(i => (
-                  <li key={i.id}>
-                    {i.fishType} ({i.weightInKg}kg) x {i.quantity} - ฿{(i.price * i.quantity).toFixed(2)}
-                    <button onClick={() => removeFromCart(i.id)}>✕</button>
-                  </li>
-                ))}
-              </ul>
-              <div className="cart-total">
-                <strong>Total: ฿{totalPrice.toFixed(2)}</strong>
-                <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
-              </div>
-            </>
-          )}
-        </div>
+        {user?.role === "BUYER" && (
+          <div className="cart-panel">
+            <h3>🛒 Your Cart</h3>
+            {cart.length === 0 ? (
+              <p>Your cart is empty.</p>
+            ) : (
+              <>
+                <ul>
+                  {cart.map(i => (
+                    <li key={i.id}>
+                      {i.fishType} ({i.weightInKg}kg) x {i.quantity} - ฿{(i.price * i.quantity).toFixed(2)}
+                      <button onClick={() => removeFromCart(i.id)}>✕</button>
+                    </li>
+                  ))}
+                </ul>
+                <div className="cart-total">
+                  <strong>Total: ฿{totalPrice.toFixed(2)}</strong>
+                  <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {selectedFish && (
@@ -472,12 +494,13 @@ const FishMarket = () => {
               <p><strong>Location:</strong> {selectedFish.location}</p>
               <p><strong>Date Caught:</strong> {formatDate(selectedFish.catchDate)}</p>
             </div>
-            <button className="add-to-cart-btn" onClick={() => addToCart(selectedFish)}>Add to Cart</button>
+            {user?.role === "BUYER" && (
+              <button className="add-to-cart-btn" onClick={() => addToCart(selectedFish)}>Add to Cart</button>
+            )}
           </div>
         </div>
       )}
     </div>
   );
 };
-
 export default FishMarket;

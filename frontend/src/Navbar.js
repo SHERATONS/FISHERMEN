@@ -28,10 +28,13 @@ export default function Navbar() {
       <div>
         <Link style={linkStyle} to="/">Home</Link>
         {user && user.role === "FISHERMAN" && (
+          <>
           <Link style={linkStyle} to="/upload">Upload Fish</Link>
+          <Link style={linkStyle} to="/manage">Manage Orders</Link>
+          </>
         )}
         <Link style={linkStyle} to="/market">Market</Link>
-        {user && <Link style={linkStyle} to="/manage">Manage Orders</Link>}
+        {/* {user && <Link style={linkStyle} to="/manage">Manage Orders</Link>} */}
         {user && user.role === "BUYER" && (
           <Link style={linkStyle} to="/reviews">Reviews</Link>
         )}
