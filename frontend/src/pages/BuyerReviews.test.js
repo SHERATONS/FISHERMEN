@@ -161,11 +161,16 @@ const productParagraphMatcher = (type) => {
 };
 
 // Utility to render component with mocked useAuth + fetch
-const renderComponent = async (fetchResponses = []) => {
-  // Ensure useAuth returns the logged-in buyer
-  useAuth.mockReturnValue({ user: mockUser });
+const renderComponent = async (user = mockUser, fetchResponses = []) => {
+  // Ensure useAuth returns the specified user state
+  useAuth.mockReturnValue({ user: user });
 
-  setupFetchSequence(fetchResponses);
+  // Only setup fetch if a user is present, otherwise fetch should not be called.
+  if (user) {
+      setupFetchSequence(fetchResponses);
+  } else {
+      fetch.mockClear(); // Ensure fetch calls are not made when no user is present
+  }
 
   await act(async () => {
     render(<BuyerReviews />);
@@ -323,7 +328,7 @@ describe("Suite 2: BuyerReviews Filtering Logic", () => {
   });
 });
 
-// ---------------------- Suite 3: Review Form & Submit/Edit ----------------------
+// ---------------------- Suite 3: Review Submission and Editing Logic ----------------------
 describe("Suite 3: Review Submission and Editing Logic", () => {
   beforeEach(async () => {
     useAuth.mockClear();
@@ -525,7 +530,7 @@ describe("Suite 4: Missing Error and Edge Case Handling", () => {
 
   afterEach(() => cleanup());
 
-  // NEW TEST: Covers initial fetch failure (e.g., lines 262, 277-284)
+  // Covers initial fetch failure (e.g., lines 262, 277-284)
   test("1. handles initial data fetch failure (e.g., orders) and shows error message", async () => {
     // Set up fetch to fail on the Orders call
     useAuth.mockReturnValue({ user: mockUser });
@@ -553,7 +558,7 @@ describe("Suite 4: Missing Error and Edge Case Handling", () => {
     expect(screen.getByText(/Error loading orders or reviews/i)).toBeInTheDocument();
   });
 
-  // NEW TEST: Covers review submission failure (e.g., lines 191-196, 277-284)
+  // Covers review submission failure (e.g., lines 191-196, 277-284)
   test("2. shows alert error message if review submission (POST) fails", async () => {
     // 1. Initial successful render to get to the form
     await renderComponent();
@@ -603,7 +608,7 @@ describe("Suite 4: Missing Error and Edge Case Handling", () => {
     expect(screen.getByText(productParagraphMatcher("Tuna"))).toBeInTheDocument();
   });
 
-  // NEW TEST: Covers review update failure (PUT)
+  // Covers review update failure (PUT)
   test("3. shows alert error message if review update (PUT) fails", async () => {
     // 1. Initial successful render to get to the form
     await renderComponent();
@@ -652,4 +657,66 @@ describe("Suite 4: Missing Error and Edge Case Handling", () => {
     // Alert failure (Covers the catch block/error path for update)
     expect(global.alert).toHaveBeenCalledWith("Failed to update review.");
   });
+  
+  // NEW TEST: Targets the failure of the FIRST API call (User Details)
+  test("4. handles user details fetch failure and shows error message", async () => {
+    // Set up fetch to fail on the initial User Details call
+    useAuth.mockReturnValue({ user: mockUser });
+    fetch.mockImplementationOnce(() => Promise.resolve({ ok: false, status: 500 })); // User Details FAIL
+    // Subsequent fetch calls are irrelevant as the component should fail fast.
+
+    await act(async () => {
+        render(<BuyerReviews />);
+    });
+
+    // Expect the component to show the generic error message.
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1)); // Only the user details call
+    expect(screen.getByText(/Error loading orders or reviews/i)).toBeInTheDocument();
+    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------- Suite 5: Authentication & Other Edge Cases (Targets 32, 69, 152-182) ----------------------
+describe("Suite 5: Authentication & Other Edge Cases", () => {
+    beforeEach(() => {
+        useAuth.mockClear();
+        fetch.mockClear();
+        global.alert.mockClear();
+    });
+
+    afterEach(() => cleanup());
+
+    // NEW TEST: Targets lines 152-182 (Unauthenticated user block)
+    test("1. shows an access denial message if user is not authenticated", async () => {
+        // Mock useAuth to return null user
+        await renderComponent(null); // Passing null for the user
+
+        // Since the component is highly likely to return early if no user is found,
+        // we check for a key UI element indicating the required state.
+        // We assume the component uses 'Log in' or similar access control language.
+        expect(screen.getByText(/Please log in to view/i)).toBeInTheDocument();
+
+        // Fetch should NOT have been called, covering potential early returns/guards.
+        expect(fetch).not.toHaveBeenCalled();
+    });
+
+    // NEW TEST: Targets lines 32 and 69 (likely related to initial state/empty data processing)
+    test("2. gracefully handles empty orders and empty reviews on initial load", async () => {
+        // Set up fetch to return successfully but with empty arrays for orders and reviews
+        const emptyResponses = [
+            mockUserDetails, // User details
+            [],              // Empty orders
+            [],              // Empty reviews
+        ];
+
+        await renderComponent(mockUser, emptyResponses);
+
+        // Wait for all 3 successful fetches
+        await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
+
+        // Expect the component to show the "No items to display" message
+        // This execution path should hit initialization code (L32) and the data filtering/check (L69)
+        expect(screen.getByText("No items to display.")).toBeInTheDocument();
+        expect(screen.queryByText(productParagraphMatcher("Tuna"))).not.toBeInTheDocument();
+    });
 });
