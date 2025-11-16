@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import './BuyerReviews.css';
+import { useCart } from "../CartContext";
+import { useNavigate } from "react-router-dom";
+
 
 const BuyerReviews = () => {
   const [selectedStatus, setSelectedStatus] = useState('All');
@@ -8,6 +11,9 @@ const BuyerReviews = () => {
   const [ratingInput, setRatingInput] = useState(0);
   const [commentInput, setCommentInput] = useState('');
   const [reviews, setReviews] = useState({});
+
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   const buyer = { id: 'BUY12345', name: 'Ray Wesker' };
   const statuses = ['All', 'Pending', 'Completed', 'Cancelled'];
@@ -97,7 +103,7 @@ const BuyerReviews = () => {
                     <div className="review-form">
                       <p>Select overall rating:</p>
                       <div className="star-input">
-                        {[1,2,3,4,5].map(i => (
+                        {[1, 2, 3, 4, 5].map(i => (
                           <span
                             key={i}
                             className={`star ${i <= ratingInput ? 'selected' : ''}`}
@@ -137,7 +143,24 @@ const BuyerReviews = () => {
                   ) : (
                     <button className="btn rate" onClick={() => setShowReviewFormFor(order.id)}>Rate</button>
                   )}
-                  <button className="btn buy-again">Buy Again</button>
+                  {/* <button className="btn buy-again">Buy Again</button> */}
+                  <button
+                    className="btn buy-again"
+                    onClick={() => {
+                      const fish = {
+                        id: order.id,
+                        fishType: order.product,
+                        price: order.price,
+                        quantity: 1,
+                      };
+
+                      addToCart(fish);
+                      navigate("/market");
+                    }}
+                  >
+                    Buy Again
+                  </button>
+
                 </div>
 
                 {/* Review Form */}
@@ -145,7 +168,7 @@ const BuyerReviews = () => {
                   <div className="review-form">
                     <p>Select overall rating:</p>
                     <div className="star-input">
-                      {[1,2,3,4,5].map(i => (
+                      {[1, 2, 3, 4, 5].map(i => (
                         <span
                           key={i}
                           className={`star ${i <= ratingInput ? 'selected' : ''}`}

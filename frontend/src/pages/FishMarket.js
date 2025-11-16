@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../AuthContext";
-import { CheckCircle, User, Mail, Lock } from "lucide-react";
+import { useCart } from "../CartContext";
 
 const FishMarket = () => {
   const [fishList, setFishList] = useState([]);
@@ -11,11 +11,12 @@ const FishMarket = () => {
   const [selectedFreshness, setSelectedFreshness] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  const [cart, setCart] = useState([]);
+  // const [cart, setCart] = useState([]);
   const [selectedFish, setSelectedFish] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { login, user } = useAuth();
+  const { user } = useAuth();
+  const { cart, addToCart, removeFromCart } = useCart();
 
   useEffect(() => {
     const loadFish = async () => {
@@ -51,16 +52,16 @@ const FishMarket = () => {
     setFilteredList(updated);
   }, [searchTerm, selectedSpecies, selectedFreshness, minPrice, maxPrice, fishList]);
 
-  const addToCart = (fish) => {
-    setCart(prev => {
-      const existing = prev.find(i => i.id === fish.id);
-      return existing
-        ? prev.map(i => i.id === fish.id ? { ...i, quantity: i.quantity + 1 } : i)
-        : [...prev, { ...fish, quantity: 1 }];
-    });
-  };
+  // const addToCart = (fish) => {
+  //   setCart(prev => {
+  //     const existing = prev.find(i => i.id === fish.id);
+  //     return existing
+  //       ? prev.map(i => i.id === fish.id ? { ...i, quantity: i.quantity + 1 } : i)
+  //       : [...prev, { ...fish, quantity: 1 }];
+  //   });
+  // };
 
-  const removeFromCart = (id) => setCart(prev => prev.filter(i => i.id !== id));
+  // const removeFromCart = (id) => setCart(prev => prev.filter(i => i.id !== id));
   const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   const handleCheckout = () => {
@@ -447,8 +448,8 @@ const FishMarket = () => {
                   <p>Status: {fish.status}</p>
                   <p>Date Caught: {formatDate(fish.catchDate)}</p>
                   {user?.role === "BUYER" && (
-              <button onClick={(e) => { e.stopPropagation(); addToCart(fish); }}>Add to Cart</button>
-            )}
+                    <button onClick={(e) => { e.stopPropagation(); addToCart(fish); }}>Add to Cart</button>
+                  )}
                 </div>
               ))
             )}
