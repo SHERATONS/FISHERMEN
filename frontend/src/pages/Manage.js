@@ -73,7 +73,7 @@ const Manage = () => {
   const formatDate = iso => {
     if (!iso) return '-';
     try {
-      return new Date(iso).toLocaleDateString('th-TH', { dateStyle: 'medium' });
+      return new Date(iso).toLocaleDateString('en-GB', { dateStyle: 'medium' });
     } catch {
       return iso;
     }
