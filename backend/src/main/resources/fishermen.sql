@@ -232,35 +232,35 @@ INSERT INTO payments (order_id, amount, status, transaction_id, payment_date) VA
 -- =================================================================
 
 -- Reviews for Order 1 (SHIPPED - can be reviewed)
-INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
-(4, 'Good quality anchovy, fresh and well-packaged. Perfect for my pasta sauce!', 'BUY0001', 1, '2024-05-12 18:00:00'),
-(5, 'Exceptional bluefin tuna! The quality was restaurant-grade. Will definitely order again.', 'BUY0001', 2, '2024-05-12 18:15:00');
+-- INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
+-- (4, 'Good quality anchovy, fresh and well-packaged. Perfect for my pasta sauce!', 'BUY0001', 1, '2024-05-12 18:00:00'),
+-- (5, 'Exceptional bluefin tuna! The quality was restaurant-grade. Will definitely order again.', 'BUY0001', 2, '2024-05-12 18:15:00');
 
--- Reviews for Order 2 (COMPLETED)
-INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
-(5, 'Perfect snapper for our restaurant. Customers loved the freshness and taste. Excellent supplier!', 'BUY0002', 3, '2024-05-12 20:00:00');
+-- -- Reviews for Order 2 (COMPLETED)
+-- INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
+-- (5, 'Perfect snapper for our restaurant. Customers loved the freshness and taste. Excellent supplier!', 'BUY0002', 3, '2024-05-12 20:00:00');
 
--- Reviews for Order 4 (COMPLETED)
-INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
-(5, 'Outstanding bluefin tuna! Perfect for our high-end sashimi menu. Impeccable quality.', 'BUY0004', 4, '2024-05-14 10:00:00'),
-(4, 'Very good pomfret, fresh and flavorful. Slight delay in delivery but quality made up for it.', 'BUY0004', 5, '2024-05-14 10:15:00'),
-(5, 'Excellent yellowtail! Perfect texture and taste for our Japanese dishes. Highly recommended.', 'BUY0004', 6, '2024-05-14 10:30:00');
+-- -- Reviews for Order 4 (COMPLETED)
+-- INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
+-- (5, 'Outstanding bluefin tuna! Perfect for our high-end sashimi menu. Impeccable quality.', 'BUY0004', 4, '2024-05-14 10:00:00'),
+-- (4, 'Very good pomfret, fresh and flavorful. Slight delay in delivery but quality made up for it.', 'BUY0004', 5, '2024-05-14 10:15:00'),
+-- (5, 'Excellent yellowtail! Perfect texture and taste for our Japanese dishes. Highly recommended.', 'BUY0004', 6, '2024-05-14 10:30:00');
 
--- Reviews for Order 6 (COMPLETED)
-INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
-(4, 'Good bulk herring order. Fresh fish, well-packaged. Great for our market customers.', 'BUY0006', 9, '2024-05-15 09:00:00'),
-(3, 'Mackerel was okay, some pieces were better than others. Decent for the price point.', 'BUY0006', 10, '2024-05-15 09:15:00'),
-(4, 'Solid carp quality. Good for our budget-conscious customers. Reliable supplier.', 'BUY0006', 11, '2024-05-15 09:30:00');
+-- -- Reviews for Order 6 (COMPLETED)
+-- INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
+-- (4, 'Good bulk herring order. Fresh fish, well-packaged. Great for our market customers.', 'BUY0006', 9, '2024-05-15 09:00:00'),
+-- (3, 'Mackerel was okay, some pieces were better than others. Decent for the price point.', 'BUY0006', 10, '2024-05-15 09:15:00'),
+-- (4, 'Solid carp quality. Good for our budget-conscious customers. Reliable supplier.', 'BUY0006', 11, '2024-05-15 09:30:00');
 
--- Reviews for Order 8 (COMPLETED)
-INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
-(5, 'Absolutely perfect bluefin tuna! Our sushi customers were amazed by the quality. Top-tier fish!', 'BUY0008', 12, '2024-05-16 08:00:00'),
-(5, 'Exceptional yellowtail! Perfect for sashimi and nigiri. Will be ordering regularly from this supplier.', 'BUY0008', 13, '2024-05-16 08:15:00');
+-- -- Reviews for Order 8 (COMPLETED)
+-- INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
+-- (5, 'Absolutely perfect bluefin tuna! Our sushi customers were amazed by the quality. Top-tier fish!', 'BUY0008', 12, '2024-05-16 08:00:00'),
+-- (5, 'Exceptional yellowtail! Perfect for sashimi and nigiri. Will be ordering regularly from this supplier.', 'BUY0008', 13, '2024-05-16 08:15:00');
 
--- Additional diverse reviews
-INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
-(2, 'Fish arrived later than expected and quality was not as fresh as hoped. Disappointed with this order.', 'BUY0005', 7, '2024-05-14 19:00:00'),
-(1, 'Very poor quality trout. Fish smelled off and had to throw it away. Requesting refund.', 'BUY0005', 8, '2024-05-14 19:15:00');
+-- -- Additional diverse reviews
+-- INSERT INTO reviews (rating, comment, buyer_id, order_item_id, review_date) VALUES
+-- (2, 'Fish arrived later than expected and quality was not as fresh as hoped. Disappointed with this order.', 'BUY0005', 7, '2024-05-14 19:00:00'),
+-- (1, 'Very poor quality trout. Fish smelled off and had to throw it away. Requesting refund.', 'BUY0005', 8, '2024-05-14 19:15:00');
 
 -- =================================================================
 -- Update sequences for auto-generated IDs to avoid conflicts
