@@ -96,7 +96,7 @@ INSERT INTO fish_listings (
 
 -- Order 1: Alice buys Anchovy and Bluefin Tuna (CORRECTED)
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD001', '2024-05-11 12:00:00', 'SHIPPED', 0, 'BUY0001');
+('ORD001', '2025-05-11 12:00:00', 'SHIPPED', 0, 'BUY0001');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD001', 2, 2.0, 235.00),  -- 2kg Anchovy (id=2, price=235)
@@ -106,16 +106,16 @@ UPDATE orders SET total_price = (2.0 * 235.00 + 1.5 * 7920.00) WHERE id = 'ORD00
 
 -- Order 2: Bob buys Snapper (CORRECTED)
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD002', '2024-05-11 14:30:00', 'COMPLETED', 0, 'BUY0002');
+('ORD002', '2025-05-11 14:30:00', 'COMPLETED', 0, 'BUY0002');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
-('ORD002', 21, 10.0, 1370.00); -- 10kg Snapper (id=21, price=1370)
+('ORD002', 21, 2.0, 1370.00); -- 10kg Snapper (id=21, price=1370)
 
-UPDATE orders SET total_price = (10.0 * 1370.00) WHERE id = 'ORD002';
+UPDATE orders SET total_price = (2.0 * 1370.00) WHERE id = 'ORD002';
 
 -- Order 3: Charlie buys Herring and Salmon
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD003', '2024-05-12 10:00:00', 'PENDING', 0, 'BUY0003');
+('ORD003', '2025-05-12 10:00:00', 'PENDING', 0, 'BUY0003');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD003', 11, 3.0, 430.00),  -- 3kg Herring (id=11, price=430)
@@ -125,7 +125,7 @@ UPDATE orders SET total_price = (3.0 * 430.00 + 2.5 * 1260.00) WHERE id = 'ORD00
 
 -- Order 4: Chef David buys premium fish
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD004', '2024-05-13 09:00:00', 'COMPLETED', 0, 'BUY0004');
+('ORD004', '2025-05-13 09:00:00', 'COMPLETED', 0, 'BUY0004');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD004', 3, 5.0, 5400.00),   -- 5kg Bluefin Tuna (id=3, price=5400)
@@ -136,7 +136,7 @@ UPDATE orders SET total_price = (5.0 * 5400.00 + 3.0 * 1260.00 + 2.0 * 2340.00) 
 
 -- Order 5: Emma buys family fish
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD005', '2024-05-13 15:00:00', 'SHIPPED', 0, 'BUY0005');
+('ORD005', '2025-05-13 15:00:00', 'SHIPPED', 0, 'BUY0005');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD005', 9, 4.0, 1080.00),   -- 4kg Cod (id=9, price=1080)
@@ -146,7 +146,7 @@ UPDATE orders SET total_price = (4.0 * 1080.00 + 3.0 * 650.00) WHERE id = 'ORD00
 
 -- Order 6: Frank buys bulk fish
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD006', '2024-05-14 08:00:00', 'COMPLETED', 0, 'BUY0006');
+('ORD006', '2025-05-14 08:00:00', 'COMPLETED', 0, 'BUY0006');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD006', 11, 15.0, 430.00),  -- 15kg Herring (id=11, price=430)
@@ -157,7 +157,7 @@ UPDATE orders SET total_price = (15.0 * 430.00 + 8.0 * 360.00 + 6.0 * 290.00) WH
 
 -- Order 7: Lisa buys healthy fish
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD007', '2024-05-14 11:00:00', 'CANCELLED', 0, 'BUY0007');
+('ORD007', '2025-05-14 11:00:00', 'CANCELLED', 0, 'BUY0007');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD007', 17, 2.0, 650.00),   -- 2kg Trout (id=17, price=650)
@@ -167,7 +167,7 @@ UPDATE orders SET total_price = (2.0 * 650.00 + 1.5 * 790.00) WHERE id = 'ORD007
 
 -- Order 8: Ken buys sushi-grade fish
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD008', '2024-05-15 07:00:00', 'COMPLETED', 0, 'BUY0008');
+('ORD008', '2025-05-15 07:00:00', 'COMPLETED', 0, 'BUY0008');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD008', 4, 3.0, 7920.00),   -- 3kg Bluefin Tuna (id=4, price=7920)
@@ -177,7 +177,7 @@ UPDATE orders SET total_price = (3.0 * 7920.00 + 2.0 * 2700.00) WHERE id = 'ORD0
 
 -- Order 9: Alice's second order
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD009', '2024-05-15 14:00:00', 'SHIPPED', 0, 'BUY0001');
+('ORD009', '2025-05-15 14:00:00', 'SHIPPED', 0, 'BUY0001');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD009', 10, 2.5, 900.00),   -- 2.5kg Cod (id=10, price=900)
@@ -187,7 +187,7 @@ UPDATE orders SET total_price = (2.5 * 900.00 + 1.0 * 415.00) WHERE id = 'ORD009
 
 -- Order 10: Bob's restaurant order
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD010', '2024-05-16 10:00:00', 'PENDING', 0, 'BUY0002');
+('ORD010', '2025-05-16 10:00:00', 'PENDING', 0, 'BUY0002');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD010', 22, 5.0, 1620.00),  -- 5kg Snapper (id=22, price=1620)
@@ -201,31 +201,31 @@ UPDATE orders SET total_price = (5.0 * 1620.00 + 3.0 * 1000.00) WHERE id = 'ORD0
 
 -- Payment for Order 1 (CORRECTED)
 INSERT INTO payments (order_id, amount, status, transaction_id, payment_date) VALUES
-('ORD001', 12350.00, 'SUCCESSFUL', 'txn_1a2b3c4d5e6f', '2024-05-11 12:01:00');
+('ORD001', 12350.00, 'SUCCESSFUL', 'txn_1a2b3c4d5e6f', '2025-05-11 12:01:00');
 
 -- Payment for Order 2 (CORRECTED)
 INSERT INTO payments (order_id, amount, status, transaction_id, payment_date) VALUES
-('ORD002', 13700.00, 'SUCCESSFUL', 'txn_7g8h9i0j1k2l', '2024-05-11 14:31:00');
+('ORD002', 13700.00, 'SUCCESSFUL', 'txn_7g8h9i0j1k2l', '2025-05-11 14:31:00');
 
 -- Payment for Order 4
 INSERT INTO payments (order_id, amount, status, transaction_id, payment_date) VALUES
-('ORD004', 35460.00, 'SUCCESSFUL', 'txn_chef_premium', '2024-05-13 09:05:00');
+('ORD004', 35460.00, 'SUCCESSFUL', 'txn_chef_premium', '2025-05-13 09:05:00');
 
 -- Payment for Order 5
 INSERT INTO payments (order_id, amount, status, transaction_id, payment_date) VALUES
-('ORD005', 6270.00, 'SUCCESSFUL', 'txn_family_fish', '2024-05-13 15:05:00');
+('ORD005', 6270.00, 'SUCCESSFUL', 'txn_family_fish', '2025-05-13 15:05:00');
 
 -- Payment for Order 6
 INSERT INTO payments (order_id, amount, status, transaction_id, payment_date) VALUES
-('ORD006', 10080.00, 'SUCCESSFUL', 'txn_bulk_order', '2024-05-14 08:05:00');
+('ORD006', 10080.00, 'SUCCESSFUL', 'txn_bulk_order', '2025-05-14 08:05:00');
 
 -- Payment for Order 8
 INSERT INTO payments (order_id, amount, status, transaction_id, payment_date) VALUES
-('ORD008', 29160.00, 'SUCCESSFUL', 'txn_sushi_grade', '2024-05-15 07:05:00');
+('ORD008', 29160.00, 'SUCCESSFUL', 'txn_sushi_grade', '2025-05-15 07:05:00');
 
 -- Payment for Order 9
 INSERT INTO payments (order_id, amount, status, transaction_id, payment_date) VALUES
-('ORD009', 2665.00, 'SUCCESSFUL', 'txn_alice_second', '2024-05-15 14:05:00');
+('ORD009', 2665.00, 'SUCCESSFUL', 'txn_alice_second', '2025-05-15 14:05:00');
 
 -- =================================================================
 -- REVIEWS (EXPANDED AND CORRECTED)
