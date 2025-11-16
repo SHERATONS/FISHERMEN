@@ -106,7 +106,7 @@ UPDATE orders SET total_price = (2.0 * 235.00 + 1.5 * 7920.00) WHERE id = 'ORD00
 
 -- Order 2: Bob buys Snapper (CORRECTED)
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD002', '2024-05-11 14:30:00', 'COMPLETED', 0, 'BUY0002');
+('ORD002', '2024-05-11 14:30:00', 'UNSHIPPED', 0, 'BUY0002');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD002', 21, 10.0, 1370.00); -- 10kg Snapper (id=21, price=1370)
@@ -125,7 +125,7 @@ UPDATE orders SET total_price = (3.0 * 430.00 + 2.5 * 1260.00) WHERE id = 'ORD00
 
 -- Order 4: Chef David buys premium fish
 INSERT INTO orders (id, order_date, status, total_price, buyer_id) VALUES
-('ORD004', '2024-05-13 09:00:00', 'COMPLETED', 0, 'BUY0004');
+('ORD004', '2024-05-13 09:00:00', 'UNSHIPPED', 0, 'BUY0004');
 
 INSERT INTO order_items (order_id, fish_listing_id, quantity, price_at_purchase) VALUES
 ('ORD004', 3, 5.0, 5400.00),   -- 5kg Bluefin Tuna (id=3, price=5400)

@@ -5,6 +5,8 @@ const STATUS_LABEL = {
   PENDING: { text: 'Pending', className: 'badge-warning' },
   UNSHIPPED: { text: 'Unshipped', className: 'badge-un' },
   SHIPPED: { text: 'Shipped', className: 'badge-success' },
+  COMPLETED: { text: 'Completed', className: 'badge-com' },
+
 };
 
 const placeholderImg = '/images/placeholder.png';
@@ -42,7 +44,7 @@ const Manage = () => {
     fetchOrders();
   }, []);
 
-  const statuses = ['All', 'PENDING', 'UNSHIPPED', 'SHIPPED'];
+  const statuses = ['All', 'PENDING', 'UNSHIPPED', 'SHIPPED', 'COMPLETED'];
 
   const filteredOrders = orders.filter(order => {
     const matchStatus = selectedStatus === 'All' || order.status === selectedStatus;
@@ -209,7 +211,7 @@ const Manage = () => {
                     </button>
                   </>
                 )}
-              
+
               </div>
 
             </div>
