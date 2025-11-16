@@ -151,7 +151,8 @@ const BuyerReviews = () => {
                         id: order.id,
                         fishType: order.product,
                         price: order.price,
-                        quantity: 1,
+                        quantity: order.quantity,
+                        weightInKg: 1,
                       };
 
                       addToCart(fish);
