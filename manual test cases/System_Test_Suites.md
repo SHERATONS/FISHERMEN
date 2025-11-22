@@ -93,3 +93,42 @@ The cart is empty, and the state is reset.
 
 **Post-conditions:**
 User is navigated to the Payment screen.
+
+
+
+
+
+
+# System Test Suites - Upload Fish 
+
+**Project Name:** FISHERMEN
+**Document Date:** 2024-11-22
+
+---
+
+## Task 4: Upload Fish Functionality
+
+**Test Case ID:** TC_UI_004
+**Test Designed by:** Manasawan Pewnoul
+**Test Priority (Low/Medium/High):** High
+**Test Designed date:** 2025-11-22
+**Module Name:** Upload Fish on the System (Fisherman)
+**Test Executed by:** Manasawan Pewnoul
+**Test Title:** Verify Upload Fish Functionality
+**Test Execution date:** 2025-11-22
+**Description:** 
+Verify that the user can upload fish successfully, validate required fields, and handle invalid data.
+
+**Pre-conditions:**
+1. User is logged in.
+2. User is on the /upload page.
+
+**Dependencies:**
+- Backend and database must be running.
+
+| Step | Test Steps | Test Data | Expected Result | Actual Result | Status (Pass/Fail) | Notes |
+| :---: | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | Enter location, select species, enter weight & price, upload image, click Upload | Location: Phuket<br>Species: Anchovy<br>Weight: 2<br>Price: 20<br>Image: anchovy.jpg | Upload success popup shown, data sent to backend, redirect to /market, uploaded fish visible in market | Upload success popup shown, redirected to /market | Pass | Happy path scenario |
+| 2 | Leave required fields blank, click Upload | Location: empty / Weight: empty / Image: none | Alert message shown, upload blocked | Alert displayed, upload blocked | Pass | Validation scenario |
+| 3 | Enter invalid weight or price (<=0), click Upload | Weight: 0 / Price: -5 | Alert message shown "Weight must be greater than 0!" or "Price must be greater than 0!", upload blocked | Alert displayed, upload blocked | Pass | Invalid input scenario |
+
