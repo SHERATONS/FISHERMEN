@@ -1,38 +1,95 @@
 # System Test Suites - Fish Market Application
 
 **Project Name:** FISHERMEN
-**Module:** Buyer Market Interface
-**Tested By:** Nichakul Kongnual 6588178
+**Document Date:** 2024-11-22
 
 ---
 
-## Test Suite 1: Search and Filter Functionality
-**Objective:** Verify that users can locate specific fish products using search keywords and category filters.
+## Task 1: Search, Filter and Add to Cart
 
-| Test Case ID | Priority | Test Title | Pre-conditions | Test Steps | Test Data | Expected Result |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TC_001** | High | Verify Search by Keyword | User is logged in as Buyer and on Market page. | 1. Click on Search bar.<br>2. Type "Salmon".<br>3. Observe the product list. | Search Term: "Salmon" | The product list should update in real-time to show only items containing "Salmon". |
-| **TC_002** | Medium | Verify Filtering by Multiple Criteria | User is logged in as Buyer. | 1. Select Species: "Salmon".<br>2. Select Status: "SENT FRESH".<br>3. Enter Max Price: "1000". | Species: Salmon<br>Status: SENT FRESH<br>Max Price: 1000 | Only fish matching ALL three criteria (Salmon, Sent Fresh, <= 1000) should be displayed. |
-| **TC_003** | Low | Verify Reset Filters | Filters are currently active. | 1. Clear the search bar.<br>2. Set dropdowns back to "All".<br>3. Clear price inputs. | N/A | The product list should reload to show all available fish listings. |
+**Test Case ID:** TC_UI_001
+**Test Designed by:** Nichakul Kongnual
+**Test Priority (Low/Medium/High):** High
+**Test Designed date:** 2024-11-22
+**Module Name:** Market Interface (Buyer)
+**Test Executed by:** Nichakul Kongnual
+**Test Title:** Verify search, advanced filters, and adding item to cart
+**Test Execution date:** 2024-11-22
+**Description:** 
+Verify that the user can search, filter by criteria, and add the filtered item to the cart.
+
+**Pre-conditions:**
+1. User is logged in as "Buyer".
+2. User is on the /market page.
+
+**Dependencies:**
+- Login module functional.
+
+| Step | Test Steps | Test Data | Expected Result | Actual Result | Status (Pass/Fail) | Notes |
+| :---: | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | Type "Salmon" in Search bar | Keyword: "Salmon" | List updates to show "Salmon". | List updated | Pass | Auto: Scenario 1 |
+| 2 | Clear search, then Select Filters (Species, Status, Price) | Species: Salmon<br>Status: SENT FRESH<br>Price: 1000 | List shows items matching ALL criteria. | Filter logic worked | Pass | Auto: Scenario 2 |
+| 3 | Click "Add to Cart" on the filtered item | Item: Salmon | The item is added to the cart state. | Item added | Pass | Auto: Scenario 2 |
+
+**Post-conditions:**
+The item is successfully added to the cart, ready for verification in the next task.
 
 ---
 
-## Test Suite 2: Shopping Cart Management
-**Objective:** Verify that the user can add items, view the cart, and remove items correctly.
+## Task 2: Shopping Cart Management (Verify & Remove)
 
-| Test Case ID | Priority | Test Title | Pre-conditions | Test Steps | Test Data | Expected Result |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TC_004** | High | Add Item to Cart | User sees a list of fish. | 1. Identify a fish card (e.g., Salmon).<br>2. Click the "Add to Cart" button. | Item: Salmon | 1. The "Your Cart" panel should appear/update.<br>2. The item name should appear.<br>3. Quantity should be "x 1". |
-| **TC_005** | Medium | Update Quantity | "Salmon" is already in the cart. | 1. Click "Add to Cart" on the same item again. | Item: Salmon | In the cart panel, the quantity for Salmon should update to "x 2" and total price should double. |
-| **TC_006** | High | Remove Item from Cart | Items exist in the cart. | 1. Locate the item in the cart panel.<br>2. Click the "X" (Remove) button next to the item. | N/A | The item should be removed from the list. If it was the last item, the message "Your cart is empty" should appear. |
+**Test Case ID:** TC_UI_002
+**Test Designed by:** Nichakul Kongnual
+**Test Priority (Low/Medium/High):** High
+**Test Designed date:** 2024-11-22
+**Module Name:** Market Interface (Buyer)
+**Test Executed by:** Nichakul Kongnual
+**Test Title:** Verify cart contents and remove item
+**Test Execution date:** 2024-11-22
+**Description:** 
+Verify that the cart displays the correct item quantity (x1) from the previous step and allows removal.
+
+**Pre-conditions:**
+1. Item ("Salmon") was added to the cart in the previous task.
+
+**Dependencies:**
+- TC_UI_001 must be completed.
+
+| Step | Test Steps | Test Data | Expected Result | Actual Result | Status (Pass/Fail) | Notes |
+| :---: | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | Scroll up to view "Your Cart" panel | N/A | Cart panel is visible. | Visible | Pass | Auto: Scenario 3 |
+| 2 | Verify item quantity | N/A | Item should show Quantity **"x 1"**. | Qty is x 1 | Pass | (Matches Code) |
+| 3 | Click the "Remove" (X) button | N/A | The item is removed. Message "Your cart is empty" appears. | Item removed | Pass | Auto: Scenario 3 |
+
+**Post-conditions:**
+The cart is empty, and the state is reset.
 
 ---
 
-## Test Suite 3: Checkout Process
-**Objective:** Verify that the user can proceed from the cart to the payment screen.
+## Task 3: Checkout and Payment Flow
 
-| Test Case ID | Priority | Test Title | Pre-conditions | Test Steps | Test Data | Expected Result |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TC_007** | High | Verify Total Price Calculation | Multiple items added to cart. | 1. Add Salmon (Price 1000) x 2.<br>2. Observe "Total" at bottom of cart. | Price: 1000, Qty: 2 | The Total displayed should be exactly ฿2000.00. |
-| **TC_008** | High | Proceed to Checkout | Cart is not empty. | 1. Click the "Checkout" button. | N/A | User should be redirected to the URL `/payment`. |
-| **TC_009** | Medium | Checkout with Empty Cart | Cart is empty. | 1. Click the "Checkout" button (if visible) or try to navigate. | N/A | System should prevent checkout or show an alert "Your cart is empty!". |
+**Test Case ID:** TC_UI_003
+**Test Designed by:** Nichakul Kongnual
+**Test Priority (Low/Medium/High):** Critical
+**Test Designed date:** 2024-11-22
+**Module Name:** Market Interface (Buyer)
+**Test Executed by:** Nichakul Kongnual
+**Test Title:** Verify Total Price Calculation and Checkout
+**Test Execution date:** 2024-11-22
+**Description:** Verify that the system calculates the total price correctly and allows the user to proceed to the payment page.
+
+**Pre-conditions:**
+1. User is logged in as "Buyer".
+2. The cart is currently empty (due to Task 2 removal).
+
+**Dependencies:**
+- Cart functionality must be working.
+
+| Step | Test Steps | Test Data | Expected Result | Actual Result | Status (Pass/Fail) | Notes |
+| :---: | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | Re-add "Salmon" to cart | Item: Salmon | Item added to cart again. | Success | Pass | Auto: Scenario 4 |
+| 2 | Scroll up and Verify "Total" | N/A | Total displays "฿1000.00" (matches item price). | Price correct | Pass | Auto: Scenario 4 |
+| 3 | Click "Checkout" button | N/A | User is redirected to the `/payment` page URL. | Redirection success | Pass | Auto: Scenario 4 |
+
+**Post-conditions:**
+User is navigated to the Payment screen.
