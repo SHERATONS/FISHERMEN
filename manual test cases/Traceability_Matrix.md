@@ -14,7 +14,6 @@
 | **REQ-05** | **UI/Navigation:**<br>User shall be able to proceed to the payment page via the Checkout button. | Buyer | **TC_UI_003** ( Pass) |
 
 
-# Requirement Traceability Matrix (RTM)
 
 **Project:** FISHERMEN
 **Module:** Upload Fish
