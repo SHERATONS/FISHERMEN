@@ -7,6 +7,7 @@ module.exports = defineConfig({
     
    
     specPattern: "automated test cases/cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
+    fixturesFolder: "automated test cases/cypress/fixtures",
     
     setupNodeEvents(on, config) {
       
