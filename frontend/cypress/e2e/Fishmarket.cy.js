@@ -1,21 +1,8 @@
 /**
- * Automated UI Test Suites - Fish Market System
- * Framework: Cypress
- * Rationale & Strategy:
- * This script converts the defined Manual System Test Suites into executable Automated UI Test Suites.
- * The tests are structured to validate the core "Buyer Journey" continuously.
- *
- * Mapping Manual Tasks to Automated Suites:
- * - Manual Task 1 (Search & Filter) -> Converted to Suites 1 & 2.
- * - Manual Task 2 (Cart Management) -> Converted to Suite 3.
- * - Manual Task 3 (Checkout Flow)   -> Converted to Suite 4.
- *
- * Implementation Note:
- * { testIsolation: false } is used to maintain the browser state (session, cart data) across suites,
- * simulating a real-user flow from Login -> Search -> Cart -> Checkout.
+ * Automated UI Test Suite 1 - Fish Market System
  */
 
-describe('Fish Market - Automated UI Test Suites', { testIsolation: false }, () => {
+describe('Fish Market - Automated UI Test Suite 1', { testIsolation: false }, () => {
 
   // Pre-condition: User must be logged in before executing suites.
   before(() => {
