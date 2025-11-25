@@ -1,15 +1,29 @@
 # Requirement Traceability Matrix (RTM)
 
-**Project Name:** FISHERMEN
-**Description:** Mapping of Business Requirements to Test Cases to ensure full test coverage.
+**Project:** FISHERMEN
+**Module:** Market Interface
+**Role Scope:** Buyer
+**Document Date:** 2024-11-22
 
-| Requirement ID | Requirement Description | Test Case ID | Test Suite | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| **REQ-01** | User shall be able to search for fish by name. | TC_001 | Suite 1: Search & Filter | ✅ Covered |
-| **REQ-02** | User shall be able to filter listings by species, status, and price. | TC_002 | Suite 1: Search & Filter | ✅ Covered |
-| **REQ-03** | User shall be able to reset search results to view all items. | TC_003 | Suite 1: Search & Filter | ✅ Covered |
-| **REQ-04** | User shall be able to add products to a shopping cart. | TC_004, TC_005 | Suite 2: Cart Management | ✅ Covered |
-| **REQ-05** | User shall be able to remove products from the shopping cart. | TC_006 | Suite 2: Cart Management | ✅ Covered |
-| **REQ-06** | The system must calculate the total price accurately. | TC_007 | Suite 3: Checkout Process | ✅ Covered |
-| **REQ-07** | User shall be able to navigate to the payment page via Checkout. | TC_008 | Suite 3: Checkout Process | ✅ Covered |
-| **REQ-08** | System must prevent checkout if the cart is empty. | TC_009 | Suite 3: Checkout Process | ✅ Covered |
+| Requirement ID | Requirement Type & Description | Applicable Role | Test Cases with Status |
+| :--- | :--- | :--- | :--- |
+| **REQ-01** | **Functional:**<br>User shall be able to search for fish by keywords and filter by criteria (Species, Price). | Buyer | **TC_UI_001** (Pass) |
+| **REQ-02** | **Functional:**<br>User shall be able to add specific products to the shopping cart. | Buyer | **TC_UI_001** (Pass) |
+| **REQ-03** | **Functional:**<br>User shall be able to remove items from the shopping cart. | Buyer | **TC_UI_002** (Pass) |
+| **REQ-04** | **Business Rule:**<br>The system must calculate and display the total price accurately based on item quantity. | Buyer | **TC_UI_003** (Pass) |
+| **REQ-05** | **UI/Navigation:**<br>User shall be able to proceed to the payment page via the Checkout button. | Buyer | **TC_UI_003** ( Pass) |
+
+
+
+**Project:** FISHERMEN
+**Module:** Upload Fish
+**Role Scope:** Fisherman
+**Document Date:** 2025-11-22
+
+| Requirement ID | Requirement Type & Description | Applicable Role | Test Cases with Status |
+| :--- | :--- | :--- | :--- |
+| **REQ-06** | **Functional:**<br>User shall be able to upload daily catch including location, species, weight, price, Delivery Status, Catch Date, and image. | Fisherman | **TC_UI_004 - Step 1** (Pass) |
+| **REQ-07** | **Validation:**<br>Required fields (location, species, weight, price, Delivery Status, Catch Date, and image) must be filled; system shall block submission if missing. | Fisherman | **TC_UI_004 - Step 2** (Pass) |
+| **REQ-08** | **Business Rule:**<br>Weight and price must be greater than 0; system shall show alert and block invalid input. | Fisherman | **TC_UI_004 - Step 3** (Pass) |
+| **REQ-09** | **UI/Navigation:**<br>After successful upload, the system shall show confirmation popup and redirect user to /market page. | Fisherman | **TC_UI_004 - Step 1** (Pass) |
+| **REQ-10** | **Data Integration:**<br>Uploaded fish data shall be correctly stored in the backend and visible in market listings. | Fisherman | **TC_UI_004 - Step 1** (Pass) |
