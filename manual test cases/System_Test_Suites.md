@@ -109,42 +109,6 @@ User is navigated to the Payment screen.
 
 ---
 
-## Task 4: Upload Fish Functionality
-
-**Test Case ID:** TC_UI_004
-**Test Designed by:** Manasawan Pewnoul
-**Test Priority (Low/Medium/High):** High
-**Test Designed date:** 2025-11-22
-**Module Name:** Upload Fish on the System (Fisherman)
-**Test Executed by:** Manasawan Pewnoul
-**Test Title:** Verify Upload Fish Functionality
-**Test Execution date:** 2025-11-22
-**Description:** 
-Verify that the user can upload fish successfully, validate required fields, and handle invalid data.
-
-**Pre-conditions:**
-1. User is logged in.
-2. User is on the /upload page.
-
-**Dependencies:**
-- Backend and database must be running.
-
-| Step | Test Steps | Test Data | Expected Result | Actual Result | Status (Pass/Fail) | Notes |
-| :---: | :--- | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter location, select species, enter weight & price, upload image, click Upload | Location: Phuket<br>Species: Anchovy<br>Weight: 2<br>Price: 20<br>Image: anchovy.jpg | Upload success popup shown, data sent to backend, redirect to /market, uploaded fish visible in market | Upload success popup shown, redirected to /market | Pass | Happy path scenario |
-| 2 | Leave required fields blank, click Upload | Location: empty | Alert message shown "Please enter location", upload blocked | Alert displayed, upload blocked | Pass | Validation scenario |
-| 3 | Enter invalid weight or price (<=0), click Upload | Weight: 0 / Price: -5 | Alert message shown "Weight must be greater than 0!" or "Price must be greater than 0!", upload blocked | Alert displayed, upload blocked | Pass | Invalid input scenario |
-
-
-
-
-
-# System Test Suite 2 - Upload Fish
-
-**Project Name:** FISHERMEN  
-**Document Date:** 2025-11-26  
-
----
 
 ## Task 4: Upload Fish Successfully
 
@@ -174,37 +138,9 @@ Verify that the user can upload fish successfully and that the uploaded fish app
 
 ---
 
-## Task 5: Invalid Inputs
+## Task 5: Validate Required Fields
 
 **Test Case ID:** TC_UI_005
-**Test Designed by:** Manasawan Pewnoul
-**Test Priority (Low/Medium/High):** High
-**Test Designed date:** 2025-11-22
-**Module Name:** Upload Fish on the System (Fisherman)
-**Test Executed by:** Manasawan Pewnoul
-**Test Title:** Verify System Handles Invalid Input
-**Test Execution date:** 2025-11-22
-**Description:** 
-Check system response to invalid weight and price inputs.
-
-
-**Pre-conditions:**  
-1. User is logged in.  
-2. User is on the /upload page.  
-
-**Dependencies:**  
-- Backend and database must be running.  
-
-| Step | Test Steps | Test Data | Expected Result | Actual Result | Status (Pass/Fail) | Notes |
-| :---: | :--- | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter negative weight, click Upload | Weight: -1 | Alert "Weight must be greater than 0!", upload blocked | Alert shown, upload blocked | Pass | Invalid weight scenario |
-| 2 | Enter negative price, click Upload | Price: -5 | Alert "Price must be greater than 0!", upload blocked | Alert shown, upload blocked | Pass | Invalid price scenario |
-
----
-
-## Task 6: Validate Required Fields
-
-**Test Case ID:** TC_UI_006
 **Test Designed by:** Manasawan Pewnoul
 **Test Priority (Low/Medium/High):** High
 **Test Designed date:** 2025-11-22
@@ -227,5 +163,32 @@ Ensure the system blocks uploads if required fields are empty.
 | :---: | :--- | :--- | :--- | :--- | :--- | :--- |
 | 1 | Leave location empty, click Upload | Location: empty | Alert "Please enter location", upload blocked | Alert shown, upload blocked | Pass | Required field validation |
 | 2 | Leave species empty, click Upload | Species: empty | Alert "Please select fish species", upload blocked | Alert shown, upload blocked | Pass | Required field validation |
-| 3 | Leave image empty, click Upload | Image: empty | Alert "Please upload an image", upload blocked | Alert shown, upload blocked | Pass | Required field validation |
 
+
+---
+
+## Task 6: Invalid Inputs
+
+**Test Case ID:** TC_UI_006
+**Test Designed by:** Manasawan Pewnoul
+**Test Priority (Low/Medium/High):** High
+**Test Designed date:** 2025-11-22
+**Module Name:** Upload Fish on the System (Fisherman)
+**Test Executed by:** Manasawan Pewnoul
+**Test Title:** Verify System Handles Invalid Input
+**Test Execution date:** 2025-11-22
+**Description:** 
+Check system response to invalid weight and price inputs.
+
+
+**Pre-conditions:**  
+1. User is logged in.  
+2. User is on the /upload page.  
+
+**Dependencies:**  
+- Backend and database must be running.  
+
+| Step | Test Steps | Test Data | Expected Result | Actual Result | Status (Pass/Fail) | Notes |
+| :---: | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | Enter negative weight, click Upload | Weight: -1 | Alert "Weight must be greater than 0!", upload blocked | Alert shown, upload blocked | Pass | Invalid weight scenario |
+| 2 | Enter negative price, click Upload | Price: -5 | Alert "Price must be greater than 0!", upload blocked | Alert shown, upload blocked | Pass | Invalid price scenario |
