@@ -132,5 +132,5 @@ Verify that the user can upload fish successfully, validate required fields, and
 | Step | Test Steps | Test Data | Expected Result | Actual Result | Status (Pass/Fail) | Notes |
 | :---: | :--- | :--- | :--- | :--- | :--- | :--- |
 | 1 | Enter location, select species, enter weight & price, upload image, click Upload | Location: Phuket<br>Species: Anchovy<br>Weight: 2<br>Price: 20<br>Image: anchovy.jpg | Upload success popup shown, data sent to backend, redirect to /market, uploaded fish visible in market | Upload success popup shown, redirected to /market | Pass | Happy path scenario |
-| 2 | Leave required fields blank, click Upload | Location: empty / Fisher id: empty | Alert message shown, upload blocked | Alert displayed, upload blocked | Pass | Validation scenario |
+| 2 | Leave required fields blank, click Upload | Location: empty | Alert message shown "Please enter location", upload blocked | Alert displayed, upload blocked | Pass | Validation scenario |
 | 3 | Enter invalid weight or price (<=0), click Upload | Weight: 0 / Price: -5 | Alert message shown "Weight must be greater than 0!" or "Price must be greater than 0!", upload blocked | Alert displayed, upload blocked | Pass | Invalid input scenario |
