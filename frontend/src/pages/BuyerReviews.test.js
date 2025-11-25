@@ -9,11 +9,11 @@
  * - Uses tight text matchers to avoid "multiple elements" errors
  *
  * Assumes the component uses the endpoints:
- *  GET /api/users/:id
- *  GET /api/orders/buyer/:id
- *  GET /api/reviews/buyer/:id
- *  POST /api/reviews/create
- *  PUT  /api/reviews/update/:id
+ *  GET /api/users/:id
+ *  GET /api/orders/buyer/:id
+ *  GET /api/reviews/buyer/:id
+ *  POST /api/reviews/create
+ *  PUT  /api/reviews/update/:id
  */
 
 import React from "react";
