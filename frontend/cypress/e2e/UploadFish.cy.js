@@ -1,5 +1,23 @@
 import 'cypress-file-upload';
 
+/**
+ * Automated UI Test Suites - Fish Market System (Fishermen Module)
+ * Feature: Upload Fish
+ * Framework: Cypress
+ * Rationale & Strategy:
+ * This script converts the defined Manual System Test Cases for uploading fish
+ * into executable Automated UI Test Suites. The tests validate the core "Fisherman Upload Journey"
+ * continuously to ensure that the system enforces proper data validation and successful uploads.
+ *
+ * Mapping Manual Tasks to Automated Suites:
+ * - Manual Task 1 (Upload Fish Successfully) -> Converted to Step 1.
+ * - Manual Task 2 (Validate Required Fields) -> Converted to Step 2.
+ * - Manual Task 3 (Invalid Weight/Price) -> Converted to Step 3.
+ *
+ * Implementation Note:
+ * { testIsolation: false } is recommended if you want to maintain login/session state
+ * across multiple tests to simulate a real-user journey from Login -> Upload -> Market.
+ */
 
 describe('FISHERMEN - Upload Fish', () => {
   before(() => {
