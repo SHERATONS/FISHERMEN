@@ -15,6 +15,7 @@
 **Test Executed by:** Nichakul Kongnual
 **Test Title:** Verify search, advanced filters, and adding item to cart
 **Test Execution date:** 2024-11-22
+
 **Description:** 
 Verify that the user can search, filter by criteria, and add the filtered item to the cart.
 
@@ -46,6 +47,7 @@ The item is successfully added to the cart, ready for verification in the next t
 **Test Executed by:** Nichakul Kongnual
 **Test Title:** Verify cart contents and remove item
 **Test Execution date:** 2024-11-22
+
 **Description:** 
 Verify that the cart displays the correct item quantity (x1) from the previous step and allows removal.
 
@@ -76,6 +78,7 @@ The cart is empty, and the state is reset.
 **Test Executed by:** Nichakul Kongnual
 **Test Title:** Verify Total Price Calculation and Checkout
 **Test Execution date:** 2024-11-22
+
 **Description:** Verify that the system calculates the total price correctly and allows the user to proceed to the payment page.
 
 **Pre-conditions:**
