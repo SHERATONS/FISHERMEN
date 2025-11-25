@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FishListingController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">backend</a> &gt; <a href="index.source.html" class="el_package">com.example.backend.controller</a> &gt; <span class="el_source">FishListingController.java</span></div><h1>FishListingController.java</h1><pre class="source lang-java linenums">package com.example.backend.controller;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.example.backend.dto.FishListingResponseDto;
+import com.example.backend.dto.UpdateFishListingDto;
+import com.example.backend.dto.UserSummaryDto;
+import com.example.backend.enums.ListingStatus;
+import com.example.backend.enums.UserRole;
+import com.example.backend.model.FishListing;
+import com.example.backend.model.User;
+import com.example.backend.repository.FishListingRepo;
+import com.example.backend.repository.UserRepo;
+
+@RestController
+@CrossOrigin(origins = &quot;http://localhost:3000&quot;)
+@RequestMapping(&quot;/api/fishListings&quot;)
+public class FishListingController {
+
+    private final UserRepo userRepo;
+    private final FishListingRepo fishListingRepo;
+<span class="nc" id="L46">    private final String UPLOAD_DIR = &quot;uploads/fish-images/&quot;;</span>
+
+<span class="nc" id="L48">    public FishListingController(FishListingRepo fishListingRepo, UserRepo userRepo) {</span>
+<span class="nc" id="L49">        this.fishListingRepo = fishListingRepo;</span>
+<span class="nc" id="L50">        this.userRepo = userRepo;</span>
+
+        // Create uploads folder, if haven't
+        try {
+<span class="nc" id="L54">            Files.createDirectories(Paths.get(UPLOAD_DIR));</span>
+<span class="nc" id="L55">        } catch (IOException e) {</span>
+<span class="nc" id="L56">            throw new RuntimeException(&quot;Could not create upload directory!&quot;, e);</span>
+<span class="nc" id="L57">        }</span>
+<span class="nc" id="L58">    }</span>
+
+    private FishListingResponseDto convertToDto(FishListing listing) {
+<span class="nc" id="L61">        FishListingResponseDto dto = new FishListingResponseDto();</span>
+<span class="nc" id="L62">        dto.setId(listing.getId());</span>
+<span class="nc" id="L63">        dto.setFishType(listing.getFishType());</span>
+<span class="nc" id="L64">        dto.setWeightInKg(listing.getWeightInKg());</span>
+<span class="nc" id="L65">        dto.setPrice(listing.getPrice());</span>
+<span class="nc" id="L66">        dto.setPhotoUrl(listing.getPhotoUrl());</span>
+<span class="nc" id="L67">        dto.setCatchDate(listing.getCatchDate());</span>
+<span class="nc" id="L68">        dto.setLocation(listing.getLocation());</span>
+<span class="nc" id="L69">        dto.setStatus(listing.getStatus());</span>
+<span class="nc" id="L70">        dto.setCreatedAt(listing.getCreatedAt());</span>
+
+<span class="nc" id="L72">        UserSummaryDto fishermanDto = new UserSummaryDto();</span>
+<span class="nc" id="L73">        fishermanDto.setId(listing.getFisherman().getId());</span>
+<span class="nc" id="L74">        fishermanDto.setFirstName(listing.getFisherman().getFirstName());</span>
+<span class="nc" id="L75">        fishermanDto.setLastName(listing.getFisherman().getLastName());</span>
+<span class="nc" id="L76">        dto.setFisherman(fishermanDto);</span>
+
+<span class="nc" id="L78">        return dto;</span>
+    }
+
+    @GetMapping(&quot;/list&quot;)
+    public ResponseEntity&lt;List&lt;FishListingResponseDto&gt;&gt; getAllFishListings() {
+<span class="nc" id="L83">        List&lt;FishListing&gt; fishListings = fishListingRepo.findAll();</span>
+<span class="nc" id="L84">        List&lt;FishListingResponseDto&gt; dtoList = fishListings.stream().map(this::convertToDto)</span>
+<span class="nc" id="L85">                .collect(Collectors.toList());</span>
+<span class="nc" id="L86">        return ResponseEntity.ok(dtoList);</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;FishListingResponseDto&gt; getFishListingById(@PathVariable Long id) {
+<span class="nc" id="L91">        return fishListingRepo.findById(id)</span>
+<span class="nc" id="L92">                .map(listing -&gt; ResponseEntity.ok(convertToDto(listing)))</span>
+<span class="nc" id="L93">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    @PostMapping(&quot;/create&quot;)
+    public ResponseEntity&lt;?&gt; createFishListing(
+            @RequestParam(&quot;fishType&quot;) String fishType,
+            @RequestParam(&quot;weightInKg&quot;) Double weightInKg,
+            @RequestParam(&quot;price&quot;) BigDecimal price,
+            @RequestParam(&quot;catchDate&quot;) String catchDate,
+            @RequestParam(&quot;fishermanId&quot;) String fishermanId,
+            @RequestParam(&quot;location&quot;) String location,
+            @RequestParam(&quot;status&quot;) String statusStr,
+            @RequestParam(value = &quot;image&quot;, required = false) MultipartFile image) {
+
+        try {
+            // Check Fisherman
+<span class="nc" id="L109">            User fisherman = userRepo.findById(fishermanId).orElse(null);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">            if (fisherman == null) {</span>
+<span class="nc" id="L111">                return new ResponseEntity&lt;&gt;(&quot;Fisherman not found&quot;, HttpStatus.NOT_FOUND);</span>
+            }
+
+<span class="nc bnc" id="L114" title="All 2 branches missed.">            if (fisherman.getRole() != UserRole.FISHERMAN) {</span>
+<span class="nc" id="L115">                return new ResponseEntity&lt;&gt;(&quot;User is not a Fisherman&quot;, HttpStatus.FORBIDDEN);</span>
+            }
+
+            // Manage the image file
+<span class="nc" id="L119">            String photoUrl = null;</span>
+<span class="nc bnc" id="L120" title="All 4 branches missed.">            if (image != null &amp;&amp; !image.isEmpty()) {</span>
+<span class="nc" id="L121">                String originalFilename = image.getOriginalFilename();</span>
+<span class="nc" id="L122">                String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(&quot;.&quot;));</span>
+<span class="nc" id="L123">                String uniqueFilename = UUID.randomUUID().toString() + fileExtension;</span>
+
+<span class="nc" id="L125">                Path filePath = Paths.get(UPLOAD_DIR + uniqueFilename);</span>
+<span class="nc" id="L126">                Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);</span>
+
+                // Create URL for accessing the image
+<span class="nc" id="L129">                photoUrl = &quot;http://localhost:8080/uploads/fish-images/&quot; + uniqueFilename;</span>
+            }
+
+            // Convert String to ListingStatus enum
+            ListingStatus status;
+            try {
+<span class="nc" id="L135">                status = ListingStatus.valueOf(statusStr);</span>
+<span class="nc" id="L136">            } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L137">                return new ResponseEntity&lt;&gt;(&quot;Invalid status value: &quot; + statusStr, HttpStatus.BAD_REQUEST);</span>
+<span class="nc" id="L138">            }</span>
+
+            // Convert catchDate from ISO String to LocalDateTime
+<span class="nc" id="L141">            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;</span>
+<span class="nc" id="L142">            LocalDateTime parsedCatchDate = LocalDateTime.parse(catchDate, formatter);</span>
+
+            // Create FishListing
+<span class="nc" id="L145">            FishListing fishListing = new FishListing();</span>
+<span class="nc" id="L146">            fishListing.setFishType(fishType);</span>
+<span class="nc" id="L147">            fishListing.setWeightInKg(weightInKg);</span>
+<span class="nc" id="L148">            fishListing.setPrice(price);</span>
+<span class="nc" id="L149">            fishListing.setPhotoUrl(photoUrl);</span>
+<span class="nc" id="L150">            fishListing.setCatchDate(parsedCatchDate);</span>
+<span class="nc" id="L151">            fishListing.setLocation(location);</span>
+<span class="nc" id="L152">            fishListing.setFisherman(fisherman);</span>
+<span class="nc" id="L153">            fishListing.setStatus(status);</span>
+
+<span class="nc" id="L155">            FishListing createdFishListing = fishListingRepo.save(fishListing);</span>
+
+<span class="nc" id="L157">            return new ResponseEntity&lt;&gt;(convertToDto(createdFishListing), HttpStatus.CREATED);</span>
+
+<span class="nc" id="L159">        } catch (IOException e) {</span>
+<span class="nc" id="L160">            return new ResponseEntity&lt;&gt;(&quot;Failed to upload image: &quot; + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);</span>
+<span class="nc" id="L161">        } catch (Exception e) {</span>
+<span class="nc" id="L162">            return new ResponseEntity&lt;&gt;(&quot;Error creating fish listing: &quot; + e.getMessage(), HttpStatus.BAD_REQUEST);</span>
+        }
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;FishListingResponseDto&gt; updateFishListing(@PathVariable Long id,
+            @RequestBody UpdateFishListingDto listingDto) {
+<span class="nc" id="L169">        return fishListingRepo.findById(id).map(existingFishListing -&gt; {</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">            if (listingDto.getFishType() != null)</span>
+<span class="nc" id="L171">                existingFishListing.setFishType(listingDto.getFishType());</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">            if (listingDto.getWeightInKg() != null)</span>
+<span class="nc" id="L173">                existingFishListing.setWeightInKg(listingDto.getWeightInKg());</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">            if (listingDto.getPrice() != null)</span>
+<span class="nc" id="L175">                existingFishListing.setPrice(listingDto.getPrice());</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">            if (listingDto.getPhotoUrl() != null)</span>
+<span class="nc" id="L177">                existingFishListing.setPhotoUrl(listingDto.getPhotoUrl());</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">            if (listingDto.getCatchDate() != null)</span>
+<span class="nc" id="L179">                existingFishListing.setCatchDate(listingDto.getCatchDate());</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">            if (listingDto.getStatus() != null)</span>
+<span class="nc" id="L181">                existingFishListing.setStatus(listingDto.getStatus());</span>
+
+<span class="nc" id="L183">            FishListing updated = fishListingRepo.save(existingFishListing);</span>
+<span class="nc" id="L184">            return ResponseEntity.ok(convertToDto(updated));</span>
+<span class="nc" id="L185">        }).orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;String&gt; deleteFishListing(@PathVariable Long id) {
+<span class="nc bnc" id="L190" title="All 2 branches missed.">        if (!fishListingRepo.existsById(id)) {</span>
+<span class="nc" id="L191">            return ResponseEntity.notFound().build();</span>
+        }
+
+<span class="nc" id="L194">        fishListingRepo.deleteById(id);</span>
+<span class="nc" id="L195">        return ResponseEntity.ok(&quot;FishListing deleted successfully&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

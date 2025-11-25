@@ -1,0 +1,16 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+backend,com.example.backend.controller,FishListingController,351,0,22,0,86,0,20,0,9,0
+backend,com.example.backend.controller,UserController,471,0,38,0,107,0,34,0,15,0
+backend,com.example.backend.controller,OrderController,36,249,1,13,13,60,3,15,2,9
+backend,com.example.backend.controller,PaymentController,129,0,6,0,31,0,10,0,7,0
+backend,com.example.backend.controller,OrderItemController,42,0,2,0,12,0,5,0,4,0
+backend,com.example.backend.controller,ReviewController,0,340,0,16,0,95,0,18,0,10
+backend,com.example.backend.config,SecurityConfig,3,0,0,0,1,0,1,0,1,0
+backend,com.example.backend.config,FileStorageConfig,0,20,0,0,0,4,0,2,0,2
+backend,com.example.backend.enums,ListingStatus,3,46,0,0,1,9,1,2,1,2
+backend,com.example.backend.enums,PaymentStatus,21,0,0,0,4,0,1,0,1,0
+backend,com.example.backend.enums,OrderStatus,0,39,0,0,0,7,0,1,0,1
+backend,com.example.backend.enums,UserRole,15,0,0,0,3,0,1,0,1,0
+backend,com.example.backend.dto,OrderDto,140,0,2,0,35,0,3,0,2,0
+backend,com.example.backend.dto,ReviewResponseDto,27,39,0,0,7,14,7,7,7,7
+backend,com.example.backend,BackendApplication,5,3,0,0,2,1,1,1,1,1

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">backend</a> &gt; <a href="index.source.html" class="el_package">com.example.backend.controller</a> &gt; <span class="el_source">UserController.java</span></div><h1>UserController.java</h1><pre class="source lang-java linenums">package com.example.backend.controller;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.backend.dto.FishListingSummaryDto;
+import com.example.backend.dto.LoginRequestDto;
+import com.example.backend.dto.OrderSummaryDto;
+import com.example.backend.dto.RegisterUserDto;
+import com.example.backend.dto.ReviewSummaryDto;
+import com.example.backend.dto.UpdateUserDto;
+import com.example.backend.dto.UserResponseDto;
+import com.example.backend.enums.UserRole;
+import com.example.backend.model.User;
+import com.example.backend.repository.UserRepo;
+
+@RestController
+@CrossOrigin(origins = &quot;http://localhost:3000&quot;) // Removed allowCredentials as full Spring Security is not used
+@RequestMapping(&quot;/api/users&quot;)
+public class UserController {
+
+<span class="nc" id="L36">    private static final Logger logger = LoggerFactory.getLogger(UserController.class);</span>
+    private final UserRepo userRepo;
+
+<span class="nc" id="L39">    public UserController(UserRepo userRepo) {</span>
+<span class="nc" id="L40">        this.userRepo = userRepo;</span>
+<span class="nc" id="L41">    }</span>
+
+    private synchronized String generateUserId(UserRole role) {
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        String prefix = role == UserRole.BUYER ? &quot;BUY&quot; : &quot;FISHER&quot;;</span>
+<span class="nc" id="L45">        String lastId = userRepo.findMaxIdWithPrefix(prefix);</span>
+<span class="nc" id="L46">        int nextSequence = 1;</span>
+
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (lastId != null) {</span>
+            try {
+<span class="nc" id="L50">                int lastSequence = Integer.parseInt(lastId.substring(prefix.length()));</span>
+<span class="nc" id="L51">                nextSequence = lastSequence + 1;</span>
+<span class="nc" id="L52">            } catch (NumberFormatException | StringIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L53">                logger.warn(&quot;Failed to parse sequence from lastId: '{}'. Resetting sequence to 1. Error: {}&quot;, lastId, e.getMessage());</span>
+                // If parsing fails, it means the ID format is unexpected. Start from 1,
+                // but rely on the unique constraint to catch actual duplicates.
+<span class="nc" id="L56">                nextSequence = 1; </span>
+<span class="nc" id="L57">            }</span>
+        }
+<span class="nc" id="L59">        return String.format(&quot;%s%04d&quot;, prefix, nextSequence);</span>
+    }
+
+    private UserResponseDto convertToDto(User user) {
+<span class="nc" id="L63">        UserResponseDto dto = new UserResponseDto();</span>
+<span class="nc" id="L64">        dto.setId(user.getId());</span>
+<span class="nc" id="L65">        dto.setFirstName(user.getFirstName());</span>
+<span class="nc" id="L66">        dto.setLastName(user.getLastName());</span>
+<span class="nc" id="L67">        dto.setUsername(user.getUsername());</span>
+<span class="nc" id="L68">        dto.setEmail(user.getEmail());</span>
+<span class="nc" id="L69">        dto.setRole(user.getRole());</span>
+<span class="nc" id="L70">        dto.setProfileInfo(user.getProfileInfo());</span>
+<span class="nc" id="L71">        dto.setLocation(user.getLocation());</span>
+<span class="nc" id="L72">        dto.setCreatedAt(user.getCreatedAt());</span>
+
+<span class="nc bnc" id="L74" title="All 4 branches missed.">        if (user.getRole() == UserRole.FISHERMAN &amp;&amp; user.getFishListings() != null) {</span>
+<span class="nc" id="L75">            dto.setFishListings(user.getFishListings().stream().map(listing -&gt; {</span>
+<span class="nc" id="L76">                FishListingSummaryDto summary = new FishListingSummaryDto();</span>
+<span class="nc" id="L77">                summary.setId(listing.getId());</span>
+<span class="nc" id="L78">                summary.setFishType(listing.getFishType());</span>
+<span class="nc" id="L79">                return summary;</span>
+<span class="nc" id="L80">            }).toList());</span>
+        }
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (user.getRole() == UserRole.BUYER) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (user.getOrders() != null) {</span>
+<span class="nc" id="L85">                dto.setOrders(user.getOrders().stream().map(order -&gt; {</span>
+<span class="nc" id="L86">                    OrderSummaryDto summary = new OrderSummaryDto();</span>
+<span class="nc" id="L87">                    summary.setId(order.getId());</span>
+<span class="nc" id="L88">                    summary.setOrderDate(order.getOrderDate());</span>
+<span class="nc" id="L89">                    summary.setStatus(order.getStatus());</span>
+<span class="nc" id="L90">                    summary.setTotalPrice(order.getTotalPrice());</span>
+<span class="nc" id="L91">                    return summary;</span>
+<span class="nc" id="L92">                }).toList());</span>
+            }
+
+<span class="nc bnc" id="L95" title="All 2 branches missed.">            if (user.getReviews() != null) {</span>
+<span class="nc" id="L96">                dto.setReviews(user.getReviews().stream().map(review -&gt; {</span>
+<span class="nc" id="L97">                    ReviewSummaryDto summary = new ReviewSummaryDto();</span>
+<span class="nc" id="L98">                    summary.setId(review.getId());</span>
+<span class="nc" id="L99">                    summary.setRating(review.getRating());</span>
+<span class="nc" id="L100">                    summary.setComment(review.getComment());</span>
+<span class="nc" id="L101">                    summary.setReviewDate(review.getReviewDate());</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">                    if (review.getOrderItem() != null) {</span>
+<span class="nc" id="L103">                        summary.setOrderItemId(review.getOrderItem().getId());</span>
+                    }
+<span class="nc" id="L105">                    return summary;</span>
+<span class="nc" id="L106">                }).toList());</span>
+            }
+        }
+
+<span class="nc" id="L110">        return dto;</span>
+    }
+
+    @GetMapping(&quot;/list&quot;)
+    public ResponseEntity&lt;List&lt;UserResponseDto&gt;&gt; getAllUsers() {
+<span class="nc" id="L115">        List&lt;User&gt; users = userRepo.findAll();</span>
+<span class="nc" id="L116">        List&lt;UserResponseDto&gt; userDtos = users.stream().map(this::convertToDto).toList();</span>
+<span class="nc" id="L117">        return ResponseEntity.ok(userDtos);</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;UserResponseDto&gt; getUserById(@PathVariable String id) {
+<span class="nc" id="L122">        return userRepo.findById(id).map(user -&gt; ResponseEntity.ok(convertToDto(user))).orElse(ResponseEntity.notFound().build());</span>
+    }
+    
+    @PostMapping(&quot;/register&quot;) // Changed from createUser to registerUser for clarity
+    public ResponseEntity&lt;?&gt; registerUser(@RequestBody RegisterUserDto registerDto) {
+        // Check if username already exists
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (userRepo.findByUsername(registerDto.getUsername()).isPresent()) {</span>
+<span class="nc" id="L129">            return new ResponseEntity&lt;&gt;(&quot;Username already exists&quot;, HttpStatus.CONFLICT);</span>
+        }
+        // Check if email already exists
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        if (userRepo.findByEmail(registerDto.getEmail()).isPresent()) {</span>
+<span class="nc" id="L133">            return new ResponseEntity&lt;&gt;(&quot;Email already exists&quot;, HttpStatus.CONFLICT);</span>
+        }
+
+<span class="nc" id="L136">        User user = new User();</span>
+<span class="nc" id="L137">        user.setUsername(registerDto.getUsername());</span>
+<span class="nc" id="L138">        user.setEmail(registerDto.getEmail());</span>
+        // Save the password in plain text
+<span class="nc" id="L140">        user.setPassword(registerDto.getPassword());</span>
+<span class="nc" id="L141">        user.setFirstName(registerDto.getFirstName());</span>
+<span class="nc" id="L142">        user.setLastName(registerDto.getLastName());</span>
+<span class="nc" id="L143">        user.setProfileInfo(registerDto.getProfileInfo());</span>
+<span class="nc" id="L144">        user.setLocation(registerDto.getLocation());</span>
+
+        try {
+<span class="nc" id="L147">            String roleString = registerDto.getRole();</span>
+<span class="nc" id="L148">            UserRole role = UserRole.valueOf(roleString.toUpperCase());</span>
+<span class="nc" id="L149">            user.setRole(role);</span>
+
+            // Generate and set the custom ID
+<span class="nc" id="L152">            String newId = generateUserId(role);</span>
+<span class="nc" id="L153">            user.setId(newId);</span>
+<span class="nc" id="L154">        } catch (IllegalArgumentException e) {</span>
+            // Catch specific exception for invalid enum value
+<span class="nc" id="L156">            logger.error(&quot;Invalid role specified during registration: {}&quot;, registerDto.getRole());</span>
+<span class="nc" id="L157">            return new ResponseEntity&lt;&gt;(&quot;Invalid role specified. Must be 'BUYER' or 'FISHERMAN'.&quot;, HttpStatus.BAD_REQUEST);</span>
+<span class="nc" id="L158">        } catch (Exception e) { // Catch any other unexpected errors during ID generation or role assignment</span>
+<span class="nc" id="L159">            logger.error(&quot;An unexpected error occurred during user registration: {}&quot;, e.getMessage(), e);</span>
+<span class="nc" id="L160">            return new ResponseEntity&lt;&gt;(&quot;An unexpected error occurred during registration.&quot;, HttpStatus.INTERNAL_SERVER_ERROR);</span>
+<span class="nc" id="L161">        }</span>
+
+<span class="nc" id="L163">        User createdUser = userRepo.save(user);</span>
+<span class="nc" id="L164">        return new ResponseEntity&lt;&gt;(createdUser, HttpStatus.CREATED);</span>
+    }
+
+    @PostMapping(&quot;/login&quot;) // Changed to POST and using DTO
+    public ResponseEntity&lt;?&gt; login(@RequestBody LoginRequestDto loginRequest) {
+        // Try to find user by username first
+<span class="nc" id="L170">        Optional&lt;User&gt; userOptional = userRepo.findByUsername(loginRequest.getUsername());</span>
+
+        // If not found by username, try by email (assuming username or email can be used for login)
+<span class="nc bnc" id="L173" title="All 4 branches missed.">        if (userOptional.isEmpty() &amp;&amp; loginRequest.getUsername().contains(&quot;@&quot;)) {</span>
+<span class="nc" id="L174">            userOptional = userRepo.findByEmail(loginRequest.getUsername());</span>
+        }
+
+<span class="nc" id="L177">        return userOptional.map(user -&gt; {</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">            if (loginRequest.getPassword().equals(user.getPassword())) {</span>
+<span class="nc" id="L179">                return ResponseEntity.ok(user); // Login successful</span>
+            } else {
+<span class="nc" id="L181">                return new ResponseEntity&lt;&gt;(&quot;Invalid username or password&quot;, HttpStatus.UNAUTHORIZED); // Password mismatch</span>
+            }
+<span class="nc" id="L183">        }).orElse(new ResponseEntity&lt;&gt;(&quot;Invalid username or password&quot;, HttpStatus.UNAUTHORIZED)); // User not found</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;) // Use PUT for updating existing resources
+    public ResponseEntity&lt;?&gt; updateUser(@PathVariable String id, @RequestBody UpdateUserDto updateDto) {
+<span class="nc" id="L188">        Optional&lt;User&gt; userOptional = userRepo.findById(id);</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">        if (userOptional.isEmpty()) {</span>
+<span class="nc" id="L190">            return ResponseEntity.notFound().build();</span>
+        }
+
+<span class="nc" id="L193">        User existingUser = userOptional.get();</span>
+        // Update only the allowed fields from the DTO
+<span class="nc bnc" id="L195" title="All 2 branches missed.">        if (updateDto.getFirstName() != null) existingUser.setFirstName(updateDto.getFirstName());</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">        if (updateDto.getLastName() != null) existingUser.setLastName(updateDto.getLastName());</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (updateDto.getProfileInfo() != null) existingUser.setProfileInfo(updateDto.getProfileInfo());</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">        if (updateDto.getLocation() != null) existingUser.setLocation(updateDto.getLocation());</span>
+
+<span class="nc" id="L200">        User updatedUser = userRepo.save(existingUser);</span>
+<span class="nc" id="L201">        logger.info(&quot;User with ID {} updated successfully.&quot;, id);</span>
+<span class="nc" id="L202">        return ResponseEntity.ok(updatedUser);</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;) // Simplified RESTful endpoint
+    public ResponseEntity&lt;String&gt; deleteUser(@PathVariable String id) {
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        if (!userRepo.existsById(id)) { // More efficient check</span>
+<span class="nc" id="L208">            return ResponseEntity.notFound().build();</span>
+        }
+
+<span class="nc" id="L211">        userRepo.deleteById(id);</span>
+<span class="nc" id="L212">        return ResponseEntity.ok(&quot;User deleted successfully&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

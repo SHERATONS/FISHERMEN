@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">backend</a> &gt; <a href="index.source.html" class="el_package">com.example.backend.dto</a> &gt; <span class="el_source">OrderDto.java</span></div><h1>OrderDto.java</h1><pre class="source lang-java linenums">package com.example.backend.dto;
+
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import com.example.backend.model.Order;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class OrderDto {
+
+
+   private String id;
+   private LocalDateTime orderDate;
+   private String status;
+   private BigDecimal totalPrice;
+
+
+   private List&lt;OrderItemDto&gt; items;
+   private BuyerDto buyer;
+   @Data
+   @AllArgsConstructor
+   @NoArgsConstructor
+   public static class BuyerDto {
+       private String id;
+       private String username;
+       private String firstName;
+       private String lastName;
+   }
+
+
+   public static OrderDto from(Order order) {
+<span class="nc" id="L41">       OrderDto dto = new OrderDto();</span>
+<span class="nc" id="L42">       dto.setId(order.getId());</span>
+<span class="nc" id="L43">       dto.setOrderDate(order.getOrderDate());</span>
+<span class="nc" id="L44">       dto.setStatus(order.getStatus().name());</span>
+<span class="nc" id="L45">       dto.setTotalPrice(order.getTotalPrice());</span>
+
+       // Map Items
+<span class="nc" id="L48">       List&lt;OrderItemDto&gt; itemDtos = order.getItems().stream().map(item -&gt; {</span>
+<span class="nc" id="L49">           OrderItemDto iDto = new OrderItemDto();</span>
+<span class="nc" id="L50">           iDto.setId(item.getId());</span>
+<span class="nc" id="L51">           iDto.setFishListingId(item.getFishListing().getId());</span>
+<span class="nc" id="L52">           iDto.setFishName(item.getFishListing().getFishType());</span>
+<span class="nc" id="L53">           iDto.setPriceAtPurchase(item.getPriceAtPurchase());</span>
+<span class="nc" id="L54">           iDto.setQuantity(item.getQuantity());</span>
+<span class="nc" id="L55">           iDto.setPhotoUrl(item.getFishListing().getPhotoUrl());</span>
+           
+           // Add fishListing details
+<span class="nc" id="L58">           OrderItemDto.FishListingDto fishListingDto = new OrderItemDto.FishListingDto();</span>
+<span class="nc" id="L59">           fishListingDto.setId(item.getFishListing().getId());</span>
+<span class="nc" id="L60">           fishListingDto.setFishType(item.getFishListing().getFishType());</span>
+<span class="nc" id="L61">           fishListingDto.setPrice(item.getFishListing().getPrice());</span>
+<span class="nc" id="L62">           fishListingDto.setPhotoUrl(item.getFishListing().getPhotoUrl());</span>
+           
+           // Add fisherman details
+<span class="nc" id="L65">           OrderItemDto.FishListingDto.FishermanDto fishermanDto = new OrderItemDto.FishListingDto.FishermanDto();</span>
+<span class="nc" id="L66">           fishermanDto.setId(item.getFishListing().getFisherman().getId());</span>
+<span class="nc" id="L67">           fishermanDto.setFirstName(item.getFishListing().getFisherman().getFirstName());</span>
+<span class="nc" id="L68">           fishermanDto.setLastName(item.getFishListing().getFisherman().getLastName());</span>
+<span class="nc" id="L69">           fishListingDto.setFisherman(fishermanDto);</span>
+           
+<span class="nc" id="L71">           iDto.setFishListing(fishListingDto);</span>
+           
+<span class="nc" id="L73">           return iDto;</span>
+<span class="nc" id="L74">       }).toList();</span>
+
+<span class="nc" id="L76">       dto.setItems(itemDtos);</span>
+
+       // Map Buyer
+<span class="nc bnc" id="L79" title="All 2 branches missed.">       if (order.getBuyer() != null) {</span>
+<span class="nc" id="L80">           BuyerDto buyerDto = new BuyerDto(</span>
+<span class="nc" id="L81">               order.getBuyer().getId(),</span>
+<span class="nc" id="L82">               order.getBuyer().getUsername(),</span>
+<span class="nc" id="L83">               order.getBuyer().getFirstName(),</span>
+<span class="nc" id="L84">               order.getBuyer().getLastName()</span>
+           );
+<span class="nc" id="L86">           dto.setBuyer(buyerDto);</span>
+       }
+
+<span class="nc" id="L89">       return dto;</span>
+   }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
