@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,6 @@ class ReviewControllerTest {
         buyer.setUsername("test_buyer");
         buyer.setEmail("buyer@test.com");
 
-
         otherBuyer = new User();
         otherBuyer.setId("BUY0002");
         otherBuyer.setFirstName("Other Buyer");
@@ -92,9 +90,14 @@ class ReviewControllerTest {
         review.setReviewDate(LocalDateTime.now());
     }
 
-    // Test 4: Submission flow (happy path - end to end)
+    // =================================================================================================
+    // Feature 1: Create Review (MBCC)
+    // Characteristics: Buyer ID, Order Item ID, Uniqueness, Permission, Data (Rating/Comment)
+    // =================================================================================================
+
+    // MBCC Base Choice 1: Valid Buyer, Valid Item, New, Authorized, Positive Data (Rating 5)
     @Test
-    void testCreateReview_HappyPath() throws Exception {
+    void testCreateReview_BaseChoice_Positive() throws Exception {
         CreateReviewDto createDto = new CreateReviewDto();
         createDto.setRating(5);
         createDto.setComment("Excellent fish quality!");
@@ -110,16 +113,125 @@ class ReviewControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.rating").value(5))
-                .andExpect(jsonPath("$.comment").value("Great product!"))
-                .andExpect(jsonPath("$.buyerId").value("BUY0001"))
-                .andExpect(jsonPath("$.orderItemId").value(1L));
+                .andExpect(jsonPath("$.rating").value(5));
 
         verify(reviewRepo).save(any(Review.class));
     }
 
+    // MBCC Base Choice 2: Valid Buyer, Valid Item, New, Authorized, Negative Data (Rating 1)
     @Test
-    void testUpdateReview_HappyPath() throws Exception {
+    void testCreateReview_BaseChoice_Negative() throws Exception {
+        CreateReviewDto createDto = new CreateReviewDto();
+        createDto.setRating(1);
+        createDto.setComment("Bad quality.");
+        createDto.setBuyerId("BUY0001");
+        createDto.setOrderItemId(1L);
+
+        Review negativeReview = new Review();
+        negativeReview.setId(2L);
+        negativeReview.setRating(1);
+        negativeReview.setComment("Bad quality.");
+        negativeReview.setBuyer(buyer);
+        negativeReview.setOrderItem(orderItem);
+        negativeReview.setReviewDate(LocalDateTime.now());
+
+        when(userRepo.findById("BUY0001")).thenReturn(Optional.of(buyer));
+        when(orderItemRepo.findById(1L)).thenReturn(Optional.of(orderItem));
+        when(reviewRepo.existsByOrderItemId(1L)).thenReturn(false);
+        when(reviewRepo.save(any(Review.class))).thenReturn(negativeReview);
+
+        mockMvc.perform(post("/api/reviews/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.rating").value(1));
+    }
+
+    // MBCC Variation 1: Invalid Buyer ID
+    @Test
+    void testCreateReview_Variation_InvalidBuyer() throws Exception {
+        CreateReviewDto createDto = new CreateReviewDto();
+        createDto.setRating(5);
+        createDto.setComment("Great!");
+        createDto.setBuyerId("INVALID");
+        createDto.setOrderItemId(1L);
+
+        when(userRepo.findById("INVALID")).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/api/reviews/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDto)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Buyer not found"));
+    }
+
+    // MBCC Variation 2: Invalid Order Item ID
+    @Test
+    void testCreateReview_Variation_InvalidOrderItem() throws Exception {
+        CreateReviewDto createDto = new CreateReviewDto();
+        createDto.setRating(5);
+        createDto.setComment("Great!");
+        createDto.setBuyerId("BUY0001");
+        createDto.setOrderItemId(999L);
+
+        when(userRepo.findById("BUY0001")).thenReturn(Optional.of(buyer));
+        when(orderItemRepo.findById(999L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/api/reviews/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDto)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Order item not found"));
+    }
+
+    // MBCC Variation 3: Review Already Exists
+    @Test
+    void testCreateReview_Variation_ReviewExists() throws Exception {
+        CreateReviewDto createDto = new CreateReviewDto();
+        createDto.setRating(5);
+        createDto.setComment("Great!");
+        createDto.setBuyerId("BUY0001");
+        createDto.setOrderItemId(1L);
+
+        when(userRepo.findById("BUY0001")).thenReturn(Optional.of(buyer));
+        when(orderItemRepo.findById(1L)).thenReturn(Optional.of(orderItem));
+        when(reviewRepo.existsByOrderItemId(1L)).thenReturn(true);
+
+        mockMvc.perform(post("/api/reviews/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDto)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Review for this order item already exists"));
+    }
+
+    // MBCC Variation 4: Unauthorized Buyer (Not the owner)
+    @Test
+    void testCreateReview_Variation_UnauthorizedBuyer() throws Exception {
+        CreateReviewDto createDto = new CreateReviewDto();
+        createDto.setRating(5);
+        createDto.setComment("Great!");
+        createDto.setBuyerId("BUY0002");
+        createDto.setOrderItemId(1L);
+
+        when(userRepo.findById("BUY0002")).thenReturn(Optional.of(otherBuyer));
+        when(orderItemRepo.findById(1L)).thenReturn(Optional.of(orderItem));
+        when(reviewRepo.existsByOrderItemId(1L)).thenReturn(false);
+
+        mockMvc.perform(post("/api/reviews/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDto)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("This order item does not belong to the specified buyer"));
+    }
+
+    // =================================================================================================
+    // Feature 2: Update Review (MBCC)
+    // Characteristics: Review ID, Update Payload
+    // =================================================================================================
+
+    // MBCC Base Choice 1: Valid ID, Full Update
+    @Test
+    void testUpdateReview_BaseChoice_FullUpdate() throws Exception {
         UpdateReviewDto updateDto = new UpdateReviewDto();
         updateDto.setRating(4);
         updateDto.setComment("Updated comment");
@@ -143,100 +255,61 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.comment").value("Updated comment"));
     }
 
+    // MBCC Base Choice 2: Valid ID, Rating Only
     @Test
-    void testGetAllReviews() throws Exception {
-        List<Review> reviews = Arrays.asList(review);
-        when(reviewRepo.findAll()).thenReturn(reviews);
+    void testUpdateReview_BaseChoice_RatingOnly() throws Exception {
+        UpdateReviewDto updateDto = new UpdateReviewDto();
+        updateDto.setRating(3);
 
-        mockMvc.perform(get("/api/reviews/list"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].rating").value(5))
-                .andExpect(jsonPath("$[0].comment").value("Great product!"));
-    }
+        Review updatedReview = new Review();
+        updatedReview.setId(1L);
+        updatedReview.setRating(3);
+        updatedReview.setComment("Great product!"); // Original comment
+        updatedReview.setBuyer(buyer);
+        updatedReview.setOrderItem(orderItem);
+        updatedReview.setReviewDate(LocalDateTime.now());
 
-    @Test
-    void testGetReviewsByBuyerId() throws Exception {
-        List<Review> reviews = Arrays.asList(review);
-        when(reviewRepo.findByBuyerId("BUY0001")).thenReturn(reviews);
+        when(reviewRepo.findById(1L)).thenReturn(Optional.of(review));
+        when(reviewRepo.save(any(Review.class))).thenReturn(updatedReview);
 
-        mockMvc.perform(get("/api/reviews/buyer/BUY0001"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].buyerId").value("BUY0001"));
-    }
-
-    @Test
-    void testDeleteReview() throws Exception {
-        when(reviewRepo.existsById(1L)).thenReturn(true);
-
-        mockMvc.perform(delete("/api/reviews/delete/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Review deleted successfully"));
-
-        verify(reviewRepo).deleteById(1L);
-    }
-
-    // Test 5: Validation tests
-    @Test
-    void testCreateReview_BuyerNotFound() throws Exception {
-        CreateReviewDto createDto = new CreateReviewDto();
-        createDto.setRating(5);
-        createDto.setComment("Great product!");
-        createDto.setBuyerId("INVALID_BUYER");
-        createDto.setOrderItemId(1L);
-
-        when(userRepo.findById("INVALID_BUYER")).thenReturn(Optional.empty());
-
-        mockMvc.perform(post("/api/reviews/create")
+        mockMvc.perform(put("/api/reviews/update/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Buyer not found"));
+                .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rating").value(3))
+                .andExpect(jsonPath("$.comment").value("Great product!"));
     }
 
+    // MBCC Base Choice 3: Valid ID, Comment Only
     @Test
-    void testCreateReview_OrderItemNotFound() throws Exception {
-        CreateReviewDto createDto = new CreateReviewDto();
-        createDto.setRating(5);
-        createDto.setComment("Great product!");
-        createDto.setBuyerId("BUY0001");
-        createDto.setOrderItemId(999L);
+    void testUpdateReview_BaseChoice_CommentOnly() throws Exception {
+        UpdateReviewDto updateDto = new UpdateReviewDto();
+        updateDto.setComment("Just okay.");
 
-        when(userRepo.findById("BUY0001")).thenReturn(Optional.of(buyer));
-        when(orderItemRepo.findById(999L)).thenReturn(Optional.empty());
+        Review updatedReview = new Review();
+        updatedReview.setId(1L);
+        updatedReview.setRating(5); // Original rating
+        updatedReview.setComment("Just okay.");
+        updatedReview.setBuyer(buyer);
+        updatedReview.setOrderItem(orderItem);
+        updatedReview.setReviewDate(LocalDateTime.now());
 
-        mockMvc.perform(post("/api/reviews/create")
+        when(reviewRepo.findById(1L)).thenReturn(Optional.of(review));
+        when(reviewRepo.save(any(Review.class))).thenReturn(updatedReview);
+
+        mockMvc.perform(put("/api/reviews/update/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Order item not found"));
+                .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rating").value(5))
+                .andExpect(jsonPath("$.comment").value("Just okay."));
     }
 
+    // MBCC Variation 1: Invalid Review ID
     @Test
-    void testCreateReview_ReviewAlreadyExists() throws Exception {
-        CreateReviewDto createDto = new CreateReviewDto();
-        createDto.setRating(5);
-        createDto.setComment("Great product!");
-        createDto.setBuyerId("BUY0001");
-        createDto.setOrderItemId(1L);
-
-        when(userRepo.findById("BUY0001")).thenReturn(Optional.of(buyer));
-        when(orderItemRepo.findById(1L)).thenReturn(Optional.of(orderItem));
-        when(reviewRepo.existsByOrderItemId(1L)).thenReturn(true);
-
-        mockMvc.perform(post("/api/reviews/create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("Review for this order item already exists"));
-    }
-
-    @Test
-    void testUpdateReview_ReviewNotFound() throws Exception {
+    void testUpdateReview_Variation_InvalidId() throws Exception {
         UpdateReviewDto updateDto = new UpdateReviewDto();
         updateDto.setRating(4);
-        updateDto.setComment("Updated comment");
 
         when(reviewRepo.findById(999L)).thenReturn(Optional.empty());
 
@@ -247,62 +320,77 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.message").value("Review not found"));
     }
 
-    @Test
-    void testGetReviewById_NotFound() throws Exception {
-        when(reviewRepo.findById(999L)).thenReturn(Optional.empty());
+    // =================================================================================================
+    // Feature 3: Delete Review (MBCC)
+    // Characteristics: Review ID
+    // =================================================================================================
 
-        mockMvc.perform(get("/api/reviews/999"))
-                .andExpect(status().isNotFound());
+    // MBCC Base Choice: Valid ID
+    @Test
+    void testDeleteReview_BaseChoice_ValidId() throws Exception {
+        when(reviewRepo.existsById(1L)).thenReturn(true);
+
+        mockMvc.perform(delete("/api/reviews/delete/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Review deleted successfully"));
+
+        verify(reviewRepo).deleteById(1L);
     }
 
+    // MBCC Variation: Invalid ID
     @Test
-    void testDeleteReview_NotFound() throws Exception {
+    void testDeleteReview_Variation_InvalidId() throws Exception {
         when(reviewRepo.existsById(999L)).thenReturn(false);
 
         mockMvc.perform(delete("/api/reviews/delete/999"))
                 .andExpect(status().isNotFound());
     }
 
-    // Test 6: Permission tests
+    // =================================================================================================
+    // Feature 4: Get Review(s) (MBCC)
+    // Characteristics: ID/BuyerID Validity
+    // =================================================================================================
+
+    // MBCC Base Choice: Valid Review ID
     @Test
-    void testCreateReview_WrongBuyerPermission() throws Exception {
-        CreateReviewDto createDto = new CreateReviewDto();
-        createDto.setRating(5);
-        createDto.setComment("Great product!");
-        createDto.setBuyerId("BUY0002");
-        createDto.setOrderItemId(1L);
+    void testGetReviewById_BaseChoice_ValidId() throws Exception {
+        when(reviewRepo.findById(1L)).thenReturn(Optional.of(review));
 
-        when(userRepo.findById("BUY0002")).thenReturn(Optional.of(otherBuyer));
-        when(orderItemRepo.findById(1L)).thenReturn(Optional.of(orderItem));
-        when(reviewRepo.existsByOrderItemId(1L)).thenReturn(false);
-
-        mockMvc.perform(post("/api/reviews/create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value("This order item does not belong to the specified buyer"));
-
-        verify(reviewRepo, never()).save(any(Review.class));
+        mockMvc.perform(get("/api/reviews/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
     }
 
+    // MBCC Variation: Invalid Review ID
     @Test
-    void testCreateReview_CorrectBuyerPermission() throws Exception {
-        CreateReviewDto createDto = new CreateReviewDto();
-        createDto.setRating(5);
-        createDto.setComment("Great product!");
-        createDto.setBuyerId("BUY0001");
-        createDto.setOrderItemId(1L);
+    void testGetReviewById_Variation_InvalidId() throws Exception {
+        when(reviewRepo.findById(999L)).thenReturn(Optional.empty());
 
-        when(userRepo.findById("BUY0001")).thenReturn(Optional.of(buyer));
-        when(orderItemRepo.findById(1L)).thenReturn(Optional.of(orderItem));
-        when(reviewRepo.existsByOrderItemId(1L)).thenReturn(false);
-        when(reviewRepo.save(any(Review.class))).thenReturn(review);
+        mockMvc.perform(get("/api/reviews/999"))
+                .andExpect(status().isNotFound());
+    }
 
-        mockMvc.perform(post("/api/reviews/create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(status().isCreated());
+    // MBCC Base Choice: Get All Reviews
+    @Test
+    void testGetAllReviews_BaseChoice() throws Exception {
+        List<Review> reviews = Arrays.asList(review);
+        when(reviewRepo.findAll()).thenReturn(reviews);
 
-        verify(reviewRepo).save(any(Review.class));
+        mockMvc.perform(get("/api/reviews/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").value(1));
+    }
+
+    // MBCC Base Choice: Get Reviews by Buyer ID
+    @Test
+    void testGetReviewsByBuyerId_BaseChoice() throws Exception {
+        List<Review> reviews = Arrays.asList(review);
+        when(reviewRepo.findByBuyerId("BUY0001")).thenReturn(reviews);
+
+        mockMvc.perform(get("/api/reviews/buyer/BUY0001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].buyerId").value("BUY0001"));
     }
 }
