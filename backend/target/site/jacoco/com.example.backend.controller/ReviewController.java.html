@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReviewController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">backend</a> &gt; <a href="index.source.html" class="el_package">com.example.backend.controller</a> &gt; <span class="el_source">ReviewController.java</span></div><h1>ReviewController.java</h1><pre class="source lang-java linenums">package com.example.backend.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.backend.dto.CreateReviewDto;
+import com.example.backend.dto.ReviewResponseDto;
+import com.example.backend.dto.UpdateReviewDto;
+import com.example.backend.model.OrderItem;
+import com.example.backend.model.Review;
+import com.example.backend.model.User;
+import com.example.backend.repository.OrderItemRepo;
+
+@RestController
+@CrossOrigin(origins = &quot;http://localhost:3000&quot;)
+@RequestMapping(&quot;/api/reviews&quot;)
+public class ReviewController {
+
+    private final com.example.backend.repository.ReviewRepo reviewRepo;
+    private final com.example.backend.repository.UserRepo userRepo;
+    private final OrderItemRepo orderItemRepo;
+
+<span class="fc" id="L37">    public ReviewController(com.example.backend.repository.ReviewRepo reviewRepo, com.example.backend.repository.UserRepo userRepo, OrderItemRepo orderItemRepo) {</span>
+<span class="fc" id="L38">        this.reviewRepo = reviewRepo;</span>
+<span class="fc" id="L39">        this.userRepo = userRepo;</span>
+<span class="fc" id="L40">        this.orderItemRepo = orderItemRepo;</span>
+<span class="fc" id="L41">    }</span>
+
+    @GetMapping(&quot;/list&quot;)
+    public ResponseEntity&lt;List&lt;ReviewResponseDto&gt;&gt; getAllReviews() {
+<span class="fc" id="L45">        List&lt;Review&gt; reviews = reviewRepo.findAll();</span>
+<span class="fc" id="L46">        List&lt;ReviewResponseDto&gt; dtos = reviews.stream()</span>
+<span class="fc" id="L47">            .map(r -&gt; new ReviewResponseDto(</span>
+<span class="fc" id="L48">                r.getId(),</span>
+<span class="fc" id="L49">                r.getRating(),</span>
+<span class="fc" id="L50">                r.getComment(),</span>
+<span class="fc" id="L51">                r.getBuyer().getId(),</span>
+<span class="fc" id="L52">                r.getOrderItem().getId(),</span>
+<span class="fc" id="L53">                r.getReviewDate()</span>
+            ))
+<span class="fc" id="L55">            .toList();</span>
+<span class="fc" id="L56">        return ResponseEntity.ok(dtos);</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;ReviewResponseDto&gt; getReviewById(@PathVariable Long id) {
+<span class="fc" id="L61">        return reviewRepo.findById(id)</span>
+<span class="fc" id="L62">            .map(r -&gt; new ReviewResponseDto(</span>
+<span class="fc" id="L63">                r.getId(),</span>
+<span class="fc" id="L64">                r.getRating(),</span>
+<span class="fc" id="L65">                r.getComment(),</span>
+<span class="fc" id="L66">                r.getBuyer().getId(),</span>
+<span class="fc" id="L67">                r.getOrderItem().getId(),</span>
+<span class="fc" id="L68">                r.getReviewDate()</span>
+            ))
+<span class="fc" id="L70">            .map(ResponseEntity::ok)</span>
+<span class="fc" id="L71">            .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    @PostMapping(&quot;/create&quot;)
+    public ResponseEntity&lt;?&gt; createReview(@RequestBody CreateReviewDto reviewDto) {
+        // Find the buyer by their String ID
+<span class="fc" id="L77">        Optional&lt;User&gt; buyerOptional = userRepo.findById(reviewDto.getBuyerId());</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (buyerOptional.isEmpty()) {</span>
+<span class="fc" id="L79">            Map&lt;String, String&gt; errorResponse = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L80">            errorResponse.put(&quot;message&quot;, &quot;Buyer not found&quot;);</span>
+<span class="fc" id="L81">            return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.NOT_FOUND);</span>
+        }
+
+        // Find the order item by its Long ID
+<span class="fc" id="L85">        Optional&lt;OrderItem&gt; orderItemOptional = orderItemRepo.findById(reviewDto.getOrderItemId());</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (orderItemOptional.isEmpty()) {</span>
+<span class="fc" id="L87">            Map&lt;String, String&gt; errorResponse = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L88">            errorResponse.put(&quot;message&quot;, &quot;Order item not found&quot;);</span>
+<span class="fc" id="L89">            return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.NOT_FOUND);</span>
+        }
+
+        // Check if a review for this order item already exists
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (reviewRepo.existsByOrderItemId(reviewDto.getOrderItemId())) {</span>
+<span class="fc" id="L94">            Map&lt;String, String&gt; errorResponse = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L95">            errorResponse.put(&quot;message&quot;, &quot;Review for this order item already exists&quot;);</span>
+<span class="fc" id="L96">            return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.CONFLICT);</span>
+        }
+
+<span class="fc" id="L99">        User buyer = buyerOptional.get();</span>
+<span class="fc" id="L100">        OrderItem orderItem = orderItemOptional.get();</span>
+
+        // Verify that the buyer who is leaving the review is the one who placed the order
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (!orderItem.getOrder().getBuyer().getId().equals(buyer.getId())) {</span>
+<span class="fc" id="L104">            Map&lt;String, String&gt; errorResponse = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L105">            errorResponse.put(&quot;message&quot;, &quot;This order item does not belong to the specified buyer&quot;);</span>
+<span class="fc" id="L106">            return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.FORBIDDEN);</span>
+        }
+
+<span class="fc" id="L109">        Review review = new Review();</span>
+<span class="fc" id="L110">        review.setRating(reviewDto.getRating());</span>
+<span class="fc" id="L111">        review.setComment(reviewDto.getComment());</span>
+<span class="fc" id="L112">        review.setBuyer(buyer);</span>
+<span class="fc" id="L113">        review.setOrderItem(orderItem);</span>
+<span class="fc" id="L114">        review.setReviewDate(java.time.LocalDateTime.now());</span>
+
+<span class="fc" id="L116">        Review createdReview = reviewRepo.save(review);</span>
+<span class="fc" id="L117">        ReviewResponseDto responseDto = new ReviewResponseDto(</span>
+<span class="fc" id="L118">            createdReview.getId(),</span>
+<span class="fc" id="L119">            createdReview.getRating(),</span>
+<span class="fc" id="L120">            createdReview.getComment(),</span>
+<span class="fc" id="L121">            createdReview.getBuyer().getId(),</span>
+<span class="fc" id="L122">            createdReview.getOrderItem().getId(),</span>
+<span class="fc" id="L123">            createdReview.getReviewDate()</span>
+        );
+<span class="fc" id="L125">        return new ResponseEntity&lt;&gt;(responseDto, HttpStatus.CREATED);</span>
+    }
+
+    @GetMapping(&quot;/buyer/{buyerId}&quot;)
+    public ResponseEntity&lt;List&lt;ReviewResponseDto&gt;&gt; getReviewsByBuyerId(@PathVariable String buyerId) {
+<span class="fc" id="L130">        List&lt;Review&gt; reviews = reviewRepo.findByBuyerId(buyerId);</span>
+<span class="fc" id="L131">        List&lt;ReviewResponseDto&gt; dtos = reviews.stream()</span>
+<span class="fc" id="L132">            .map(r -&gt; new ReviewResponseDto(</span>
+<span class="fc" id="L133">                r.getId(),</span>
+<span class="fc" id="L134">                r.getRating(),</span>
+<span class="fc" id="L135">                r.getComment(),</span>
+<span class="fc" id="L136">                r.getBuyer().getId(),</span>
+<span class="fc" id="L137">                r.getOrderItem().getId(),</span>
+<span class="fc" id="L138">                r.getReviewDate()</span>
+            ))
+<span class="fc" id="L140">            .toList();</span>
+<span class="fc" id="L141">        return ResponseEntity.ok(dtos);</span>
+    }
+
+    @PutMapping(&quot;/update/{id}&quot;)
+    public ResponseEntity&lt;?&gt; updateReview(@PathVariable Long id, @RequestBody UpdateReviewDto reviewDto) {
+<span class="fc" id="L146">        Optional&lt;Review&gt; reviewOptional = reviewRepo.findById(id);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        if (reviewOptional.isEmpty()) {</span>
+<span class="fc" id="L148">            Map&lt;String, String&gt; errorResponse = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L149">            errorResponse.put(&quot;message&quot;, &quot;Review not found&quot;);</span>
+<span class="fc" id="L150">            return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.NOT_FOUND);</span>
+        }
+
+<span class="fc" id="L153">        Review existingReview = reviewOptional.get();</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        if (reviewDto.getRating() != null) {</span>
+<span class="fc" id="L155">            existingReview.setRating(reviewDto.getRating());</span>
+        }
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if (reviewDto.getComment() != null) {</span>
+<span class="fc" id="L158">            existingReview.setComment(reviewDto.getComment());</span>
+        }
+        
+<span class="fc" id="L161">        Review updated = reviewRepo.save(existingReview);</span>
+<span class="fc" id="L162">        ReviewResponseDto responseDto = new ReviewResponseDto(</span>
+<span class="fc" id="L163">            updated.getId(),</span>
+<span class="fc" id="L164">            updated.getRating(),</span>
+<span class="fc" id="L165">            updated.getComment(),</span>
+<span class="fc" id="L166">            updated.getBuyer().getId(),</span>
+<span class="fc" id="L167">            updated.getOrderItem().getId(),</span>
+<span class="fc" id="L168">            updated.getReviewDate()</span>
+        );
+<span class="fc" id="L170">        return ResponseEntity.ok(responseDto);</span>
+    }
+
+    @DeleteMapping(&quot;/delete/{id}&quot;)
+    public ResponseEntity&lt;String&gt; deleteReview(@PathVariable Long id) {
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (!reviewRepo.existsById(id)) {</span>
+<span class="fc" id="L176">            return ResponseEntity.notFound().build();</span>
+        }
+
+<span class="fc" id="L179">        reviewRepo.deleteById(id);</span>
+<span class="fc" id="L180">        return ResponseEntity.ok(&quot;Review deleted successfully&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
