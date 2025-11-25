@@ -23,7 +23,7 @@
 | Requirement ID | Requirement Type & Description | Applicable Role | Test Cases with Status |
 | :--- | :--- | :--- | :--- |
 | **REQ-06** | **Functional:**<br>User shall be able to upload daily catch including location, species, weight, price, Delivery Status, Catch Date, and image. | Fisherman | **TC_UI_004 - Step 1** (Pass) |
-| **REQ-07** | **Validation:**<br>Required fields (location, species, weight, price, Delivery Status, Catch Date, and image) must be filled; system shall block submission if missing. | Fisherman | **TC_UI_004 - Step 2** (Pass) |
-| **REQ-08** | **Business Rule:**<br>Weight and price must be greater than 0; system shall show alert and block invalid input. | Fisherman | **TC_UI_004 - Step 3** (Pass) |
-| **REQ-09** | **UI/Navigation:**<br>After successful upload, the system shall show confirmation popup and redirect user to /market page. | Fisherman | **TC_UI_004 - Step 1** (Pass) |
-| **REQ-10** | **Data Integration:**<br>Uploaded fish data shall be correctly stored in the backend and visible in market listings. | Fisherman | **TC_UI_004 - Step 1** (Pass) |
+| **REQ-07** | **Validation:**<br>Required fields (location, species, weight, price, Delivery Status, Catch Date, and image) must be filled; system shall block submission if missing. | Fisherman | **TC_UI_005 - Step 1, Step 2** (Pass) |
+| **REQ-08** | **Business Rule:**<br>Weight and price must be greater than 0; system shall show alert and block invalid input. | Fisherman | **TC_UI_006 - Step 1, Step 2** (Pass) |
+| **REQ-09** | **UI/Navigation:**<br>After successful upload, the system shall show confirmation popup and redirect user to /market page. | Fisherman | **TC_UI_004 - Step 1, Step 2** (Pass) |
+| **REQ-10** | **Data Integration:**<br>Uploaded fish data shall be correctly stored in the backend and visible in market listings. | Fisherman | **TC_UI_004 - Step 2** (Pass) |
