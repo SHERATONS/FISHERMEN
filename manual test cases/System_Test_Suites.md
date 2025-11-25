@@ -1,4 +1,4 @@
-# System Test Suites - Fish Market Application
+# System Test Suite 1 - Fish Market Application
 
 **Project Name:** FISHERMEN
 **Document Date:** 2024-11-22
@@ -99,7 +99,7 @@ User is navigated to the Payment screen.
 
 
 
-# System Test Suites - Upload Fish 
+# System Test Suite 2 - Upload Fish 
 
 **Project Name:** FISHERMEN
 **Document Date:** 2025-11-22
