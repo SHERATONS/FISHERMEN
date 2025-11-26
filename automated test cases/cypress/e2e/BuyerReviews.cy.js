@@ -1,5 +1,5 @@
 /**
- * Automated UI Test Suites - Buyer Reviews Module
+ * Automated UI Test Suites 3 - Buyer Reviews Module
  * Framework: Cypress
  * Test Coverage: View → Add Review → Edit Review
  */
@@ -20,7 +20,7 @@ describe('Buyer Reviews - Complete UI Test Suites', { testIsolation: false }, ()
 
 
   // --------------------------------------------------------
-  // 1. NAVIGATE TO REVIEWS PAGE
+  // 1. NAVIGATE TO REVIEWS PAGE (Task 7)
   // --------------------------------------------------------
   it('1. Navigate to Reviews page', () => {
     cy.intercept('GET', 'http://localhost:8080/api/users/*').as('getUser')
@@ -40,7 +40,7 @@ describe('Buyer Reviews - Complete UI Test Suites', { testIsolation: false }, ()
 
 
   // --------------------------------------------------------
-  // 2. VERIFY PAGE RENDERING
+  // 2. VERIFY PAGE RENDERING (Task 7)
   // --------------------------------------------------------
   it('2. Verify page components', () => {
     cy.contains('My Reviews').should('exist')
@@ -55,7 +55,7 @@ describe('Buyer Reviews - Complete UI Test Suites', { testIsolation: false }, ()
 
 
   // --------------------------------------------------------
-  // 3. VERIFY "NOT REVIEWED" ITEMS
+  // 3. VERIFY "NOT REVIEWED" ITEMS (Task 7)
   // --------------------------------------------------------
   it('3. Verify "Not Reviewed" filter', () => {
     cy.contains('button', 'Not Reviewed').click()
@@ -71,7 +71,7 @@ describe('Buyer Reviews - Complete UI Test Suites', { testIsolation: false }, ()
 
 
   // --------------------------------------------------------
-  // 4. OPEN REVIEW FORM
+  // 4. OPEN REVIEW FORM (Task 8)
   // --------------------------------------------------------
   it('4. Open review form', () => {
     cy.contains('button', 'Rate').first().click()
@@ -88,7 +88,7 @@ describe('Buyer Reviews - Complete UI Test Suites', { testIsolation: false }, ()
 
 
   // --------------------------------------------------------
-  // 5. SUBMIT NEW REVIEW
+  // 5. SUBMIT NEW REVIEW (Task 8)
   // --------------------------------------------------------
   it('5. Submit new review', () => {
     cy.intercept('POST', 'http://localhost:8080/api/reviews/create').as('createReview')
@@ -113,7 +113,7 @@ describe('Buyer Reviews - Complete UI Test Suites', { testIsolation: false }, ()
 
 
   // --------------------------------------------------------
-  // 6. SWITCH TO "REVIEWED" AND VERIFY
+  // 6. SWITCH TO "REVIEWED" AND VERIFY (Task 9)
   // --------------------------------------------------------
   it('6. Switch to "Reviewed" filter', () => {
     // Wait for previous state to settle
@@ -173,7 +173,7 @@ describe('Buyer Reviews - Complete UI Test Suites', { testIsolation: false }, ()
 
 
   // --------------------------------------------------------
-  // 8. OPEN EDIT FORM
+  // 8. OPEN EDIT FORM (Task 9)
   // --------------------------------------------------------
   it('8. Open edit review form', () => {
     // Find the specific card with our review, then click Edit
@@ -192,7 +192,7 @@ describe('Buyer Reviews - Complete UI Test Suites', { testIsolation: false }, ()
 
   
   // --------------------------------------------------------
-  // 9. UPDATE REVIEW
+  // 9. UPDATE REVIEW (Task 9)
   // --------------------------------------------------------
   it('9. Update review', () => {
     cy.intercept('PUT', 'http://localhost:8080/api/reviews/update/*').as('updateReview')
