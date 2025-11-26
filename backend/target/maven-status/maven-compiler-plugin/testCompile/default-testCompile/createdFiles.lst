@@ -1,2 +1,4 @@
-com\example\backend\backend\BackendApplicationTests.class
+com\example\backend\controller\FishListingControllerTest.class
+com\example\backend\controller\OrderControllerTest.class
 com\example\backend\controller\ReviewControllerTest.class
+com\example\backend\backend\BackendApplicationTests.class

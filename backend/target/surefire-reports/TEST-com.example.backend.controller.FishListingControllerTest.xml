@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.example.backend.controller.OrderControllerTest" time="0.178" tests="11" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.example.backend.controller.FishListingControllerTest" time="5.256" tests="16" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -63,15 +63,41 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="testUpdateOrder_Success" classname="com.example.backend.controller.OrderControllerTest" time="0.137"/>
-  <testcase name="testDeleteOrder_NotFound" classname="com.example.backend.controller.OrderControllerTest" time="0.004"/>
-  <testcase name="testCreateOrder_EmptyItems" classname="com.example.backend.controller.OrderControllerTest" time="0.001"/>
-  <testcase name="testGetOrderById_NotFound" classname="com.example.backend.controller.OrderControllerTest" time="0.004"/>
-  <testcase name="testCreateOrder_Success" classname="com.example.backend.controller.OrderControllerTest" time="0.009"/>
-  <testcase name="testCreateOrder_BuyerNotFound" classname="com.example.backend.controller.OrderControllerTest" time="0.0"/>
-  <testcase name="testGetAllOrders" classname="com.example.backend.controller.OrderControllerTest" time="0.006"/>
-  <testcase name="testGetOrderById_Success" classname="com.example.backend.controller.OrderControllerTest" time="0.002"/>
-  <testcase name="testUpdateOrder_NotFound" classname="com.example.backend.controller.OrderControllerTest" time="0.002"/>
-  <testcase name="testCreateOrder_FishListingNotFound" classname="com.example.backend.controller.OrderControllerTest" time="0.004"/>
-  <testcase name="testDeleteOrder_Success" classname="com.example.backend.controller.OrderControllerTest" time="0.003"/>
+  <testcase name="testGetAllFishListings_BaseChoice" classname="com.example.backend.controller.FishListingControllerTest" time="0.403">
+    <system-out><![CDATA[22:36:42.867 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.backend.controller.FishListingControllerTest]: FishListingControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+22:36:43.109 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.backend.BackendApplication for test class com.example.backend.controller.FishListingControllerTest
+22:36:43.312 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.3.13)
+
+2025-11-26T22:36:43.877+07:00  INFO 1992 --- [           main] c.e.b.c.FishListingControllerTest        : Starting FishListingControllerTest using Java 17.0.17 with PID 1992 (started by act22 in C:\Users\act22\Documents\GitHub\FISHERMEN\backend)
+2025-11-26T22:36:43.877+07:00  INFO 1992 --- [           main] c.e.b.c.FishListingControllerTest        : No active profile set, falling back to 1 default profile: "default"
+2025-11-26T22:36:47.075+07:00  INFO 1992 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2025-11-26T22:36:47.076+07:00  INFO 1992 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2025-11-26T22:36:47.080+07:00  INFO 1992 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2025-11-26T22:36:47.125+07:00  INFO 1992 --- [           main] c.e.b.c.FishListingControllerTest        : Started FishListingControllerTest in 3.84 seconds (process running for 5.486)
+]]></system-out>
+  </testcase>
+  <testcase name="testCreateFishListing_Variation_InvalidFishermanId" classname="com.example.backend.controller.FishListingControllerTest" time="0.055"/>
+  <testcase name="testGetFishListingById_Variation_InvalidId" classname="com.example.backend.controller.FishListingControllerTest" time="0.015"/>
+  <testcase name="testUpdateFishListing_BaseChoice_PriceOnly" classname="com.example.backend.controller.FishListingControllerTest" time="0.09"/>
+  <testcase name="testGetAllFishListings_BaseChoice_EmptyList" classname="com.example.backend.controller.FishListingControllerTest" time="0.007"/>
+  <testcase name="testCreateFishListing_Variation_InvalidStatus" classname="com.example.backend.controller.FishListingControllerTest" time="0.007"/>
+  <testcase name="testDeleteFishListing_BaseChoice_ValidId" classname="com.example.backend.controller.FishListingControllerTest" time="0.021"/>
+  <testcase name="testDeleteFishListing_Variation_InvalidId" classname="com.example.backend.controller.FishListingControllerTest" time="0.009"/>
+  <testcase name="testUpdateFishListing_Variation_InvalidId" classname="com.example.backend.controller.FishListingControllerTest" time="0.009"/>
+  <testcase name="testCreateFishListing_BaseChoice_SoldStatus" classname="com.example.backend.controller.FishListingControllerTest" time="0.015"/>
+  <testcase name="testGetFishListingById_BaseChoice_ValidId" classname="com.example.backend.controller.FishListingControllerTest" time="0.004"/>
+  <testcase name="testUpdateFishListing_BaseChoice_FullUpdate" classname="com.example.backend.controller.FishListingControllerTest" time="0.009"/>
+  <testcase name="testCreateFishListing_BaseChoice_WithImage" classname="com.example.backend.controller.FishListingControllerTest" time="0.009"/>
+  <testcase name="testCreateFishListing_BaseChoice_WithoutImage" classname="com.example.backend.controller.FishListingControllerTest" time="0.008"/>
+  <testcase name="testCreateFishListing_Variation_NotFishermanRole" classname="com.example.backend.controller.FishListingControllerTest" time="0.006"/>
+  <testcase name="testUpdateFishListing_BaseChoice_StatusOnly" classname="com.example.backend.controller.FishListingControllerTest" time="0.009"/>
 </testsuite>
