@@ -158,7 +158,7 @@ describe('Buyer Reviews - Complete UI Test Suites', { testIsolation: false }, ()
 
 
   // --------------------------------------------------------
-  // 7. VERIFY REVIEW DETAILS
+  // 7. VERIFY REVIEW DETAILS (Task 9)
   // --------------------------------------------------------
   it('7. Verify review details', () => {
     // Find the specific card with our review comment (not .first())
