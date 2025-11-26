@@ -5,7 +5,7 @@ This document provides a comprehensive technical breakdown of the unit tests for
 
 **Test Class:** `src/test/java/com/example/backend/controller/FishListingControllerTest.java`
 
-**Frameworks:** JUnit 5, Mockito, Spring MockMvc
+**Frameworks:** JUnit 5, Mockito
 
 **Testing Strategy:** MBCC (Multiple Base Choice Coverage)
 
